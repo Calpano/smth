@@ -1,0 +1,5 @@
+.env
+screenshots/*
+node_modules/
+.claude/
+.idea/

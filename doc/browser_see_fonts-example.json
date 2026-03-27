@@ -1,0 +1,17 @@
+{
+  "input": {},
+  "output": [
+    {
+      "family": "sans-serif",
+      "count": 128,
+      "sizes": [6, 8, 10, 13, 13.92, 14, 16, 18, 22, 24, 26, 28],
+      "weights": [400, 700]
+    },
+    {
+      "family": "Raleway",
+      "count": 7,
+      "sizes": [16, 34, 41],
+      "weights": [400, 700]
+    }
+  ]
+}

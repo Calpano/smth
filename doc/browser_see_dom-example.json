@@ -1,0 +1,19 @@
+{
+  "examples": [
+    {
+      "label": "text lens — home page",
+      "input": { "lens": ["text"] },
+      "output": "Quotes to Scrape<h1><a>Quotes to Scrape</a></h1><p><a>Login</a></p><span class=\"text\">\"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"</span><span>byAlbert Einstein<a>(about)</a></span>Tags:<a class=\"tag\">change</a><a class=\"tag\">deep-thoughts</a><a class=\"tag\">thinking</a><a class=\"tag\">world</a><span class=\"text\">\"It is our choices, Harry, that show what we truly are, far more than our abilities.\"</span><span>byJ.K. Rowling<a>(about)</a></span>Tags:<a class=\"tag\">abilities</a><a class=\"tag\">choices</a>..."
+    },
+    {
+      "label": "code lens — login page (shows form wiring)",
+      "input": { "lens": ["code"] },
+      "output": "<head><meta charset=\"UTF-8\"><title>Quotes to Scrape</title><link rel=\"stylesheet\" href=\"/static/bootstrap.min.css\"><link rel=\"stylesheet\" href=\"/static/main.css\"></head><a href=\"/\">Quotes to Scrape</a><a href=\"/login\">Login</a><form action=\"/login\" method=\"post\"><input type=\"hidden\" name=\"csrf_token\" value=\"FfdvNuMQCtIHiTzhrqwgPyajoBWSLbYKspGRkZeAnVUDEOcXJmlx\">Username<input type=\"text\" class=\"form-control\" id=\"username\" name=\"username\" value=\"testuser\">Password<input type=\"password\" class=\"form-control\" id=\"password\" name=\"password\"><input type=\"submit\" value=\"Login\" class=\"btn btn-primary\"></form>..."
+    },
+    {
+      "label": "search — find context around terms",
+      "input": { "search": ["Albert Einstein", "simile"] },
+      "output": "[Albert Einstein]\n    Login\n\n    \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"\n>>> by Albert Einstein (about)\n    Tags: change deep-thoughts thinking world\n    \"It is our choices, Harry, that show what we truly are, far more than our abilities.\"\n    by J.K. Rowling (about)\n\n---\n\n[simile]\n    Tags: misattributed-eleanor-roosevelt\n    \"A day without sunshine is like, you know, night.\"\n    by Steve Martin (about)\n>>> Tags: humor obvious simile\n    Next →\n    Top Ten tags\n    love"
+    }
+  ]
+}

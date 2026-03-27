@@ -1,0 +1,34 @@
+services:
+  test:
+    build:
+      context: .
+      dockerfile: test/Dockerfile
+    volumes:
+      - ./test:/app/test:ro   # live-mount test source; node_modules stay in the image
+    environment:
+      - SMTH_URL=http://smth:3000
+    depends_on:
+      smth:
+        condition: service_healthy
+    profiles: ["test"]
+    restart: "no"
+
+  smth:
+    build: .
+    image: smth:latest
+    container_name: smth
+    ports:
+      - "${SMTH_PORT:-3000}:3000"
+    volumes:
+      - ${PAGES_DIR:-./test-pages}:/pages:ro
+    environment:
+      - PORT=3000
+      - PAGES_DIR=/pages
+      - HOST_PAGES_DIR=${PAGES_DIR:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

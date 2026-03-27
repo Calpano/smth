@@ -1,0 +1,13 @@
+{
+  "input": {},
+  "output": [
+    { "text": "#ffffff", "background": "#7ca3e6", "contrast": 2.55, "aa": false, "aaa": false, "count": 40 },
+    { "text": "#333333", "background": "#ffffff", "contrast": 12.63, "aa": true,  "aaa": true,  "count": 33 },
+    { "text": "#4582ec", "background": "#ffffff", "contrast": 3.71,  "aa": false, "aaa": false, "count": 12 },
+    { "text": "#3677e8", "background": "#ffffff", "contrast": 4.23,  "aa": false, "aaa": false, "count": 10 },
+    { "text": "#b02cce", "background": "#f5f5f5", "contrast": 4.7,   "aa": true,  "aaa": false, "count": 2  },
+    { "text": "#b3b3b3", "background": "#f5f5f5", "contrast": 1.92,  "aa": false, "aaa": false, "count": 1  },
+    { "text": "#4582ec", "background": "#f5f5f5", "contrast": 3.4,   "aa": false, "aaa": false, "count": 1  },
+    { "text": "#333333", "background": "#f5f5f5", "contrast": 11.59, "aa": true,  "aaa": true,  "count": 1  }
+  ]
+}

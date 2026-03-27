@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>smth test — home</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 0; background: #fff; color: #222; }
+    nav  { background: #1a1a2e; padding: 12px 24px; }
+    nav a { color: #eee; text-decoration: none; margin-right: 16px; font-family: Arial, sans-serif; font-size: 14px; }
+    .content { max-width: 800px; margin: 40px auto; padding: 0 24px; }
+    h1 { color: #1a1a2e; font-size: 2em; }
+    h2 { color: #333; font-size: 1.3em; }
+    .card { background: #f5f5f5; border: 1px solid #ddd; padding: 16px; margin: 16px 0; border-radius: 4px; }
+    button { background: #4a90d9; color: #fff; border: none; padding: 8px 16px; cursor: pointer; font-family: Arial, sans-serif; border-radius: 3px; margin-right: 8px; }
+    button:hover { background: #357abd; }
+    input { border: 1px solid #ccc; padding: 6px 10px; font-family: Georgia, serif; margin: 4px 0 12px; display: block; width: 260px; }
+    label { font-size: 0.9em; color: #555; }
+    .tip  { position: relative; display: inline-block; cursor: default; border-bottom: 1px dashed #999; }
+    .tip .tip-text { display: none; position: absolute; bottom: 125%; left: 0; background: #333; color: #fff;
+                     font-size: 0.8em; padding: 4px 8px; white-space: nowrap; border-radius: 3px; }
+    .tip:hover .tip-text { display: block; }
+    .ok  { color: #27ae60; }
+    .err { color: #e74c3c; }
+    footer { background: #1a1a2e; color: #aaa; padding: 24px; text-align: center; margin-top: 60px; font-family: Arial, sans-serif; font-size: 13px; }
+    footer a { color: #aaa; text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="test.html">Home</a>
+    <a href="test-b.html">Articles</a>
+    <a href="test-b.html#about">About</a>
+  </nav>
+
+  <div class="content">
+    <h1 id="page-title">Welcome to smth test page</h1>
+    <p id="intro">This page is used to verify all smth MCP browser tools. It contains interactive elements, known colors, form fields, and hover effects.</p>
+
+    <div class="card" id="card-buttons">
+      <h2>Buttons</h2>
+      <button id="btn-primary">Click me</button>
+      <button class="btn-secondary">No ID button</button>
+      <p>Hover: <span id="tip-host" class="tip">hover over me<span class="tip-text">Tooltip appeared!</span></span></p>
+    </div>
+
+    <div class="card" id="card-form">
+      <h2>Form</h2>
+      <form id="test-form" action="test-b.html" method="get">
+        <label for="name-input">Name:</label>
+        <input id="name-input" type="text" placeholder="Enter your name" />
+        <label for="email-input">Email:</label>
+        <input id="email-input" type="email" placeholder="Enter email" />
+        <button id="submit-btn" type="submit">Submit form</button>
+      </form>
+    </div>
+
+    <div class="card" id="card-text">
+      <h2>Known text — alpha bravo charlie</h2>
+      <p>The quick brown fox jumps over the lazy dog. Alpha bravo charlie delta echo foxtrot golf hotel.</p>
+      <p class="err">Error: something went wrong on this line</p>
+      <p class="ok">Success: operation completed without issues</p>
+    </div>
+  </div>
+
+  <footer>
+    <a href="test.html">Home</a>
+    <a href="test-b.html">Articles</a>
+    <span>&copy; 2024 smth test site</span>
+  </footer>
+</body>
+</html>

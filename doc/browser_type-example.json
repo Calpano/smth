@@ -1,0 +1,7 @@
+{
+  "input": {
+    "id": "username",
+    "text": "testuser"
+  },
+  "output": "Typed into #username"
+}

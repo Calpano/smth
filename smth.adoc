@@ -1,0 +1,97 @@
+= smth
+
+smth is a local MCP browser server that gives Claude a full Puppeteer/Chromium session via Docker.
+It exposes 16 tools for screenshots, DOM inspection, WCAG color analysis, and page interaction.
+
+== Using smth in a project
+
+Add `.mcp.json` to the project root:
+
+[source,json]
+----
+{
+  "mcpServers": {
+    "smth": { "type": "http", "url": "http://localhost:3000/mcp" }
+  }
+}
+----
+
+Restart Claude Code. The `+++mcp__smth__+++*` tools are then available.
+
+For legacy clients that don't support Streamable HTTP, use the SSE fallback:
+`http://localhost:3000/sse`
+
+== Tools
+
+Always call `browser_launch` before any other `browser_*` tool.
+
+.See — read and analyze pages
+[cols="1,3"]
+|===
+| Tool | Description
+| `browser_see_visual` | Screenshot (viewport or full page, any device emulation)
+| `browser_read_text` | Page text as Markdown + interactive element selectors
+| `browser_see_dom` | Lens-filtered compact HTML or text search
+| `browser_see_fonts` | All fonts grouped by family, size, and weight
+| `browser_see_colors` | All computed colors with usage counts
+| `browser_see_color_pairs` | Text/background pairs with WCAG 2.2 contrast ratios
+|===
+
+.Act — drive the browser
+[cols="1,3"]
+|===
+| Tool | Description
+| `browser_launch` | Start a session and open a URL
+| `browser_goto` | Navigate to a new URL in the existing session
+| `browser_click` | Click an element by id or CSS selector
+| `browser_hover` | Hover and return a before/after diff
+| `browser_type` | Type text into a form field
+|===
+
+.Compare — snapshot and diff
+[cols="1,3"]
+|===
+| Tool | Description
+| `browser_remember_dom` | Save a named DOM snapshot
+| `browser_doms` | List all saved snapshots
+| `browser_dom_compare` | Diff two snapshots or subtract a background
+| `fetch_dom_content` | Open a URL and return only foreground content
+| `browser_list_devices` | List device names for `browser_see_visual`
+|===
+
+== Local files
+
+The container mounts one host directory as read-only `/pages`.
+Set `PAGES_DIR` in `smth/.env` to your project root, then restart:
+
+[source,bash]
+----
+PAGES_DIR=/path/to/project docker compose up -d --force-recreate
+----
+
+Pass file paths relative to that root: `browser_launch url="index.html"`, `browser_launch url="dist/app/index.html"`.
+
+== Accessing a local dev server
+
+Docker cannot reach the host's `localhost`. Use `host.docker.internal` instead:
+
+[source]
+----
+# Wrong
+browser_launch url="http://localhost:4000/"
+
+# Correct
+browser_launch url="http://host.docker.internal:4000/"
+----
+
+== Container management
+
+.Commands
+`docker compose up -d`:: Start smth.
+`docker compose down`:: Stop smth.
+`docker compose up -d --build`:: Rebuild and restart after code changes.
+`docker compose up -d --force-recreate`:: Restart without rebuilding (e.g. after changing `PAGES_DIR`).
+`docker compose logs -f`:: Tail logs.
+
+After `--force-recreate`, the MCP session token is invalidated.
+The first tool call will get a `Session not found` error — retry once; Claude Code re-establishes the session automatically.

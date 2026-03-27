@@ -1,0 +1,7 @@
+{
+  "input": {
+    "name": "home",
+    "lens": ["text"]
+  },
+  "output": "Snapshot \"home\" saved (3374 chars, lens: text)"
+}

@@ -1,0 +1,6 @@
+{
+  "input": {
+    "url": "https://quotes.toscrape.com/page/2/"
+  },
+  "output": "Navigated to: Quotes to Scrape"
+}

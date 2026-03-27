@@ -1,0 +1,6 @@
+{
+  "input": {
+    "id": "username"
+  },
+  "output": "Clicked #username. Page: Quotes to Scrape"
+}

@@ -1,0 +1,401 @@
+= Web Page Design Rules
+:toc:
+:toc-title: Contents
+:toclevels: 2
+:sectnums:
+
+Reference of authoritative rules for layout, typography, and color in web design.
+Current as of 2026.
+
+== Layout
+
+=== Grid and Spacing
+
+*L1 · 8-Point Grid* — All spacing, padding, and margin values must be multiples of 8 (8, 16, 24, 32, 40, 48 …).
+Use multiples of 4 for sub-unit precision (icon padding, dense UIs).
+8 divides evenly by 1, 2, 4, and 8, which aligns to common device pixel ratios (1×, 1.5×, 2×, 3×) and prevents fractional-pixel rendering.
+
+Sources: link:https://m2.material.io/design/layout/spacing-methods.html[Google Material Design 2],
+link:https://developer.apple.com/design/human-interface-guidelines/layout[Apple HIG],
+link:https://blog.prototypr.io/the-8pt-grid-consistent-spacing-in-ui-design-with-sketch-577e4f0fd520[Chris Godby — The 8pt Grid]
+
+*L2 · 12-Column Grid* — Use a 12-column layout grid.
+12 is divisible by 1, 2, 3, 4, and 6, enabling halves, thirds, quarters, and sixths.
+Define consistent gutter widths (typically 16 px or 24 px) and column margins.
+
+Source: link:https://www.designsystems.com/space-grids-and-layouts/[Design Systems — Space, Grids, and Layouts]
+
+*L3 · Spacing Scale* — Define a named token scale rather than arbitrary values:
+XS = 4 px, S = 8 px, M = 16 px, L = 32 px, XL = 64 px.
+Consistent tokens prevent drift and align designer–developer communication.
+
+Source: link:https://cieden.com/book/sub-atomic/spacing/spacing-best-practices[Cieden — Spacing Best Practices]
+
+*L4 · Internal ≤ External Rule* — The internal spacing within a component must never exceed the spacing between that component and its neighbors.
+Tighter internal spacing creates visual grouping (Gestalt: proximity).
+
+Source: link:https://cieden.com/book/sub-atomic/spacing/spacing-best-practices[Cieden — Spacing Best Practices]
+
+=== Container and Content Width
+
+*L5 · Max Content Width* — Cap the main content container at 1140–1280 px for full-width layouts.
+
+*L6 · Max Prose Width* — For readable body text, apply `max-width: 65ch` (the `ch` unit equals the width of the "0" glyph), which maps to the typographic ideal of ~66 characters per line.
+
+*L7 · Avoid Fixed Heights* — Never set a fixed `height` on content containers.
+Let content dictate vertical size; use `min-height` or flexbox instead.
+Fixed heights cause overflow and text clipping on reflow.
+
+Sources: link:https://www.framer.com/blog/responsive-breakpoints/[Framer — Responsive Breakpoints 2026],
+link:https://www.blushush.co.uk/blogs/responsive-web-design-best-practices-in-2026[Blushush — Responsive Web Design Best Practices 2026]
+
+=== Responsive Design
+
+*L8 · Content-Driven Breakpoints* — Set breakpoints where your specific layout breaks, not at assumed device sizes.
+Use CSS `clamp()` and container queries for fluid, future-proof scaling.
+
+Common reference points (Bootstrap 5 / industry convention):
+576 px (sm), 768 px (md), 992 px (lg), 1200 px (xl), 1400 px (xxl).
+
+Sources: link:https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/CSS_layout/Responsive_Design[MDN — Responsive Web Design],
+link:https://www.nngroup.com/articles/breakpoints-in-responsive-design/[NN/G — Breakpoints in Responsive Design]
+
+*L9 · CSS Container Queries* — Prefer container queries over media queries for component-level layout adaptation.
+Components respond to their parent container's size, not the global viewport.
+
+Source: link:https://www.framer.com/blog/responsive-breakpoints/[Framer — Responsive Breakpoints 2026]
+
+=== Touch Targets and Interactive Sizing
+
+*L10 · Minimum Touch Target: 48 × 48 CSS px* — Interactive elements (buttons, links, form controls) must be at least 48 × 48 CSS pixels.
+48 px is the grid-aligned value (6 × 8 pt grid) and matches the Android/Material Design specification (48 px targets, 8 px gaps).
+WCAG 2.5.8 (Level AA, WCAG 2.2) sets the legal floor at 44 × 44 px; use 48 px to satisfy both the standard and the 8-point grid simultaneously.
+
+Sources: link:https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum[WCAG 2.5.8 Target Size],
+link:https://developer.apple.com/design/human-interface-guidelines/[Apple HIG]
+
+*L11 · Fitts's Law* — Time to click a target is a function of distance and size: `T = a + b log₂(2D/W)`.
+Practical rule: place primary actions close to where attention already is, and make them large.
+Never place destructive actions (delete, cancel) adjacent to confirm actions.
+
+Sources: Paul Fitts (1954),
+link:https://lawsofux.com/fittss-law/[Laws of UX — Fitts's Law],
+link:https://www.nngroup.com/articles/fitts-law/[NN/G — Fitts's Law]
+
+=== Visual Hierarchy
+
+*L12 · F-Pattern and Z-Pattern Scanning* — Users scan text-heavy pages in an F-shape (two horizontal sweeps, then a vertical scan down the left edge).
+On sparse pages they scan in a Z-shape (top-left → top-right → bottom-left → bottom-right).
+Place critical content and calls to action along these paths.
+
+Source: link:https://www.nngroup.com/articles/visual-hierarchy-ux-definition/[NN/G — Visual Hierarchy in UX]
+
+*L13 · Limit Type Size Levels to 2–3* — Use 2–3 distinct type sizes to signal content hierarchy.
+More than 3 creates confusion; fewer than 2 provides no differentiation.
+
+Source: link:https://www.nngroup.com/articles/visual-hierarchy-ux-definition/[NN/G — Visual Hierarchy in UX]
+
+*L14 · Gestalt: Proximity* — Elements placed close together are perceived as related.
+Use whitespace deliberately to group related items and separate unrelated ones.
+Never rely on borders alone when whitespace suffices.
+
+Sources: Wertheimer (1923),
+link:https://www.nngroup.com/articles/principles-visual-design/[NN/G — 5 Principles of Visual Design in UX]
+
+== Typography
+
+=== Font Size
+
+*T1 · Base Body Size: 16 px (1 rem)* — 16 px is the browser default and the accepted minimum for comfortable body text on desktop.
+On mobile, prefer 16–18 px; never go below 16 px.
+
+Sources: link:https://www.learnui.design/blog/mobile-desktop-website-font-size-guidelines.html[Learn UI Design — Font Size Guidelines],
+link:https://pimpmytype.com/font-size/[Pimp My Type — Font Size],
+Apple HIG minimum: 11 pt
+
+=== Line Height
+
+*T2 · Body Line Height: 1.4–1.6 × font size* — The canonical sweet spot is 1.5 (150% of font size).
+WCAG 1.4.12 (Text Spacing, Level AA) requires that line height can be set to at least 1.5× without loss of content or functionality.
+
+Sources: Robert Bringhurst — _The Elements of Typographic Style_ (4th ed., 2012),
+link:https://pimpmytype.com/line-length-line-height/[Pimp My Type — Line Length & Line Height],
+link:https://www.w3.org/WAI/WCAG21/Understanding/text-spacing.html[WCAG 1.4.12]
+
+*T3 · Heading Line Height: 1.1–1.3 × font size* — Headings are set large and short; they need tighter leading than body copy.
+1.2 is the most widely recommended value.
+
+Source: link:https://www.justinmind.com/blog/best-ux-practices-for-line-spacing/[Justinmind — Best UX Practices for Line Spacing]
+
+*T4 · Longer Lines Need More Leading* — As line length increases, line height must increase proportionally.
+If you widen your text column, raise the line height.
+
+Source: Pimp My Type, Bringhurst
+
+=== Line Length
+
+*T5 · 45–75 Characters per Line (desktop)* — The optimal target is ~66 characters (Bringhurst's canonical figure).
+Implement with `max-width: 65ch`.
+
+Sources: Robert Bringhurst — _The Elements of Typographic Style_, §2.1.2,
+link:https://www.smashingmagazine.com/2014/09/balancing-line-length-font-size-responsive-web-design/[Smashing Magazine — Balancing Line Length and Font Size]
+
+*T6 · 30–50 Characters per Line (mobile)*
+
+Source: link:https://www.uxpin.com/studio/blog/optimal-line-length-for-readability/[UXPin — Optimal Line Length for Readability]
+
+*T7 · Below 45 Characters: Avoid for Running Text* — Short lines force excessive hyphenation and disrupt reading rhythm.
+Acceptable only for narrow callouts, captions, or sidebars.
+
+Source: Bringhurst
+
+=== Type Scale
+
+*T8 · Consistent Modular Ratio* — Generate heading sizes from a single multiplier applied to the base.
+
+Common ratios:
+
+[cols="1,2,3", options="header"]
+|===
+| Ratio | Name | Best for
+| 1.125 | Major Second | Subtle, minimalist interfaces
+| 1.250 | Major Third | General-purpose, balanced
+| 1.333 | Perfect Fourth | Clear differentiation — widely used
+| 1.618 | Golden Ratio | Dramatic hierarchy, display contexts
+|===
+
+Sources: link:https://cieden.com/book/sub-atomic/typography/establishing-a-type-scale[Cieden — Establishing a Type Scale],
+link:https://www.modularscale.com/[Modular Scale calculator]
+
+=== WCAG 1.4.12 Text Spacing (Level AA)
+
+*T9 · Text Spacing Overrides* — These are minimum override tolerances: your layout must not break when users apply the following overrides.
+
+* Letter spacing ≥ 0.12 × font size
+* Word spacing ≥ 0.16 × font size
+* Paragraph spacing ≥ 2 × font size
+* Line height ≥ 1.5 × font size
+
+Source: link:https://www.w3.org/WAI/WCAG21/Understanding/text-spacing.html[WCAG 2.1 SC 1.4.12]
+
+=== Number of Typefaces
+
+*T10 · Maximum 2 Typefaces per Design* — One for headings, one for body text.
+A third is acceptable only for code or a specific decorative purpose.
+More than two creates visual noise without hierarchy benefit.
+
+Source: link:https://www.nngroup.com/articles/good-visual-design/[NN/G — Good Visual Design]
+
+== Color
+
+=== Contrast Ratios (WCAG 2.2 — current binding standard)
+
+*C1 · Contrast Ratios*
+
+[cols="3,1,1", options="header"]
+|===
+| Context | AA minimum | AAA minimum
+| Normal text (< 18 pt / < 14 pt bold) | 4.5:1 | 7:1
+| Large text (≥ 18 pt / ≥ 14 pt bold) | 3:1 | 4.5:1
+| UI components and graphical objects | 3:1 | —
+| Focus indicators | 3:1 | —
+|===
+
+18 pt = 24 CSS px. 14 pt bold ≈ 19 CSS px.
+Do not round up: 4.47:1 fails. Measure precisely.
+
+Sources: link:https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum[WCAG 2.2 SC 1.4.3 — Contrast Minimum],
+link:https://www.w3.org/WAI/WCAG22/Understanding/contrast-enhanced[WCAG 2.2 SC 1.4.6 — Contrast Enhanced],
+link:https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast[WCAG 2.2 SC 1.4.11 — Non-text Contrast],
+link:https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance[WCAG 2.2 SC 2.4.11 — Focus Appearance],
+link:https://webaim.org/articles/contrast/[WebAIM — Contrast and Color Accessibility]
+
+=== Color Must Not Be the Sole Differentiator
+
+*C2 · Color Not Sole Differentiator* — Color alone must never be the only means of conveying information, indicating an action, prompting a response, or distinguishing an element. (WCAG SC 1.4.1, Level A)
+
+Practical implications:
+
+* Error states need an icon or text label in addition to red.
+* Links in body copy need underlines, not just a color change.
+* Charts need patterns or labels in addition to color coding.
+
+Source: link:https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html[W3C WAI — Understanding SC 1.4.1]
+
+=== The 60-30-10 Rule
+
+*C3 · 60-30-10 Color Proportion* — Proportion colors across three tiers:
+
+[cols="1,1,3", options="header"]
+|===
+| Share | Role | Usage
+| 60% | Dominant | Backgrounds and large surfaces; typically a neutral (white, off-white, light gray, or desaturated brand color)
+| 30% | Secondary | Sidebars, cards, secondary surfaces; complements the dominant and adds depth
+| 10% | Accent | CTAs, highlights, key interactive elements; the highest-energy color
+|===
+
+Sources: link:https://uxplanet.org/the-60-30-10-rule-a-foolproof-way-to-choose-colors-for-your-ui-design-d15625e56d25[UX Planet — The 60-30-10 Rule],
+link:https://www.nngroup.com/articles/color-enhance-design/[NN/G — Using Color to Enhance Design]
+
+=== Limit the Color Palette
+
+*C4 · Palette Size: 3–5 Colors* — 3 colors minimum (per the 60-30-10 rule); never more than 5 without expertise.
+The 60-30-10 rule defines exactly three functional tiers — dominant, secondary, accent — which is the practical minimum.
+A fourth or fifth color must be functional (e.g. a semantic error red), not decorative.
+
+Source: link:https://www.nngroup.com/articles/visual-hierarchy-ux-definition/[NN/G — Visual Hierarchy in UX]
+
+=== Color Blindness
+
+*C5 · Color Blindness Accommodation* — Approximately 8% of men and 0.5% of women have color vision deficiency (CVD).
+The most common types are deuteranopia and protanopia (both red-green).
+
+Rules:
+
+* Never rely on red vs. green alone to distinguish states (pass/fail, valid/invalid).
+* Always add an icon, label, or pattern as a second signal.
+* Test by simulating CVD: Chrome DevTools → Rendering → Emulate vision deficiency.
+
+Sources: link:https://www.w3.org/WAI/WCAG21/Understanding/use-of-color.html[WCAG SC 1.4.1],
+link:https://www.audioeye.com/post/8-ways-to-design-a-color-blind-friendly-website/[AudioEye — Designing for Color Blindness]
+
+=== APCA / WCAG 3.0 (Emerging — not yet binding)
+
+*C6 · APCA Contrast* — APCA (Advanced Perceptual Contrast Algorithm) is the proposed replacement for the 4.5:1 ratio system in WCAG 3.0.
+It produces a Lightness Contrast score (Lc 0–106+) that accounts for font size, weight, and polarity.
+
+Indicative thresholds: body text ≥ Lc 60; large headlines may require only Lc 45.
+
+Status: WCAG 3.0 is a Working Draft as of 2026; finalization is not expected before 2028–2030.
+*WCAG 2.2 AA remains the binding legal standard.*
+Use APCA for forward-looking validation in addition to, not instead of, WCAG 2.2.
+
+Sources: link:https://git.apcacontrast.com/documentation/WhyAPCA[APCA Documentation],
+link:https://webaim.org/articles/contrast/[WebAIM — Contrast],
+link:https://rubyroidlabs.com/blog/2025/10/how-to-prepare-for-wcag-3-0/[WCAG 3.0 timeline overview]
+
+== Tools
+
+The smth MCP browser tools can be used to audit most rules programmatically.
+Each tool operates on the live, rendered page — computed styles and actual layout, not source code.
+
+=== browser_see_fonts
+
+Collects computed font family, size, and weight for every visible element.
+
+[cols="1,3,3", options="header"]
+|===
+| Rule | What to check | Pass condition
+| T1 | Look for `size: 16` entries in the dominant family | Body text entries at 16 px or above
+| T8 | Extract distinct sizes; compute ratios between consecutive steps | Ratios should cluster around 1.125–1.618
+| T10 | Count distinct font families in the result | ≤ 2 families (3 if a monospace/code face is present)
+| L13 | Count distinct size values across all families | 2–3 distinct sizes in active use
+|===
+
+=== browser_see_colors
+
+Collects computed text, background, and border colors for every visible element, with usage counts.
+
+[cols="1,3,3", options="header"]
+|===
+| Rule | What to check | Pass condition
+| C1 | Identify text/background pairs; compute contrast ratio manually or with a tool | All pairs ≥ 4.5:1 (normal text), ≥ 3:1 (large text / UI components)
+| C3 | Compare relative usage counts of background vs. text vs. accent colors | Dominant background color ≈ 60% of background usage; accent appears sparingly
+| C4 | Count distinct colors (excluding near-duplicates and alpha variants) | 3–5 intentional colors; investigate outliers
+| C5 | Check whether only two colors distinguish interactive states | No red/green-only pairs without a secondary signal
+|===
+
+Pass `where: true` to get element selectors per color — useful for tracing unexpected colors back to their source.
+
+=== browser_see_dom
+
+Inspects the live DOM structure with configurable lenses.
+
+[cols="1,3,3", options="header"]
+|===
+| Rule | Suggested call | What to look for
+| L5 | `lens=["layout"]` | `max-width` on the outermost container; should be 1140–1280 px
+| L6 | `lens=["layout"]` | `max-width` on `<p>`, `<article>`, or prose wrappers; should be ~65ch
+| L7 | `lens=["layout"]` | `height` (not `min-height`) on container elements; flag any fixed values
+| L10 | `lens=["layout"]` | `width` and `height` on `<button>`, `<a>`, `<input>`; should be ≥ 48 px
+| L2 | `lens=["layout"]` | Grid/flex containers; look for `grid-template-columns` with 12 tracks or equivalent
+| T9 | `lens=["code"]` | Presence of `letter-spacing`, `word-spacing`, `line-height` overrides; ensure layout does not collapse under user text spacing overrides
+| C2 | `lens=["text","code"]` | Error/state elements; confirm they carry a text label or icon (`aria-label`, visible text) alongside any color change
+|===
+
+Use `justCount: true` first to gauge response size, then `max_chars` to fit within context limits on large pages.
+
+=== browser_see_visual
+
+Takes a screenshot of the rendered page, returned as an embedded image visible to the model.
+
+[cols="1,3,3", options="header"]
+|===
+| Rule | Suggested call | What to look for
+| L1 | Default or `zoom: 2` for pixel-level detail | Spacing between elements should land on 8 px increments; misalignments are visible at 2× zoom
+| L3 | Default | Spacing tokens should be visually consistent — same gap used for same semantic distance throughout
+| L4 | Default | Internal padding within cards/components should appear tighter than the gap between cards
+| L12 | Default, full page | Primary CTAs and key content should sit on the F-path (top-left, first two rows) or Z-path corners
+| L13 | Default | Heading and body text should form a clear size ladder with 2–3 visible steps
+| C3 | Default, full page | Visually estimate color surface area: background should dominate (~60%), accent should appear only on key elements
+| L8 | `device: "iPhone 15"` (or similar) | Re-check L1, L10, L13 at mobile viewport; layout should adapt without overflow or collapsed elements
+|===
+
+=== browser_read_text
+
+Returns visible text as Markdown with an Interactive Elements index.
+
+[cols="1,3,3", options="header"]
+|===
+| Rule | What to check | Pass condition
+| T5 | Count characters per line in body paragraphs | Lines should average 45–75 characters
+| T6 | Re-run with a mobile device set via `browser_launch` then check line lengths | Lines should average 30–50 characters
+| L11 | Inspect the Interactive Elements list for destructive actions (delete, cancel, reset) | No destructive action adjacent to a confirm action in the element order
+|===
+
+== Quick Reference
+
+[cols="3,2,3", options="header"]
+|===
+| Rule | Value | Source
+| Grid base unit (L1) | 8 px (sub: 4 px) | Material Design, Apple HIG
+| Column grid (L2) | 12 columns | Industry convention
+| Touch target minimum (L10) | 48 × 48 CSS px (WCAG floor: 44 px) | WCAG 2.5.8, Material Design, 8-pt grid
+| Max container width (L5) | 1140–1280 px | Industry convention
+| Max prose width (L6) | ~65ch | Bringhurst, CSS practice
+| Body font size (T1) | 16 px desktop / 16–18 px mobile | Browser default, Learn UI
+| Body line height (T2) | 1.4–1.6× font size | Bringhurst, WCAG 1.4.12
+| Heading line height (T3) | 1.1–1.3× font size | Typography convention
+| Body line length (T5) | 45–75 chars (target: 66) | Bringhurst §2.1.2
+| Mobile line length (T6) | 30–50 chars | UXPin
+| Type scale ratio (T8) | 1.25–1.333 (general) | Modularscale.com
+| Max typefaces (T10) | 2 per design | NN/G
+| Contrast — normal text AA (C1) | 4.5:1 | WCAG 2.2 SC 1.4.3
+| Contrast — large text AA (C1) | 3:1 | WCAG 2.2 SC 1.4.3
+| Contrast — UI components AA (C1) | 3:1 | WCAG 2.2 SC 1.4.11
+| Contrast — normal text AAA (C1) | 7:1 | WCAG 2.2 SC 1.4.6
+| Color-only information (C2) | Forbidden (Level A) | WCAG 2.2 SC 1.4.1
+| Color proportion (C3) | 60/30/10 | Interior design tradition / NN/G
+| Color palette (C4) | 3 minimum (60/30/10), max 5 | NN/G, 60-30-10 rule
+|===
+
+== Sources
+
+* link:https://www.w3.org/TR/WCAG22/[WCAG 2.2 (W3C, 2023)]
+* link:https://webaim.org/articles/contrast/[WebAIM — Contrast and Color Accessibility]
+* Robert Bringhurst — _The Elements of Typographic Style_ (4th ed., 2012)
+* link:https://m3.material.io/[Google Material Design 3]
+* link:https://developer.apple.com/design/human-interface-guidelines/[Apple Human Interface Guidelines]
+* link:https://www.nngroup.com/[Nielsen Norman Group]
+* link:https://lawsofux.com/[Laws of UX]
+* link:https://pimpmytype.com/line-length-line-height/[Pimp My Type — Line Length & Line Height]
+* link:https://www.learnui.design/blog/mobile-desktop-website-font-size-guidelines.html[Learn UI Design — Font Size Guidelines]
+* link:https://www.modularscale.com/[Modular Scale]
+* link:https://www.smashingmagazine.com/2014/09/balancing-line-length-font-size-responsive-web-design/[Smashing Magazine — Balancing Line Length and Font Size]
+* link:https://cieden.com/book/sub-atomic/spacing/spacing-best-practices[Cieden — Spacing Best Practices]
+* link:https://www.designsystems.com/space-grids-and-layouts/[Design Systems — Space, Grids, and Layouts]
+* link:https://uxplanet.org/the-60-30-10-rule-a-foolproof-way-to-choose-colors-for-your-ui-design-d15625e56d25[UX Planet — The 60-30-10 Rule]
+* link:https://www.audioeye.com/post/8-ways-to-design-a-color-blind-friendly-website/[AudioEye — Designing for Color Blindness]
+* link:https://git.apcacontrast.com/documentation/WhyAPCA[APCA Documentation]
+* link:https://www.framer.com/blog/responsive-breakpoints/[Framer — Responsive Breakpoints 2026]
+* link:https://www.uxpin.com/studio/blog/optimal-line-length-for-readability/[UXPin — Optimal Line Length]

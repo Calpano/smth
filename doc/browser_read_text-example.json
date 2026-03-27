@@ -1,0 +1,4 @@
+{
+  "input": {},
+  "output": "# Quotes to Scrape\n\nLogin\n\n\"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"\nby\nAlbert Einstein\n(about)\nTags:\nchange\ndeep-thoughts\nthinking\nworld\n...\n\n- Next →\n\n## Top Ten tags\n\nlove\ninspirationallif...\n\n## Interactive Elements\n\n- [a] div > div:nth-of-type(1) > div:nth-of-type(1) > h1 > a: Quotes to Scrape\n- [a] div > div:nth-of-type(1) > div:nth-of-type(2) > p > a: Login\n- [a] div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > span:nth-of-type(2) > a: (about)\n- [a] div > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1) > div > a:nth-of-type(1): change\n..."
+}

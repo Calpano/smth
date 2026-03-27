@@ -1,0 +1,17 @@
+{
+  "name": "smth",
+  "version": "1.0.0",
+  "description": "smth MCP tool — as reliable as Agent Smith",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "docker compose --profile test run --rm test",
+    "test:build": "docker compose --profile test build test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "express": "^4.19.0",
+    "puppeteer-core": "^22.0.0"
+  }
+}

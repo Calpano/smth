@@ -1,0 +1,7 @@
+{
+  "note": "browser_see_visual returns an embedded base64 PNG image — not representable as JSON text. The screenshot is displayed inline to the model.",
+  "input": {
+    "full_page": false
+  },
+  "output": "<base64 PNG image of https://quotes.toscrape.com/ viewport>"
+}

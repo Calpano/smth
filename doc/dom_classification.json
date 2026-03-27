@@ -1,0 +1,162 @@
+{
+  "categories": {
+    "text":   "Readable text visible on screen — headings, labels, button labels, form values, tooltips.",
+    "media":  "Non-text visual content — images, SVG shapes, canvas, icons.",
+    "layout": "Structural — influences position, size, or arrangement of elements, independent of specific content.",
+    "code":   "Behavioral — does not affect the static visual page; affects how the page reacts to users or scripts."
+  },
+
+  "notes": {
+    "id":     "Relevant for all lenses: anchors text, targets CSS (layout), targets JS (code), and may identify media.",
+    "class":  "Relevant for all lenses: encodes CSS layout rules, visual state, and JS hook conventions.",
+    "data-*": "Always code. See patterns section.",
+    "on*":    "Always code. See patterns section."
+  },
+
+  "patterns": {
+    "data-*": ["code"],
+    "on*":    ["code"],
+    "aria-*": ["code", "text"]
+  },
+
+  "elements": {
+    "html":     ["layout"],
+    "head":     ["code"],
+    "meta":     ["code"],
+    "link":     ["code"],
+    "title":    ["code"],
+    "script":   ["code"],
+    "style":    ["code"],
+    "body":     ["layout"],
+    "div":      ["layout"],
+    "span":     ["text", "layout"],
+    "p":        ["text", "layout"],
+    "br":       ["layout"],
+    "h1":       ["text"],
+    "h2":       ["text"],
+    "h3":       ["text"],
+    "h4":       ["text"],
+    "h5":       ["text"],
+    "h6":       ["text"],
+    "strong":   ["text"],
+    "em":       ["text"],
+    "a":        ["text", "code"],
+    "label":    ["text"],
+    "button":   ["text", "code"],
+    "input":    ["text", "code"],
+    "select":   ["text", "code"],
+    "option":   ["text", "code"],
+    "optgroup": ["text"],
+    "table":    ["layout"],
+    "thead":    ["layout"],
+    "tbody":    ["layout"],
+    "tr":       ["layout"],
+    "th":       ["text", "layout"],
+    "td":       ["text", "layout"],
+    "svg":      ["media", "layout"],
+    "path":     ["media"],
+    "canvas":   ["media", "code"],
+    "img":      ["media", "layout"],
+    "header":   ["layout"],
+    "footer":   ["layout"],
+    "nav":      ["layout"],
+    "main":     ["layout"],
+    "section":  ["layout"],
+    "article":  ["layout"],
+    "aside":    ["layout"]
+  },
+
+  "attributes": {
+    "global": {
+      "id":       ["text", "media", "layout", "code"],
+      "class":    ["text", "media", "layout", "code"],
+      "style":    ["layout"],
+      "title":    ["text"],
+      "hidden":   ["code"],
+      "tabindex": ["code"],
+      "role":     ["code", "text"]
+    },
+
+    "by_element": {
+      "html": {
+        "lang": ["code"]
+      },
+      "meta": {
+        "charset":  ["code"],
+        "name":     ["code"],
+        "content":  ["code"],
+        "property": ["code"]
+      },
+      "link": {
+        "rel":  ["code"],
+        "href": ["code"],
+        "type": ["code"]
+      },
+      "script": {
+        "src":  ["code"],
+        "type": ["code"]
+      },
+      "svg": {
+        "viewBox": ["layout"],
+        "xmlns":   ["code"]
+      },
+      "path": {
+        "d":            ["media"],
+        "fill":         ["media"],
+        "stroke":       ["media"],
+        "stroke-width": ["layout"]
+      },
+      "button": {
+        "type":    ["code"],
+        "onclick": ["code"]
+      },
+      "input": {
+        "type":        ["code"],
+        "name":        ["code"],
+        "value":       ["text", "code"],
+        "placeholder": ["text"],
+        "checked":     ["text", "code"],
+        "min":         ["code"],
+        "max":         ["code"],
+        "step":        ["code"],
+        "onchange":    ["code"]
+      },
+      "select": {
+        "onchange": ["code"]
+      },
+      "option": {
+        "value": ["code"]
+      },
+      "optgroup": {
+        "label": ["text"]
+      },
+      "label": {
+        "for": ["code"]
+      },
+      "td": {
+        "colspan": ["layout"],
+        "rowspan": ["layout"]
+      },
+      "th": {
+        "colspan": ["layout"],
+        "rowspan": ["layout"],
+        "scope":   ["code"]
+      },
+      "canvas": {
+        "width":  ["layout"],
+        "height": ["layout"]
+      },
+      "img": {
+        "src":    ["media"],
+        "alt":    ["text"],
+        "width":  ["layout"],
+        "height": ["layout"]
+      },
+      "a": {
+        "href":   ["code"],
+        "rel":    ["code"],
+        "target": ["code"]
+      }
+    }
+  }
+}

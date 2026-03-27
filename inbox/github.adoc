@@ -1,0 +1,16 @@
+= GitHub
+
+Repo: Calpano/smth
+
+Desc (max 350 chars):
+____
+Local MCP browser server (persistent Puppeteer/Chromium session in Docker).
+Allows agent to act 👆 (click, zoom, type, switch device), see 👀 (filtered DOM, diffed DOM, screenshots) and analyze 👁 (fonts, colors, contrast).
+Finally Claude understands your issues.
+____
+License: MIT
+
+Topics (separate with spaces).
+Repository topics must start with a lowercase letter or number, consist of 50 characters or less, and can include hyphens.
+
+mcp model-context-protocol docker browser-automation claude wcag accessibility screenshot dom

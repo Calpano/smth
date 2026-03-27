@@ -1,0 +1,7 @@
+{
+  "input": {
+    "url": "https://quotes.toscrape.com/",
+    "prefix": "quotes"
+  },
+  "output": "# fetch_dom_content: https://quotes.toscrape.com/\n# peer: https://quotes.toscrape.com/login\n# background: 19 lines stripped, 105 lines remain\n# snapshots: quotes_page, quotes_peer, quotes_background\n\n<div class=\"quote\">\n<span class=\"text\">\"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"</span>\n<span>byAlbert Einstein\n<a>(about)</a></span>\n<div class=\"tags\">Tags:\n<a class=\"tag\">change</a>\n<a class=\"tag\">deep-thoughts</a>\n<a class=\"tag\">thinking</a>\n<a class=\"tag\">world</a></div></div>\n...\n<div class=\"col-md-4 tags-box\">\n<h2>Top Ten tags</h2>\n<span class=\"tag-item\">\n<a class=\"tag\" style=\"font-size: 28px\">love</a></span>\n..."
+}

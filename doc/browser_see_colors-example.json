@@ -1,0 +1,14 @@
+{
+  "input": {},
+  "output": [
+    { "color": "#333333", "count": 79, "categories": ["text", "border"] },
+    { "color": "#ffffff", "count": 42, "categories": ["text", "background"] },
+    { "color": "#7ca3e6", "count": 40, "categories": ["background"] },
+    { "color": "#4582ec", "count": 13, "categories": ["text"] },
+    { "color": "#3677e8", "count": 10, "categories": ["text"] },
+    { "color": "#b02cce", "count": 2,  "categories": ["text"] },
+    { "color": "#dddddd", "count": 1,  "categories": ["border"] },
+    { "color": "#f5f5f5", "count": 1,  "categories": ["background"] },
+    { "color": "#b3b3b3", "count": 1,  "categories": ["text"] }
+  ]
+}

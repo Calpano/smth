@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>smth test — articles</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 0; background: #fff; color: #222; }
+    nav  { background: #1a1a2e; padding: 12px 24px; }
+    nav a { color: #eee; text-decoration: none; margin-right: 16px; font-family: Arial, sans-serif; font-size: 14px; }
+    .content { max-width: 800px; margin: 40px auto; padding: 0 24px; }
+    h1 { color: #1a1a2e; font-size: 2em; }
+    h2 { color: #333; font-size: 1.3em; }
+    .card { background: #f5f5f5; border: 1px solid #ddd; padding: 16px; margin: 16px 0; border-radius: 4px; }
+    footer { background: #1a1a2e; color: #aaa; padding: 24px; text-align: center; margin-top: 60px; font-family: Arial, sans-serif; font-size: 13px; }
+    footer a { color: #aaa; text-decoration: none; margin: 0 8px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="test.html">Home</a>
+    <a href="test-b.html">Articles</a>
+    <a href="test-b.html#about">About</a>
+  </nav>
+
+  <div class="content">
+    <h1 id="page-title-b">Articles</h1>
+    <p id="intro-b">This is the peer page for background-detection testing. It shares nav and footer with the home page but has different body content.</p>
+
+    <div class="card" id="article-1">
+      <h2>Article one</h2>
+      <p>Unique content: sierra tango uniform victor whiskey. This text does not appear on the home page.</p>
+    </div>
+
+    <div class="card" id="article-2">
+      <h2 id="about">About this site</h2>
+      <p>Another unique paragraph for the peer page. Xray yankee zulu.</p>
+    </div>
+  </div>
+
+  <footer>
+    <a href="test.html">Home</a>
+    <a href="test-b.html">Articles</a>
+    <span>&copy; 2024 smth test site</span>
+  </footer>
+</body>
+</html>

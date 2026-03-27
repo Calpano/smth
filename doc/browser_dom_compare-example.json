@@ -1,0 +1,8 @@
+{
+  "note": "Diff between page 1 (home) and page 2 of quotes.toscrape.com. Lines with - were only on page 1; lines with + are only on page 2.",
+  "input": {
+    "a": "home",
+    "b": "page2"
+  },
+  "output": "- <span class=\"text\">\"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\"</span>\n- <a class=\"tag\">change</a>\n- <a class=\"tag\">deep-thoughts</a>\n- <a class=\"tag\">thinking</a>\n- <a class=\"tag\">world</a>\n- <span class=\"text\">\"It is our choices, Harry, that show what we truly are, far more than our abilities.\"</span>\n...\n+ <span class=\"text\">\"This life is what you make it. No matter what, you're going to mess up sometimes...\"</span>\n+ <a class=\"tag\">friends</a>\n+ <a class=\"tag\">heartbreak</a>\n+ <a class=\"tag\">sisters</a>\n+ <span class=\"text\">\"It takes a great deal of bravery to stand up to our enemies, but just as much to stand up to our friends.\"</span>\n..."
+}

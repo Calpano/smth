@@ -1,0 +1,7 @@
+{
+  "note": "Hovering the username field on the login page — no visible CSS change occurs, so the diff is empty.",
+  "input": {
+    "id": "username"
+  },
+  "output": "(no diff)"
+}
