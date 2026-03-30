@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>smth — Browser MCP Server</title>
+  <meta name="description" content="Give your agent its own browser. smth is a local MCP server with 16 tools for screenshots, DOM inspection, WCAG analysis, and page interaction via Puppeteer.">
+
+  <meta property="og:title" content="smth — Browser MCP Server">
+  <meta property="og:description" content="Give your agent its own (phantom) browser. 16 MCP tools for screenshots, DOM inspection, WCAG contrast, and page interaction.">
+  <meta property="og:image" content="https://calpano.github.io/smth/hero-image.png">
+  <meta property="og:url" content="https://calpano.github.io/smth/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="smth — Browser MCP Server">
+  <meta name="twitter:description" content="Give your agent its own (phantom) browser. 16 MCP tools for screenshots, DOM inspection, and page interaction.">
+  <meta name="twitter:image" content="https://calpano.github.io/smth/hero-image.png">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080c10'/%3E%3Ctext x='3' y='24' font-family='monospace' font-size='20' font-weight='900' fill='%2300d4b4'%3Es%3C/text%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #080c10;
+      --bg2:          #0b1016;
+      --surface:      #0f161e;
+      --surface2:     #141e28;
+      --border:       #1a2838;
+      --border2:      #213044;
+      --text:         #d4e8ee;
+      --muted:        #5d8a9a;
+      --dim:          #7db4c4;
+      --accent:       #00d4b4;
+      --accent-bg:    rgba(0,212,180,.07);
+      --accent-glow:  rgba(0,212,180,.18);
+      --purple:       #d4006a;
+      --purple-bg:    rgba(212,0,106,.07);
+      --green:        #00e87a;
+      --green-bg:     rgba(0,232,122,.07);
+      --amber:        #ffb340;
+      --mono:         'JetBrains Mono', 'Fira Code', monospace;
+      --display:      'Chakra Petch', sans-serif;
+      --body:         'Outfit', sans-serif;
+      --r:            8px;
+      --r-lg:         14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0,212,180,.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+      height: 58px;
+      background: rgba(8,12,16,.84);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: -.03em;
+    }
+    .logo::after { content: '_'; animation: blink 1.1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .nav-links { display: flex; align-items: center; gap: 1rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 500;
+      transition: color .18s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-gh {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-family: var(--mono);
+      font-size: .75rem !important;
+      color: var(--dim) !important;
+      border: 1px solid var(--border);
+      padding: .28rem .7rem;
+      border-radius: 6px;
+      transition: border-color .18s, color .18s !important;
+    }
+    .nav-gh:hover { border-color: var(--accent) !important; color: var(--accent) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      align-items: center;
+      gap: 2.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 7rem clamp(1.25rem, 4vw, 2.5rem) 5rem;
+    }
+
+    .hero::before {
+      content: ''; position: absolute;
+      top: 10%; left: -10%; width: 60vw; height: 60vw;
+      background: radial-gradient(circle, rgba(0,212,180,.04) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-text { position: relative; }
+
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: .45rem;
+      font-family: var(--mono); font-size: .72rem; color: var(--accent);
+      background: var(--accent-bg); border: 1px solid rgba(0,212,180,.22);
+      padding: .28rem .8rem; border-radius: 99px; margin-bottom: 1.4rem;
+    }
+    .hero-pill-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); box-shadow: 0 0 6px var(--accent);
+      animation: throb 2.2s ease-in-out infinite;
+    }
+    @keyframes throb { 50% { opacity: .4; transform: scale(.75); } }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(2.1rem, 4.2vw, 3.5rem);
+      font-weight: 700; line-height: 1.1; letter-spacing: -.01em;
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1rem; color: var(--dim); max-width: 440px;
+      margin-bottom: 2rem; line-height: 1.75;
+    }
+
+    .hero-btns { display: flex; gap: .65rem; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .6rem 1.2rem; border-radius: var(--r);
+      font-size: .85rem; font-weight: 600;
+      text-decoration: none; border: none; cursor: pointer;
+      font-family: var(--body);
+    }
+    .btn-primary { background: #006b5e; color: #fff; }
+    .btn-primary:hover { background: #00806f; box-shadow: 0 0 22px rgba(0,212,180,.22); }
+    .btn-ghost { background: var(--surface2); color: var(--dim); border: 1px solid var(--border); transition: all .18s; }
+    .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+    /* ── PHANTOM STACK (terminal + ghost browser) ── */
+    .phantom-stack {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── TERMINAL ── */
+    .hero-terminal {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-terminal::before {
+      content: ''; position: absolute; inset: -20px;
+      background: radial-gradient(circle at 50% 50%, rgba(0,212,180,.06) 0%, transparent 68%);
+      border-radius: 24px; pointer-events: none;
+    }
+
+    .term {
+      background: #070b0f;
+      border: 1px solid var(--border2);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      font-family: var(--mono);
+      font-size: .74rem;
+      box-shadow:
+        0 0 0 1px rgba(0,212,180,.05),
+        0 20px 50px rgba(0,0,0,.5),
+        0 0 60px rgba(0,212,180,.04);
+    }
+
+    .term-bar {
+      display: flex; align-items: center; gap: .45rem;
+      padding: .6rem 1rem;
+      background: #0c1018;
+      border-bottom: 1px solid var(--border);
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot:nth-child(1) { background: #ff5f57; }
+    .dot:nth-child(2) { background: #febc2e; }
+    .dot:nth-child(3) { background: #28c840; }
+    .term-title { margin-left: auto; font-size: .67rem; color: var(--muted); }
+
+    .term-body { padding: 1rem 1.2rem 1.4rem; line-height: 1.85; }
+
+    .tl { display: block; }
+    .to { display: block; padding-left: 1.4rem; }
+    .tb { display: block; height: .5rem; }
+
+    .tl, .to, .tb { opacity: 0; animation: revealLine .25s ease forwards; }
+    .tl:nth-child(1)  { animation-delay: .4s;  }
+    .tl:nth-child(2)  { animation-delay: 1.1s; }
+    .tb:nth-child(3)  { animation-delay: 1.7s; }
+    .tl:nth-child(4)  { animation-delay: 1.8s; }
+    .to:nth-child(5)  { animation-delay: 2.5s; }
+    .to:nth-child(6)  { animation-delay: 2.7s; }
+    .to:nth-child(7)  { animation-delay: 2.9s; }
+    .tb:nth-child(8)  { animation-delay: 3.2s; }
+    .tl:nth-child(9)  { animation-delay: 3.3s; }
+    .to:nth-child(10) { animation-delay: 3.9s; }
+    .tb:nth-child(11) { animation-delay: 4.2s; }
+    .tl:nth-child(12) { animation-delay: 4.3s; }
+    .to:nth-child(13) { animation-delay: 4.9s; }
+
+    @keyframes revealLine {
+      from { opacity: 0; transform: translateY(3px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .tp  { color: var(--muted); }
+    .tt  { color: var(--accent); font-weight: 500; }
+    .ta  { color: #96d8e8; }
+    .ts  { color: #9fe8a0; }
+    .tr  { color: var(--muted); }
+    .tok { color: var(--green); }
+    .tk  { color: #b8d4ff; }
+    .tv  { color: #ffc97a; }
+    .ti  { color: var(--amber); }
+    .tc  { color: var(--muted); font-style: italic; }
+    .tpu { color: var(--muted); }
+
+    /* ── PHANTOM BROWSER (the secret, hidden session) ── */
+    .phantom-browser {
+      position: relative;
+      z-index: 1;
+      margin-top: -2.8rem;           /* slides under the terminal */
+      background: #090d13;
+      border: 1px solid rgba(0,212,180,.18);
+      border-top: 1px solid rgba(0,212,180,.25);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      opacity: .78;
+      box-shadow:
+        0 0 0 1px rgba(0,212,180,.04),
+        0 8px 48px rgba(0,0,0,.5),
+        0 0 50px rgba(0,212,180,.07),
+        0 0 90px rgba(212,0,106,.04);
+    }
+
+    /* browser chrome bar */
+    .pb-bar {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .52rem .85rem;
+      background: #0b1018;
+      border-bottom: 1px solid rgba(0,212,180,.09);
+    }
+    .pb-dots { display: flex; gap: .3rem; flex-shrink: 0; }
+    .pb-dots span { width: 9px; height: 9px; border-radius: 50%; }
+    .pb-dots span:nth-child(1) { background: rgba(255,95,87,.35); }
+    .pb-dots span:nth-child(2) { background: rgba(254,188,46,.35); }
+    .pb-dots span:nth-child(3) { background: rgba(40,200,64,.35); }
+
+    .pb-addr {
+      flex: 1;
+      display: flex; align-items: center; gap: .38rem;
+      background: rgba(0,212,180,.05);
+      border: 1px solid rgba(0,212,180,.12);
+      border-radius: 4px;
+      padding: .22rem .55rem;
+      font-family: var(--mono); font-size: .63rem;
+      color: rgba(0,212,180,.55);
+      min-width: 0; overflow: hidden;
+    }
+    .pb-addr svg { opacity: .5; flex-shrink: 0; }
+    .pb-addr span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    .pb-phantom-tag {
+      font-family: var(--mono); font-size: .58rem;
+      color: rgba(0,212,180,.32);
+      letter-spacing: .05em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* schematic web page content */
+    .pb-page { font-family: var(--body); }
+
+    .pb-site-nav {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .5rem .9rem;
+      background: rgba(255,255,255,.015);
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .pb-nav-logo { width: 48px; height: 7px; background: rgba(255,255,255,.1); border-radius: 2px; }
+    .pb-nav-links { display: flex; gap: .4rem; flex: 1; }
+    .pb-nav-links span { width: 26px; height: 5px; background: rgba(255,255,255,.06); border-radius: 2px; }
+    .pb-nav-cart {
+      font-family: var(--mono); font-size: .58rem;
+      color: rgba(0,212,180,.4);
+      background: rgba(0,212,180,.06);
+      border: 1px solid rgba(0,212,180,.14);
+      padding: .18rem .42rem; border-radius: 3px;
+    }
+
+    .pb-main { padding: .75rem .9rem .9rem; }
+
+    .pb-page-title {
+      font-family: var(--display); font-size: .78rem; font-weight: 600;
+      color: rgba(212,232,238,.75); margin-bottom: .65rem;
+    }
+
+    /* product row */
+    .pb-product {
+      display: flex; gap: .6rem; align-items: flex-start;
+      padding: .5rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      margin-bottom: .4rem;
+      position: relative;
+    }
+    .pb-thumb {
+      width: 40px; height: 40px; flex-shrink: 0;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 4px;
+    }
+    .pb-details { flex: 1; display: flex; flex-direction: column; gap: .18rem; }
+    .pb-pname { font-size: .68rem; color: rgba(212,232,238,.7); line-height: 1.3; }
+    /* the #777 text — exactly matching the terminal output */
+    .pb-psub { font-size: .63rem; color: #777; }
+    .pb-fail-badge {
+      display: inline-flex; align-items: center; gap: .25rem;
+      font-family: var(--mono); font-size: .57rem;
+      color: rgba(255,179,64,.9);
+      background: rgba(255,179,64,.09);
+      border: 1px solid rgba(255,179,64,.25);
+      padding: .09rem .38rem; border-radius: 3px;
+      width: fit-content;
+      margin-top: .06rem;
+    }
+    .pb-pprice { font-size: .68rem; color: rgba(212,232,238,.6); font-weight: 600; margin-top: .1rem; }
+
+    /* second product (passing, less detail) */
+    .pb-product-2 {
+      display: flex; gap: .6rem; align-items: center;
+      padding: .45rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+      margin-bottom: .55rem;
+    }
+    .pb-thumb-sm {
+      width: 32px; height: 32px; flex-shrink: 0;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 3px;
+    }
+    .pb-p2-lines { display: flex; flex-direction: column; gap: .14rem; }
+    .pb-p2-lines span { display: block; height: 5px; border-radius: 2px; }
+    .pb-p2-lines span:nth-child(1) { width: 90px; background: rgba(212,232,238,.12); }
+    .pb-p2-lines span:nth-child(2) { width: 50px; background: rgba(0,212,180,.1); }
+
+    .pb-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .45rem 0; font-size: .67rem;
+      color: rgba(212,232,238,.5);
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .pb-total-price { color: rgba(212,232,238,.8); font-weight: 600; }
+
+    .pb-checkout {
+      margin-top: .45rem;
+      background: rgba(0,107,94,.45);
+      border: 1px solid rgba(0,212,180,.2);
+      border-radius: 4px;
+      padding: .38rem .8rem;
+      font-size: .67rem; text-align: center;
+      color: rgba(0,212,180,.6);
+    }
+
+    /* scanning analysis line sweeping through the browser */
+    .pb-scan {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 1.5px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,212,180,.7) 40%, rgba(0,212,180,.7) 60%, transparent 100%);
+      animation: pbScan 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes pbScan {
+      0%   { top: 0; opacity: 0; }
+      4%   { opacity: 1; }
+      94%  { opacity: .5; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* bottom vignette — browser fades into darkness */
+    .pb-vignette {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 3rem;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    /* ── SHARED SECTION ── */
+    .section { position: relative; z-index: 1; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
+
+    .sec-head { text-align: center; margin-bottom: 3.5rem; }
+    .sec-label {
+      display: inline-block; font-family: var(--mono);
+      font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: .65rem;
+    }
+    .sec-h2 {
+      font-family: var(--display); font-size: clamp(1.7rem,2.8vw,2.3rem);
+      font-weight: 700; letter-spacing: -.01em; line-height: 1.12;
+    }
+
+    /* ── FEATURES ── */
+    .features { padding: 6rem 0; border-top: 1px solid var(--border); }
+
+    .feat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25rem; }
+    @media (max-width: 800px) { .feat-grid { grid-template-columns: 1fr; } }
+
+    .feat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 1.75rem;
+      position: relative; overflow: hidden;
+      transition: border-color .2s, transform .2s;
+    }
+    .feat-card:hover { border-color: var(--border2); transform: translateY(-3px); }
+
+    .feat-card::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+    }
+    .feat-see::after    { background: linear-gradient(90deg, var(--accent), #00c8d4); }
+    .feat-act::after    { background: linear-gradient(90deg, var(--purple), #9000a0); }
+    .feat-compare::after{ background: linear-gradient(90deg, var(--green), #00b090); }
+
+    .feat-icon {
+      width: 42px; height: 42px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.1rem;
+    }
+    .feat-see .feat-icon    { background: var(--accent-bg); color: var(--accent); }
+    .feat-act .feat-icon    { background: var(--purple-bg); color: var(--purple); }
+    .feat-compare .feat-icon{ background: var(--green-bg);  color: var(--green);  }
+
+    .feat-card h3 {
+      font-family: var(--display); font-size: 1.15rem; font-weight: 700;
+      letter-spacing: -.01em; margin-bottom: .65rem;
+    }
+    .feat-card p { font-size: .875rem; color: var(--dim); line-height: 1.75; margin-bottom: 1.4rem; }
+
+    .tag-row { display: flex; flex-wrap: wrap; gap: .35rem; }
+    .tag {
+      font-family: var(--mono); font-size: .7rem; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: .18rem .45rem; border-radius: 4px;
+    }
+
+    /* ── INSTALL ── */
+    .install { padding: 6rem 0; border-top: 1px solid var(--border); }
+
+    .install-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 4rem; align-items: start; }
+    @media (max-width: 800px) { .install-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    .install-text .sec-label { text-align: left; display: block; }
+    .install-text h2 {
+      font-family: var(--display); font-size: clamp(1.8rem,2.6vw,2.25rem);
+      font-weight: 700; letter-spacing: -.01em; line-height: 1.1; margin-bottom: 1rem;
+    }
+    .install-text > p { color: var(--dim); margin-bottom: 1.75rem; line-height: 1.75; }
+
+    .checks { list-style: none; display: flex; flex-direction: column; gap: .55rem; }
+    .checks li { display: flex; align-items: flex-start; gap: .7rem; font-size: .875rem; color: var(--dim); }
+    .checks li::before {
+      content: '✓'; color: var(--green); font-family: var(--mono);
+      font-size: .78rem; margin-top: .18rem; flex-shrink: 0;
+    }
+
+    .tabs {
+      display: flex; gap: .2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: .2rem; margin-bottom: .9rem;
+    }
+    .tab {
+      flex: 1; padding: .45rem 1rem; border: none; border-radius: 6px;
+      font-family: var(--mono); font-size: .75rem;
+      cursor: pointer; transition: all .15s;
+      background: transparent; color: var(--muted);
+    }
+    .tab.on { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+
+    .pane { display: none; }
+    .pane.on { display: flex; flex-direction: column; gap: .7rem; }
+
+    .code-box {
+      background: #080c10; border: 1px solid var(--border2);
+      border-radius: var(--r); overflow: hidden;
+      font-family: var(--mono); font-size: .78rem;
+    }
+    .code-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .5rem 1rem; background: #0c1018; border-bottom: 1px solid var(--border);
+    }
+    .code-lbl { font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+    .copy {
+      font-family: var(--mono); font-size: .7rem;
+      color: var(--muted); background: transparent;
+      border: 1px solid var(--border); padding: .18rem .5rem;
+      border-radius: 4px; cursor: pointer;
+    }
+    .copy:hover { color: var(--text); border-color: var(--border2); }
+    .copy.ok { color: var(--green); border-color: var(--green); }
+
+    .code-body { padding: .9rem 1.1rem; line-height: 1.95; white-space: pre; overflow-x: auto; }
+    .cp { color: var(--muted); user-select: none; }
+    .cc { color: var(--accent); }
+    .ca { color: var(--dim); }
+    .ck { color: #b8d4ff; }
+    .cv { color: #9fe8a0; }
+    .cx { color: var(--muted); }
+
+    .soon {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .8rem; padding: 2.5rem 1.5rem;
+      border: 1px dashed var(--border2); border-radius: var(--r); text-align: center;
+    }
+    .soon-badge {
+      font-family: var(--mono); font-size: .68rem; color: var(--amber);
+      background: rgba(255,179,64,.08); border: 1px solid rgba(255,179,64,.22);
+      padding: .22rem .6rem; border-radius: 99px;
+    }
+    .soon p { font-size: .83rem; color: var(--muted); max-width: 260px; line-height: 1.65; }
+
+    /* ── TOOLS TABLE ── */
+    .tools { padding: 6rem 0; border-top: 1px solid var(--border); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      text-align: left; padding: .55rem 1rem;
+      font-family: var(--mono); font-size: .72rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); border-bottom: 1px solid var(--border);
+    }
+    td { padding: .6rem 1rem; border-bottom: 1px solid rgba(26,40,56,.5); vertical-align: middle; }
+    tr:hover td { background: rgba(15,22,30,.7); }
+    tr:last-child td { border-bottom: none; }
+
+    .tn { font-family: var(--mono); font-size: .78rem; color: var(--accent); }
+    .tn .pfx { color: var(--muted); }
+    .td { font-size: .82rem; color: var(--dim); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: .32rem;
+      font-family: var(--mono); font-size: .69rem; padding: .18rem .5rem; border-radius: 4px;
+    }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+    .b-r { color: var(--green); background: var(--green-bg); border: 1px solid rgba(0,232,122,.14); }
+    .b-r::before { background: var(--green); }
+    .b-w { color: var(--accent); background: var(--accent-bg); border: 1px solid rgba(0,212,180,.14); }
+    .b-w::before { background: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 1.75rem 2rem;
+      text-align: center; font-size: .8rem; color: var(--muted);
+      position: relative; z-index: 1;
+    }
+    footer a { color: var(--muted); text-decoration: none; transition: color .18s; }
+    footer a:hover { color: var(--text); }
+    .sep { margin: 0 .65rem; opacity: .25; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 6rem; }
+      .hero-sub { max-width: 100%; }
+    }
+    @media (max-width: 600px) {
+      .nav-links li:not(:last-child) { display: none; }
+      th:nth-child(2), td:nth-child(2) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <a class="logo" href="#top">smth</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#tools">Tools</a></li>
+    <li>
+      <a class="nav-gh" href="https://github.com/Calpano/smth" target="_blank" rel="noopener">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        GitHub
+      </a>
+    </li>
+  </ul>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero" id="top">
+
+  <div class="hero-text">
+    <div class="hero-pill">
+      <div class="hero-pill-dot"></div>
+      MCP Server &nbsp;·&nbsp; 16 tools &nbsp;·&nbsp; MIT
+    </div>
+
+    <h1>Give your agent its own <em>(phantom)</em> browser.</h1>
+
+    <p class="hero-sub">smth is a local MCP server that lets your agent screenshot pages, inspect the DOM, check fonts and colors, and interact with forms — all in a persistent browser session.</p>
+
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="https://github.com/Calpano/smth" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        View on GitHub
+      </a>
+      <a class="btn btn-ghost" href="#install">Quick install ↓</a>
+    </div>
+  </div>
+
+  <!-- terminal on top + phantom browser sliding out below -->
+  <div class="phantom-stack">
+
+    <!-- what the agent sees: the terminal -->
+    <div class="hero-terminal">
+      <div class="term">
+        <div class="term-bar">
+          <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          <span class="term-title">smth · agent terminal</span>
+        </div>
+        <div class="term-body">
+<span class="tl"><span class="tp">$ </span><span class="tt">browser_launch</span> <span class="ta">url=</span><span class="ts">"https://shop.example.com/cart"</span></span>
+<span class="tl"><span class="tr">← </span><span class="tok">Launched: Shopping Cart — Example Store</span></span>
+<span class="tb"></span>
+<span class="tl"><span class="tp">$ </span><span class="tt">browser_see_color_pairs</span></span>
+<span class="to"><span class="tpu">[</span> <span class="tk">"text"</span><span class="tpu">:</span> <span class="ts">"#777"</span><span class="tpu">,</span> <span class="tk">"contrast"</span><span class="tpu">:</span> <span class="tv">4.48</span><span class="tpu">,</span> <span class="tk">"aa"</span><span class="tpu">:</span> <span class="tv">false</span> <span class="tpu">]</span></span>
+<span class="to"><span class="tpu">[</span> <span class="tk">"text"</span><span class="tpu">:</span> <span class="ts">"#1a1a1a"</span><span class="tpu">,</span> <span class="tk">"contrast"</span><span class="tpu">:</span> <span class="tv">16.1</span><span class="tpu">,</span> <span class="tk">"aa"</span><span class="tpu">:</span> <span class="tv">true</span> <span class="tpu">]</span></span>
+<span class="to"><span class="tc">// 3 of 8 pairs fail WCAG AA</span></span>
+<span class="tb"></span>
+<span class="tl"><span class="tp">$ </span><span class="tt">browser_see_visual</span> <span class="ta">device=</span><span class="ts">"iPhone 15 Pro"</span></span>
+<span class="to"><span class="tr">← </span><span class="ti">image/png</span> <span class="tc">· 390×844 · full page captured</span></span>
+<span class="tb"></span>
+<span class="tl"><span class="tp">$ </span><span class="tt">fetch_dom_content</span> <span class="ta">url=</span><span class="ts">"https://shop.example.com/cart"</span></span>
+<span class="to"><span class="tc">// nav · header · footer stripped automatically</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- what the user never sees: the phantom browser underneath -->
+    <div class="phantom-browser" aria-hidden="true">
+
+      <!-- teal scanning line — it's alive and being analysed -->
+      <div class="pb-scan"></div>
+
+      <!-- browser chrome bar -->
+      <div class="pb-bar">
+        <div class="pb-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="pb-addr">
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          <span>shop.example.com/cart</span>
+        </div>
+        <span class="pb-phantom-tag">// phantom session</span>
+      </div>
+
+      <!-- schematic web page -->
+      <div class="pb-page">
+
+        <!-- site nav -->
+        <div class="pb-site-nav">
+          <div class="pb-nav-logo"></div>
+          <div class="pb-nav-links"><span></span><span></span><span></span></div>
+          <div class="pb-nav-cart">Cart (3)</div>
+        </div>
+
+        <!-- main content -->
+        <div class="pb-main">
+          <div class="pb-page-title">Cart (3 items)</div>
+
+          <!-- product with #777 text — matches the terminal output -->
+          <div class="pb-product">
+            <div class="pb-thumb"></div>
+            <div class="pb-details">
+              <div class="pb-pname">Wireless Noise Cancelling Headphones</div>
+              <div class="pb-psub">Ships in 2–3 business days</div><!-- color: #777 — fails AA -->
+              <div class="pb-fail-badge">⚠ contrast 4.48 · aa: false</div>
+              <div class="pb-pprice">$129.00</div>
+            </div>
+          </div>
+
+          <!-- second product (no issue) -->
+          <div class="pb-product-2">
+            <div class="pb-thumb-sm"></div>
+            <div class="pb-p2-lines">
+              <span></span><span></span>
+            </div>
+          </div>
+
+          <div class="pb-total">
+            <span>Order Total</span>
+            <span class="pb-total-price">$148.99</span>
+          </div>
+          <div class="pb-checkout">Proceed to Checkout</div>
+        </div>
+      </div>
+
+      <!-- bottom fade — browser disappears into shadow -->
+      <div class="pb-vignette"></div>
+    </div>
+
+  </div><!-- /.phantom-stack -->
+
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features section" id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-label">Capabilities</div>
+      <h2 class="sec-h2">Three modes. Sixteen tools.</h2>
+    </div>
+    <div class="feat-grid">
+
+      <div class="feat-card feat-see">
+        <div class="feat-icon">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <h3>See</h3>
+        <p>Read any page without touching it. Get screenshots at any viewport, extract visible text as Markdown, inspect the full DOM through focused lenses, and analyze fonts, colors, and WCAG contrast ratios — all returned as structured data your agent can reason about.</p>
+        <div class="tag-row">
+          <span class="tag">browser_see_visual</span>
+          <span class="tag">browser_read_text</span>
+          <span class="tag">browser_see_dom</span>
+          <span class="tag">browser_see_colors</span>
+          <span class="tag">browser_see_color_pairs</span>
+          <span class="tag">browser_see_fonts</span>
+        </div>
+      </div>
+
+      <div class="feat-card feat-act">
+        <div class="feat-icon">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6-6 6 6"/><path d="M6 12h12"/><path d="M8 15h2M14 15h2M8 18h2M14 18h2"/></svg>
+        </div>
+        <h3>Act</h3>
+        <p>Drive the browser like a user. Click elements by id or CSS selector, type into form fields, hover to reveal tooltips and dropdown menus. Every interaction waits for navigation to settle before returning.</p>
+        <div class="tag-row">
+          <span class="tag">browser_launch</span>
+          <span class="tag">browser_goto</span>
+          <span class="tag">browser_click</span>
+          <span class="tag">browser_hover</span>
+          <span class="tag">browser_type</span>
+        </div>
+      </div>
+
+      <div class="feat-card feat-compare">
+        <div class="feat-icon">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/><line x1="7" y1="8" x2="17" y2="8" stroke-dasharray="2 3" opacity=".5"/><line x1="7" y1="12" x2="17" y2="12" stroke-dasharray="2 3" opacity=".5"/><line x1="7" y1="16" x2="17" y2="16" stroke-dasharray="2 3" opacity=".5"/></svg>
+        </div>
+        <h3>Compare</h3>
+        <p>Understand what changed. Capture named DOM snapshots before and after any interaction, then diff them line by line. Or use <code style="font-family:var(--mono);font-size:.78em;color:var(--green)">fetch_dom_content</code> to automatically strip shared chrome — nav, footer, sidebar — and return only the unique content of a page.</p>
+        <div class="tag-row">
+          <span class="tag">browser_remember_dom</span>
+          <span class="tag">browser_dom_compare</span>
+          <span class="tag">browser_doms</span>
+          <span class="tag">fetch_dom_content</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── INSTALL ── -->
+<section class="install section" id="install">
+  <div class="wrap">
+    <div class="install-grid">
+
+      <div class="install-text">
+        <div class="sec-label">Get started</div>
+        <h2>Up in<br>one command.</h2>
+        <p>smth runs as a persistent local service. One <code style="font-family:var(--mono);font-size:.85em;color:var(--accent)">docker compose up</code>, then add four lines of JSON to any project.</p>
+        <ul class="checks">
+          <li>No cloud. No telemetry. Runs entirely on your machine.</li>
+          <li>Persistent session — browser stays open between tool calls.</li>
+          <li>Works with Claude Code, Cursor, Cline, and any MCP client.</li>
+          <li>Chromium included — no separate install needed.</li>
+          <li>Or run directly in Node.js with your own Chrome.</li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="tabs">
+          <button class="tab on" onclick="tab(this,'docker')">Docker</button>
+          <button class="tab" onclick="tab(this,'ext')">Desktop Extension</button>
+        </div>
+
+        <div id="pane-docker" class="pane on">
+          <div class="code-box">
+            <div class="code-hdr">
+              <span class="code-lbl">bash</span>
+              <button class="copy" onclick="cp(this,'git clone https://github.com/Calpano/smth\ncd smth\ndocker compose up -d')">copy</button>
+            </div>
+            <div class="code-body"><span class="cp">$ </span><span class="cc">git clone</span> <span class="ca">https://github.com/Calpano/smth</span>
+<span class="cp">$ </span><span class="cc">cd</span> <span class="ca">smth</span>
+<span class="cp">$ </span><span class="cc">docker compose up</span> <span class="ca">-d</span></div>
+          </div>
+          <div class="code-box">
+            <div class="code-hdr">
+              <span class="code-lbl">.mcp.json — project root</span>
+              <button class="copy" onclick="cp(this,'{\n  \"mcpServers\": {\n    \"smth\": { \"type\": \"http\", \"url\": \"http://localhost:3000/mcp\" }\n  }\n}')">copy</button>
+            </div>
+            <div class="code-body"><span class="cx">{</span>
+  <span class="ck">"mcpServers"</span><span class="cx">: {</span>
+    <span class="ck">"smth"</span><span class="cx">: {</span> <span class="ck">"type"</span><span class="cx">:</span> <span class="cv">"http"</span><span class="cx">,</span> <span class="ck">"url"</span><span class="cx">:</span> <span class="cv">"http://localhost:3000/mcp"</span> <span class="cx">}</span>
+  <span class="cx">}</span>
+<span class="cx">}</span></div>
+          </div>
+        </div>
+
+        <div id="pane-ext" class="pane">
+          <div class="soon">
+            <span class="soon-badge">Coming soon</span>
+            <p>One-click install via Claude Desktop Extensions. Pending Anthropic review — star the repo to follow along.</p>
+            <a class="btn btn-ghost" href="https://github.com/Calpano/smth" target="_blank" rel="noopener" style="font-size:.8rem;padding:.45rem .9rem">★ Star on GitHub</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── TOOLS ── -->
+<section class="tools section" id="tools">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-label">Reference</div>
+      <h2 class="sec-h2">All 16 tools</h2>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Tool</th><th>Mode</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="tn"><span class="pfx">browser_</span>launch</td>         <td><span class="badge b-w">action</span></td>    <td class="td">Start a session and open a URL. Call before any other tool.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>goto</td>           <td><span class="badge b-w">action</span></td>    <td class="td">Navigate to a new URL without relaunching the browser.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>click</td>          <td><span class="badge b-w">action</span></td>    <td class="td">Click an element by id or CSS selector.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>hover</td>          <td><span class="badge b-w">action</span></td>    <td class="td">Hover an element and return a before/after text diff.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>type</td>           <td><span class="badge b-w">action</span></td>    <td class="td">Type text into a form field. Clears first by default.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>see_visual</td>     <td><span class="badge b-r">read-only</span></td><td class="td">Screenshot — full page or viewport, any emulated device.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>read_text</td>      <td><span class="badge b-r">read-only</span></td><td class="td">Page text as Markdown + interactive element selectors.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>see_dom</td>        <td><span class="badge b-r">read-only</span></td><td class="td">Lens-filtered compact HTML or text search with context lines.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>see_colors</td>     <td><span class="badge b-r">read-only</span></td><td class="td">All computed colors with usage counts and element selectors.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>see_color_pairs</td><td><span class="badge b-r">read-only</span></td><td class="td">Text/background pairs with WCAG 2.2 contrast ratios and AA/AAA flags.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>see_fonts</td>      <td><span class="badge b-r">read-only</span></td><td class="td">All fonts grouped by family, size, and weight.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>remember_dom</td>   <td><span class="badge b-w">action</span></td>    <td class="td">Save a named DOM snapshot for later comparison.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>doms</td>           <td><span class="badge b-r">read-only</span></td><td class="td">List all saved snapshots with size, lens, and timestamp.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>dom_compare</td>    <td><span class="badge b-r">read-only</span></td><td class="td">Diff two snapshots, or subtract a background to isolate content.</td></tr>
+        <tr><td class="tn">fetch_dom_content</td>                               <td><span class="badge b-w">action</span></td>    <td class="td">Open a URL, auto-strip shared chrome, return only unique content.</td></tr>
+        <tr><td class="tn"><span class="pfx">browser_</span>list_devices</td>   <td><span class="badge b-r">read-only</span></td><td class="td">List device names for browser_see_visual emulation.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <a href="https://github.com/Calpano/smth" target="_blank" rel="noopener">GitHub</a>
+  <span class="sep">·</span>
+  <a href="https://github.com/Calpano/smth/issues" target="_blank" rel="noopener">Issues</a>
+  <span class="sep">·</span>
+  <a href="https://github.com/Calpano/smth/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+  <span class="sep">·</span>
+  <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener">MCP Docs</a>
+  <span class="sep">·</span>
+  <span style="opacity:.35">smth</span>
+</footer>
+
+<script>
+  function tab(btn, name) {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('pane-' + name).classList.add('on');
+  }
+
+  function cp(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = 'copied!';
+      btn.classList.add('ok');
+      setTimeout(() => { btn.textContent = orig; btn.classList.remove('ok'); }, 2000);
+    });
+  }
+
+</script>
+
+</body>
+</html>

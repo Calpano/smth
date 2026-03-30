@@ -1,0 +1,73 @@
+{
+  "manifest_version": "0.3",
+  "name": "smth",
+  "display_name": "smth — Browser MCP Server",
+  "version": "1.0.0",
+  "description": "Give Claude a full browser: screenshots, DOM inspection, WCAG contrast analysis, and page interaction via a persistent Puppeteer/Chromium session.",
+  "long_description": "smth exposes 16 MCP tools across three areas:\n\n**See** — read and analyze any web page: screenshots (`browser_see_visual`), visible text (`browser_read_text`), filtered DOM (`browser_see_dom`), fonts, colors, and WCAG contrast pairs.\n\n**Act** — drive the browser like a user: navigate, click, hover, type, switch devices.\n\n**Compare** — capture named DOM snapshots and diff them, or use `fetch_dom_content` to automatically strip shared chrome (nav, footer) and return only the unique content of a page.",
+  "author": {
+    "name": "Calpano",
+    "url": "https://github.com/Calpano"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Calpano/smth.git"
+  },
+  "homepage": "https://github.com/Calpano/smth",
+  "documentation": "https://github.com/Calpano/smth/blob/main/doc/smth.md",
+  "support": "https://github.com/Calpano/smth/issues",
+  "license": "MIT",
+  "keywords": ["browser", "puppeteer", "screenshot", "dom", "wcag", "accessibility", "web", "automation"],
+  "server": {
+    "type": "node",
+    "entry_point": "src/server.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/src/server.js"],
+      "env": {
+        "CHROMIUM_PATH": "${user_config.chromium_path}",
+        "PORT": "0"
+      },
+      "platform_overrides": {
+        "win32": {
+          "env": {
+            "CHROMIUM_PATH": "${user_config.chromium_path}"
+          }
+        }
+      }
+    }
+  },
+  "tools": [
+    { "name": "browser_launch",       "description": "Launch a browser session and open a URL. Always call first." },
+    { "name": "browser_goto",         "description": "Navigate to a new URL without relaunching." },
+    { "name": "browser_see_visual",   "description": "Screenshot the current page (any device, full page or viewport)." },
+    { "name": "browser_read_text",    "description": "Page text as Markdown plus interactive element selectors." },
+    { "name": "browser_see_dom",      "description": "Lens-filtered compact HTML or text search with context." },
+    { "name": "browser_see_colors",   "description": "All computed colors with usage counts." },
+    { "name": "browser_see_color_pairs", "description": "Text/background color pairs with WCAG 2.2 contrast ratios and AA/AAA flags." },
+    { "name": "browser_see_fonts",    "description": "All fonts grouped by family, size, and weight." },
+    { "name": "browser_click",        "description": "Click an element by id or CSS selector." },
+    { "name": "browser_hover",        "description": "Hover an element and return a before/after diff." },
+    { "name": "browser_type",         "description": "Type text into a form field." },
+    { "name": "browser_remember_dom", "description": "Save a named DOM snapshot." },
+    { "name": "browser_doms",         "description": "List all saved snapshots." },
+    { "name": "browser_dom_compare",  "description": "Diff two snapshots or subtract a background snapshot." },
+    { "name": "fetch_dom_content",    "description": "Open a URL, auto-detect shared chrome, return only unique page content." },
+    { "name": "browser_list_devices", "description": "List device names for browser_see_visual." }
+  ],
+  "user_config": {
+    "chromium_path": {
+      "type": "file",
+      "title": "Chromium / Chrome executable",
+      "description": "Path to the Chromium or Google Chrome binary. On macOS this is typically /Applications/Google Chrome.app/Contents/MacOS/Google Chrome.",
+      "required": true,
+      "default": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}
