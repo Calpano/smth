@@ -243,10 +243,19 @@ async function launchBrowser(sessionId, url) {
     }
   }
 
-  browserSessions.set(sessionId, { browser, page, snapshots: new Map() });
+  const consoleLogs = [];
+  page.on('console', msg => consoleLogs.push(msg));
+  browserSessions.set(sessionId, { browser, page, snapshots: new Map(), consoleLogs });
   const title = await page.title();
   const note = finalUrl !== resolved ? ` (localhost unreachable; use host.docker.internal)` : '';
   return `Launched: ${title}${note}`;
+}
+
+function drainLogs(session) {
+  if (!session?.consoleLogs?.length) return '';
+  const out = session.consoleLogs.map(m => `[console.${m.type()}] ${m.text()}`).join('\n');
+  session.consoleLogs = [];
+  return '\n\n---\nconsole:\n' + out;
 }
 
 function resolveSelector(args) {
@@ -340,6 +349,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             url: { type: 'string', description: 'URL or file path to navigate to.' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
           required: ['url'],
         },
@@ -352,6 +362,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             url: { type: 'string', description: 'URL or file path to navigate to.' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
           required: ['url'],
         },
@@ -360,13 +371,13 @@ function createMcpServer(sessionId) {
         name: 'browser_read_text',
         description: 'Return the visible text of the current page as Markdown, plus a list of interactive elements each annotated with a CSS selector usable with browser_click, browser_hover, and browser_type.',
         annotations: { readOnlyHint: true },
-        inputSchema: { type: 'object', properties: {} },
+        inputSchema: { type: 'object', properties: { getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' } } },
       },
       {
         name: 'browser_see_fonts',
         description: 'Return a JSON report of all fonts in use on the current page, grouped by family with size, weight, and usage count.',
         annotations: { readOnlyHint: true },
-        inputSchema: { type: 'object', properties: {} },
+        inputSchema: { type: 'object', properties: { getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' } } },
       },
       {
         name: 'browser_see_colors',
@@ -389,6 +400,7 @@ function createMcpServer(sessionId) {
               type: 'boolean',
               description: 'When true, each color entry gains a "where" key listing the element selectors (#id, .class, or tag) where that color is used, grouped by category.',
             },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
         },
       },
@@ -396,7 +408,7 @@ function createMcpServer(sessionId) {
         name: 'browser_see_color_pairs',
         description: 'For every visible text element, find its text color and effective background color (walking up the DOM), compute the WCAG 2.2 contrast ratio, and return all pairs with AA/AAA pass/fail flags sorted by usage count.',
         annotations: { readOnlyHint: true },
-        inputSchema: { type: 'object', properties: {} },
+        inputSchema: { type: 'object', properties: { getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' } } },
       },
       {
         name: 'browser_see_dom',
@@ -431,6 +443,7 @@ function createMcpServer(sessionId) {
               type: 'string',
               description: 'Comma-separated CSS selectors. Matching elements and their entire subtrees are removed before lens filtering. Example: ".sidebar, #cookie-banner, script"',
             },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
         },
       },
@@ -443,6 +456,7 @@ function createMcpServer(sessionId) {
           properties: {
             id:       { type: 'string', description: 'HTML element id (without #). Preferred when available.' },
             selector: { type: 'string', description: 'CSS selector. Used when the element has no id.' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
         },
       },
@@ -455,6 +469,7 @@ function createMcpServer(sessionId) {
           properties: {
             id:       { type: 'string', description: 'HTML element id (without #). Preferred when available.' },
             selector: { type: 'string', description: 'CSS selector. Used when the element has no id.' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
         },
       },
@@ -469,6 +484,7 @@ function createMcpServer(sessionId) {
             selector: { type: 'string', description: 'CSS selector. Used when the element has no id.' },
             text:     { type: 'string', description: 'Text to type into the element.' },
             clear:    { type: 'boolean', description: 'Clear the field before typing (default: true).' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
           required: ['text'],
         },
@@ -484,6 +500,7 @@ function createMcpServer(sessionId) {
             lens:      { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code'] }, description: 'Lenses to apply at capture time. Omit for the full DOM.' },
             exclude:   { type: 'string', description: 'Comma-separated CSS selectors to exclude before capturing.' },
             max_chars: { type: 'number', description: 'Character budget (same as browser_see_dom).' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
           required: ['name'],
         },
@@ -518,6 +535,7 @@ function createMcpServer(sessionId) {
             url:    { type: 'string', description: 'URL to fetch content from.' },
             lens:   { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code'] }, description: 'Lenses for DOM capture (default: ["text", "layout"]).' },
             prefix: { type: 'string', description: 'Prefix for stored snapshot names (default: "fetch").' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
           required: ['url'],
         },
@@ -535,6 +553,7 @@ function createMcpServer(sessionId) {
             zoom:       { type: 'number', description: 'CSS zoom factor. 1 = no zoom, 1.5 = 150%, 2 = 200% etc. (default: 1).' },
             element_id: { type: 'string', description: 'Scroll to and center this element id before capturing. Implies full_page: false.' },
             device:     { type: 'string', description: 'Emulate a named device (sets viewport, pixel ratio, user-agent). Overrides width/height. Call browser_list_devices to see options.' },
+            getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },
         },
       },
@@ -551,7 +570,8 @@ function createMcpServer(sessionId) {
 
     if (tool === 'browser_launch' || tool === 'browser_open') {
       const msg = await launchBrowser(sessionId, args.url);
-      return { content: [{ type: 'text', text: msg }] };
+      const logs = args.getConsoleLogs ? drainLogs(browserSessions.get(sessionId)) : '';
+      return { content: [{ type: 'text', text: msg + logs }] };
     }
 
     if (tool === 'fetch_dom_content') {
@@ -575,7 +595,8 @@ function createMcpServer(sessionId) {
       );
       const peerUrl = findMostSimilarUrl(resolvedUrl, allLinks);
       if (!peerUrl) {
-        return { content: [{ type: 'text', text: `No same-site peer link found. Returning full DOM.\n\n${htmlA}` }] };
+        const logs = args.getConsoleLogs ? drainLogs(freshSession) : '';
+        return { content: [{ type: 'text', text: `No same-site peer link found. Returning full DOM.\n\n${htmlA}` + logs }] };
       }
 
       // 4. Navigate to peer and capture DOM of page B.
@@ -595,7 +616,8 @@ function createMcpServer(sessionId) {
       const bgLines = bgHtml.split('\n').filter(l => l.trim()).length;
       const contentLines = content.split('\n').filter(l => l.trim()).length;
       const header = `# fetch_dom_content: ${url}\n# peer: ${peerUrl}\n# background: ${bgLines} lines stripped, ${contentLines} lines remain\n# snapshots: ${prefix}_page, ${prefix}_peer, ${prefix}_background\n\n`;
-      return { content: [{ type: 'text', text: header + (content || '(no content after background subtraction)') }] };
+      const logs = args.getConsoleLogs ? drainLogs(freshSession) : '';
+      return { content: [{ type: 'text', text: header + (content || '(no content after background subtraction)') + logs }] };
     }
 
     const session = browserSessions.get(sessionId);
@@ -606,16 +628,19 @@ function createMcpServer(sessionId) {
       const finalUrl = await gotoPage(page, args.url);
       const title = await page.title();
       const note = finalUrl !== resolveTarget(args.url) ? ` (localhost unreachable; use host.docker.internal)` : '';
-      return { content: [{ type: 'text', text: `Navigated to: ${title}${note}` }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: `Navigated to: ${title}${note}` + logs }] };
     }
 
     if (tool === 'browser_read_text') {
-      return { content: [{ type: 'text', text: await readPageText(page) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: await readPageText(page) + logs }] };
     }
 
     if (tool === 'browser_see_fonts') {
       const result = await page.evaluate(seeFontsScript);
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) + logs }] };
     }
 
     if (tool === 'browser_see_colors') {
@@ -624,21 +649,24 @@ function createMcpServer(sessionId) {
         .replaceAll('__COLORS__', JSON.stringify(args.colors ?? null))
         .replaceAll('__WHERE__',  JSON.stringify(args.where  ?? false));
       const result = await page.evaluate(script);
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) + logs }] };
     }
 
     if (tool === 'browser_see_color_pairs') {
       const result = await page.evaluate(seeColorPairsScript);
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) + logs }] };
     }
 
     if (tool === 'browser_see_dom') {
       if (args.search) {
         const terms = Array.isArray(args.search) ? args.search : [args.search];
         const results = await searchPageText(page, terms);
-        if (!results.length) return { content: [{ type: 'text', text: '(no matches)' }] };
+        const logs = args.getConsoleLogs ? drainLogs(session) : '';
+        if (!results.length) return { content: [{ type: 'text', text: '(no matches)' + logs }] };
         const out = results.map(r => `[${r.term}]\n${r.context}`).join('\n\n---\n\n');
-        return { content: [{ type: 'text', text: out }] };
+        return { content: [{ type: 'text', text: out + logs }] };
       }
 
       const script = seeDomScript
@@ -648,7 +676,8 @@ function createMcpServer(sessionId) {
         .replaceAll('__MAX_CHARS__',  JSON.stringify(args.max_chars ?? null))
         .replaceAll('__EXCLUDE__',    JSON.stringify(args.exclude   ?? null));
       const result = await page.evaluate(script);
-      return { content: [{ type: 'text', text: typeof result === 'string' ? result : JSON.stringify(result, null, 2) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: (typeof result === 'string' ? result : JSON.stringify(result, null, 2)) + logs }] };
     }
 
     if (tool === 'browser_click') {
@@ -660,7 +689,8 @@ function createMcpServer(sessionId) {
         page.click(sel),
       ]);
       const title = await page.title();
-      return { content: [{ type: 'text', text: `Clicked ${sel}. Page: ${title}` }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: `Clicked ${sel}. Page: ${title}` + logs }] };
     }
 
     if (tool === 'browser_hover') {
@@ -676,7 +706,8 @@ function createMcpServer(sessionId) {
       await page.hover(sel);
       await new Promise(r => setTimeout(r, 300));
       const after = await page.evaluate(() => document.body.innerText);
-      return { content: [{ type: 'text', text: lineDiff(before, after) }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: lineDiff(before, after) + logs }] };
     }
 
     if (tool === 'browser_type') {
@@ -692,14 +723,16 @@ function createMcpServer(sessionId) {
       }
       await page.focus(sel);
       await page.type(sel, args.text);
-      return { content: [{ type: 'text', text: `Typed into ${sel}` }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: `Typed into ${sel}` + logs }] };
     }
 
     if (tool === 'browser_remember_dom') {
       const { name, lens = null, exclude = null, max_chars = null } = args;
       const html = await captureDom(page, { lens, exclude, maxChars: max_chars });
       snapshots.set(name, { html, lens, timestamp: new Date().toISOString(), chars: html.length });
-      return { content: [{ type: 'text', text: `Snapshot "${name}" saved (${html.length} chars, lens: ${lens ? lens.join('+') : 'full'})` }] };
+      const logs = args.getConsoleLogs ? drainLogs(session) : '';
+      return { content: [{ type: 'text', text: `Snapshot "${name}" saved (${html.length} chars, lens: ${lens ? lens.join('+') : 'full'})` + logs }] };
     }
 
     if (tool === 'browser_doms') {
@@ -761,7 +794,12 @@ function createMcpServer(sessionId) {
         await page.evaluate(() => { document.documentElement.style.zoom = ''; });
       }
 
-      return { content: [{ type: 'image', data: buffer.toString('base64'), mimeType: 'image/png' }] };
+      const content = [{ type: 'image', data: buffer.toString('base64'), mimeType: 'image/png' }];
+      if (args.getConsoleLogs) {
+        const logs = drainLogs(session);
+        if (logs) content.push({ type: 'text', text: logs.trimStart() });
+      }
+      return { content };
     }
 
     throw new Error(`Unknown tool: ${tool}`);
