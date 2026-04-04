@@ -115,3 +115,24 @@ A scannable table of all 16 tools — already exists in README.
 4. og:image (needed before any social sharing)
 5. Feature copy (3 blurbs)
 6. Everything else
+
+
+
+the website should include the full examples from /doc folder.
+For each tool, describe in detail how it works and what comes back.
+Maybe create a shell script that launches a test server for @test-pages/test.html,
+then starts asciinema recording of the demo.
+then call each tool.
+At the same time, show the description doc page contents.
+Let user have next and rev buttons and a slow auto-advance.
+So we get like 16 short demos, one per tool.
+
+
+
+
+
+
+
+
+
+

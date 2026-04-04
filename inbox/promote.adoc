@@ -1,0 +1,133 @@
+= smth Promotion Plan
+
+Ordered by dependency: directories go live before the announcement so links exist when people search.
+
+== Phase 1 — Pre-flight
+
+Before submitting anywhere, verify these are in place.
+
+. *Confirm GitHub repo is public* ✅ — https://github.com/Calpano/smth
+. *MIT license* ✅ already present
+. *README quality check* — ensure it has a one-liner description, install steps, and at least one usage example (already in good shape)
+. *Create `manifest.json`* — required for the Anthropic Desktop Extensions submission.
+  Minimum shape:
++
+[source,json]
+----
+{
+  "name": "smth",
+  "version": "1.0.0",
+  "description": "Browser MCP server — screenshots, DOM inspection, WCAG analysis, and page interaction via Puppeteer in Docker.",
+  "homepage": "https://github.com/Calpano/smth",
+  "license": "MIT",
+  "runtime": "node"
+}
+----
+
+== Phase 2 — Directory Submissions
+
+Do these *before* the public announcement so all links are live when traffic arrives.
+
+[cols="1,2,1"]
+|===
+|Directory |Notes |Action
+
+|https://pulsemcp.com/servers[PulseMCP]
+|13,000+ servers, highest traffic and SEO. First priority.
+|https://pulsemcp.com/submit[pulsemcp.com/submit]
+
+|https://mcpservers.org[mcpservers.org]
+|Community-curated; wong2/awesome-mcp-servers redirects here.
+|https://mcpservers.org/submit[mcpservers.org/submit]
+
+|https://glama.ai/mcp/servers[Glama]
+|Enterprise reach; also proxies servers via API gateway.
+|GitHub PR or their submission form
+
+|https://smithery.ai[Smithery]
+|Developer-focused marketplace with CLI install support. Cursor uses this for discovery.
+|Via their website
+
+|https://mcpmarket.com[MCP Market]
+|General MCP directory.
+|Via their website
+
+|https://lobehub.com/mcp[LobeHub MCP]
+|Part of LobeHub AI ecosystem. Good fit for browser/automation tools.
+|GitHub PR to their repo
+|===
+
+Wait for at least PulseMCP and Smithery to confirm listing before moving to Phase 4.
+
+== Phase 3 — In-App Marketplaces
+
+. *Cline MCP Marketplace* — open an issue at https://github.com/cline/mcp-marketplace[github.com/cline/mcp-marketplace] with:
+  * GitHub repo URL: `https://github.com/Calpano/smth`
+  * 400×400 PNG logo
+  * Short description (one or two sentences)
++
+Reaches Cline's VS Code extension users directly.
+
+== Phase 4 — Anthropic Channels
+
+. *MCP Desktop Extensions* — submit via the https://docs.google.com/forms/d/e/1FAIpQLScHtjkiCNjpqnWtFLIQStChXlvVcvX8NPXkMfjtYPDPymgang/viewform[Google Form].
+  Requires: public GitHub repo ✅, MIT license ✅, Node.js ✅, `manifest.json` (create in Phase 1).
+
+. *modelcontextprotocol/servers* — open a PR to https://github.com/modelcontextprotocol/servers[modelcontextprotocol/servers] to be listed in the official reference.
+  Higher bar but gives strong credibility and surfaces the tool in Claude Desktop.
+  Check existing PR format in that repo before submitting.
+
+== Phase 5 — Community Announcement
+
+Once directory links are live (Phase 2 complete):
+
+. *Reddit* — post to https://reddit.com/r/ClaudeAI[r/ClaudeAI] and https://reddit.com/r/ClaudeCode[r/ClaudeCode].
+  Use a concrete hook: "I built an MCP server that lets Claude check WCAG contrast, screenshot any device, and diff DOM changes" — specific use cases get more traction than feature lists.
+  Cross-post to https://reddit.com/r/LocalLLaMA[r/LocalLLaMA] for broader reach.
+
+. *Hacker News* — "Show HN: smth — browser MCP server for screenshots, DOM inspection, and WCAG analysis".
+  Post on a weekday morning (US Eastern). Emphasise the single-command install and the `fetch_dom_content` background-subtraction trick as the interesting technical angle.
+
+. *X / Twitter* — short thread or single post. Tag `#MCP`, `#ModelContextProtocol`, `#ClaudeAI`.
+  Include a screenshot or GIF. Mention Smithery install command.
+
+. *Discord* — post in Anthropic's official Discord (MCP channel), Cline Discord, and Cursor Discord.
+
+== Phase 6 — Content Marketing
+
+Lower urgency, but compounds over time.
+
+. *Demo GIF / short video* — 2–5 min screen recording of one end-to-end workflow.
+  Best candidate: accessibility audit (`browser_see_color_pairs` showing WCAG failures on a real site).
+  Before/after format outperforms feature walkthroughs.
+
+. *Blog post / tutorial* — "How to give Claude a browser in 3 minutes with smth".
+  Publish on Dev.to or personal blog, then link from Reddit and HN threads.
+
+. *README improvement* — add the Smithery CLI install snippet once listed:
++
+[source,bash]
+----
+npx @smithery/cli install smth --client claude
+----
+  Also add a GIF to the README to reduce first-impression friction.
+
+== Checklist
+
+* [ ] Phase 1: `manifest.json` created
+* [ ] Phase 2: PulseMCP submitted
+* [ ] Phase 2: mcpservers.org submitted
+* [ ] Phase 2: Glama submitted
+* [ ] Phase 2: Smithery submitted
+* [ ] Phase 2: MCP Market submitted
+* [ ] Phase 2: LobeHub submitted
+* [ ] Phase 3: Cline marketplace issue opened
+* [ ] Phase 4: Desktop Extensions form submitted
+* [ ] Phase 4: modelcontextprotocol/servers PR opened
+* [ ] Phase 5: Reddit posted (r/ClaudeAI + r/ClaudeCode + r/LocalLLaMA)
+* [ ] Phase 5: HN Show HN posted
+* [ ] Phase 5: X/Twitter posted
+* [ ] Phase 5: Discord posted
+* [ ] Phase 6: Demo video published
+* [ ] Phase 6: Blog post published
+* [ ] Phase 6: README updated with Smithery snippet + GIF
