@@ -1,5 +1,7 @@
 # smth — Browser MCP Server
 
+**[https://calpano.github.io/smth/](https://calpano.github.io/smth/)**
+
 A local MCP server that gives Claude a full browser: screenshots, DOM inspection, WCAG color analysis, and page interaction — all via a persistent Puppeteer/Chromium session running in Docker.
 
 ## What it does
