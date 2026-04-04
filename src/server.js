@@ -101,6 +101,7 @@ async function serializeDOM(page) {
 // Run see-dom.js with given params and return the result string.
 // Output has newlines between tags so line-level diffs (snapshots) are meaningful.
 async function captureDom(page, { lens = null, custom = null, maxChars = null, exclude = null } = {}) {
+  if (lens && lens.includes('none')) return '';
   const script = seeDomScript
     .replaceAll('__LENS__',       JSON.stringify(lens))
     .replaceAll('__CUSTOM__',     JSON.stringify(custom))
@@ -419,8 +420,8 @@ function createMcpServer(sessionId) {
           properties: {
             lens: {
               type: 'array',
-              items: { type: 'string', enum: ['text', 'media', 'layout', 'code'] },
-              description: 'Active lenses. Omit for the full DOM. One or more of: "text" (visible text, labels, values), "media" (images, SVG, canvas), "layout" (structure, positioning), "code" (event handlers, data-* attributes, JS hooks).',
+              items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'css-classes', 'none'] },
+              description: 'Active lenses. Omit for the full DOM. One or more of: "text" (visible text, labels, values), "media" (images, SVG, canvas), "layout" (structure, positioning), "code" (event handlers, data-* attributes, JS hooks), "css-classes" (returns [{class, count}] sorted by frequency instead of HTML), "none" (returns empty DOM — useful when only console logs are needed).',
             },
             search: {
               type: 'array',
@@ -497,7 +498,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             name:      { type: 'string', description: 'Name for this snapshot.' },
-            lens:      { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code'] }, description: 'Lenses to apply at capture time. Omit for the full DOM.' },
+            lens:      { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'none'] }, description: 'Lenses to apply at capture time. Omit for the full DOM. Use "none" to capture an empty snapshot (useful when only console logs are needed).' },
             exclude:   { type: 'string', description: 'Comma-separated CSS selectors to exclude before capturing.' },
             max_chars: { type: 'number', description: 'Character budget (same as browser_see_dom).' },
             getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
@@ -533,7 +534,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             url:    { type: 'string', description: 'URL to fetch content from.' },
-            lens:   { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code'] }, description: 'Lenses for DOM capture (default: ["text", "layout"]).' },
+            lens:   { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'none'] }, description: 'Lenses for DOM capture (default: ["text", "layout"]). Use "none" to skip DOM output (useful when only console logs are needed).' },
             prefix: { type: 'string', description: 'Prefix for stored snapshot names (default: "fetch").' },
             getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },

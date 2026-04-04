@@ -90,4 +90,32 @@ describe('browser_see_dom', () => {
     const { text } = await callTool(client, 'browser_see_dom', { search: ['zzznomatch999'] });
     expect(text).toBe('(no matches)');
   });
+
+  it('css-classes lens returns class frequency array sorted descending', async () => {
+    const result = parseJSON(await callTool(client, 'browser_see_dom', { lens: ['css-classes'] }));
+    expect(Array.isArray(result)).toBe(true);
+    expect(result.length).toBeGreaterThan(0);
+    // Each entry has {class, count}
+    result.forEach(entry => {
+      expect(typeof entry.class).toBe('string');
+      expect(typeof entry.count).toBe('number');
+      expect(entry.count).toBeGreaterThan(0);
+    });
+    // Sorted descending by count
+    for (let i = 1; i < result.length; i++) {
+      expect(result[i].count).toBeLessThanOrEqual(result[i - 1].count);
+    }
+    // Known classes from test.html should appear
+    const names = result.map(e => e.class);
+    expect(names).toContain('card');
+  });
+
+  it('css-classes lens respects exclude', async () => {
+    const all = parseJSON(await callTool(client, 'browser_see_dom', { lens: ['css-classes'] }));
+    const excluded = parseJSON(await callTool(client, 'browser_see_dom', { lens: ['css-classes'], exclude: '.card' }));
+    const allCard = all.find(e => e.class === 'card');
+    const exCard  = excluded.find(e => e.class === 'card');
+    // card elements are excluded so count should drop or disappear
+    expect((exCard?.count ?? 0)).toBeLessThan(allCard.count);
+  });
 });

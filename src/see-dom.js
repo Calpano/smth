@@ -105,6 +105,21 @@
     return excludeSelectors.some(sel => { try { return el.matches(sel); } catch(e) { return false; } });
   }
 
+  // ── none mode (no DOM output, useful when only console logs are needed) ──
+  if (lens && lens.includes('none')) return '';
+
+  // ── css-classes mode ─────────────────────────────────────────────────────
+  if (lens && lens.includes('css-classes')) {
+    const counts = {};
+    document.querySelectorAll('*').forEach(el => {
+      if (isExcluded(el)) return;
+      el.classList.forEach(c => { counts[c] = (counts[c] || 0) + 1; });
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([cls, count]) => ({ class: cls, count }));
+  }
+
   // ── Serialization ────────────────────────────────────────────────────────
   const VOID = new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
   let counts;
