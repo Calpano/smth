@@ -11,7 +11,7 @@ smth exposes 16 MCP tools across three areas:
 **See** — read and analyze any web page without interacting with it
 `browser_see_visual` · `browser_read_text` · `browser_see_dom` · `browser_see_fonts` · `browser_see_colors` · `browser_see_color_pairs`
 
-**Act** — drive the browser like a user
+w**Act** — drive the browser like a user
 `browser_launch` · `browser_goto` · `browser_click` · `browser_hover` · `browser_type`
 
 **Compare** — capture and diff DOM snapshots
