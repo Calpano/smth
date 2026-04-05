@@ -13,6 +13,7 @@ jobs:
 
       - name: Build smth.mcpb bundle
         run: |
+          rm -f smth.mcpb
           zip -r smth.mcpb \
             src/ \
             manifest.json \
