@@ -6,7 +6,10 @@ Each entry: { family, count, sizes: number[], weights: number[] }
     const counts = {};
 
     document.querySelectorAll('*').forEach(el => {
-        if (!el.offsetParent && el.tagName !== 'BODY') return;
+        if (!el.offsetParent && el.tagName !== 'BODY' && !el.closest('svg')) {
+            const r = el.getBoundingClientRect();
+            if (!r.width && !r.height) return;
+        }
         const style = window.getComputedStyle(el);
         const family = style.fontFamily.split(',')[0].trim().replace(/['"]/g, '');
         const size   = parseFloat(style.fontSize);

@@ -53,7 +53,7 @@ Usage: paste into browser DevTools console — result is logged and returned.
     }
 
     const filterRgbSet = filterColors ? new Set(filterColors.map(hexToRgb).filter(Boolean)) : null;
-    const cats = only || ['text', 'background', 'border'];
+    const cats = only || ['text', 'background', 'border', 'fill', 'stroke'];
 
     const counts = {};
     const usedBy = {};
@@ -68,7 +68,7 @@ Usage: paste into browser DevTools console — result is logged and returned.
         if (!color || color === 'transparent' || color === 'rgba(0, 0, 0, 0)') return;
         if (!cats.includes(category)) return;
         if (filterRgbSet && !filterRgbSet.has(color)) return;
-        if (!counts[color]) counts[color] = { text: 0, background: 0, border: 0 };
+        if (!counts[color]) counts[color] = { text: 0, background: 0, border: 0, fill: 0, stroke: 0 };
         counts[color][category]++;
         if (where) {
             if (!usedBy[color])           usedBy[color] = {};
@@ -78,7 +78,10 @@ Usage: paste into browser DevTools console — result is logged and returned.
     }
 
     document.querySelectorAll('*').forEach(el => {
-        if (!el.offsetParent && el.tagName !== 'BODY') return;
+        if (!el.offsetParent && el.tagName !== 'BODY' && !el.closest('svg')) {
+            const r = el.getBoundingClientRect();
+            if (!r.width && !r.height) return;
+        }
 
         const style = window.getComputedStyle(el);
 
@@ -95,12 +98,20 @@ Usage: paste into browser DevTools console — result is logged and returned.
             if (parseFloat(style[wp]) > 0) visibleBorderColors.add(style[cp]);
         }
         visibleBorderColors.forEach(c => add(c, 'border', el));
+
+        // SVG fill and stroke
+        if (el.closest('svg') || el.tagName === 'svg') {
+            const fill = style.fill;
+            if (fill && fill !== 'none') add(fill, 'fill', el);
+            const stroke = style.stroke;
+            if (stroke && stroke !== 'none') add(stroke, 'stroke', el);
+        }
     });
 
     const result = Object.entries(counts)
-        .sort(([, a], [, b]) => (b.text + b.background + b.border) - (a.text + a.background + a.border))
+        .sort(([, a], [, b]) => (b.text + b.background + b.border + b.fill + b.stroke) - (a.text + a.background + a.border + a.fill + a.stroke))
         .map(([rgb, c]) => {
-            const total = c.text + c.background + c.border;
+            const total = c.text + c.background + c.border + c.fill + c.stroke;
             const categories = cats.filter(cat => c[cat] > 0);
             const entry = { color: rgbToHex(rgb), count: total, categories };
             if (where && usedBy[rgb]) {

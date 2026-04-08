@@ -169,10 +169,23 @@ async function readPageText(page) {
     }
 
     const interactive = [];
-    document.querySelectorAll('a[href], button, input, select, textarea, [onclick], [onmouseover]').forEach(el => {
+    document.querySelectorAll('a[href], button, input, select, textarea, [onclick], [onmouseover], [role="button"], [role="link"], [role="tab"], [role="menuitem"]').forEach(el => {
       const label = el.getAttribute('aria-label') || el.getAttribute('placeholder') ||
         el.getAttribute('title') || el.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) || '';
       interactive.push({ id: el.id || null, selector: getSelector(el), tag: el.tagName.toLowerCase(), label });
+    });
+    // SVG elements with cursor:pointer or click handlers (not already captured above)
+    const seen = new Set(interactive.map(i => i.selector));
+    document.querySelectorAll('svg, svg *').forEach(el => {
+      const sel = getSelector(el);
+      if (seen.has(sel)) return;
+      const hasClick = el.hasAttribute('onclick') || el.hasAttribute('onmouseover');
+      const hasCursor = window.getComputedStyle(el).cursor === 'pointer';
+      const hasRole = el.hasAttribute('role');
+      if (!hasClick && !hasCursor && !hasRole) return;
+      const label = el.getAttribute('aria-label') || el.getAttribute('title') ||
+        el.textContent?.replace(/\s+/g, ' ').trim().slice(0, 60) || '';
+      interactive.push({ id: el.id || null, selector: sel, tag: el.tagName.toLowerCase(), label });
     });
 
     let result = lines.join('\n');
@@ -389,8 +402,8 @@ function createMcpServer(sessionId) {
           properties: {
             only: {
               type: 'array',
-              items: { type: 'string', enum: ['text', 'background', 'border'] },
-              description: 'Restrict results to these usage categories. Omit to include all three.',
+              items: { type: 'string', enum: ['text', 'background', 'border', 'fill', 'stroke'] },
+              description: 'Restrict results to these usage categories. Omit to include all.',
             },
             colors: {
               type: 'array',
@@ -420,8 +433,8 @@ function createMcpServer(sessionId) {
           properties: {
             lens: {
               type: 'array',
-              items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'css-classes', 'none'] },
-              description: 'Active lenses. Omit for the full DOM. One or more of: "text" (visible text, labels, values), "media" (images, SVG, canvas), "layout" (structure, positioning), "code" (event handlers, data-* attributes, JS hooks), "css-classes" (returns [{class, count}] sorted by frequency instead of HTML), "none" (returns empty DOM — useful when only console logs are needed).',
+              items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'svg', 'css-classes', 'none'] },
+              description: 'Active lenses. Omit for the full DOM. One or more of: "text" (visible text, labels, values), "media" (images, SVG, canvas), "layout" (structure, positioning), "code" (event handlers, data-* attributes, JS hooks), "svg" (all SVG elements and attributes — shapes, paths, gradients, transforms, clip-paths), "css-classes" (returns [{class, count}] sorted by frequency instead of HTML), "none" (returns empty DOM — useful when only console logs are needed).',
             },
             search: {
               type: 'array',
@@ -498,7 +511,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             name:      { type: 'string', description: 'Name for this snapshot.' },
-            lens:      { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'none'] }, description: 'Lenses to apply at capture time. Omit for the full DOM. Use "none" to capture an empty snapshot (useful when only console logs are needed).' },
+            lens:      { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'svg', 'none'] }, description: 'Lenses to apply at capture time. Omit for the full DOM. Use "none" to capture an empty snapshot (useful when only console logs are needed).' },
             exclude:   { type: 'string', description: 'Comma-separated CSS selectors to exclude before capturing.' },
             max_chars: { type: 'number', description: 'Character budget (same as browser_see_dom).' },
             getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
@@ -534,7 +547,7 @@ function createMcpServer(sessionId) {
           type: 'object',
           properties: {
             url:    { type: 'string', description: 'URL to fetch content from.' },
-            lens:   { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'none'] }, description: 'Lenses for DOM capture (default: ["text", "layout"]). Use "none" to skip DOM output (useful when only console logs are needed).' },
+            lens:   { type: 'array', items: { type: 'string', enum: ['text', 'media', 'layout', 'code', 'svg', 'none'] }, description: 'Lenses for DOM capture (default: ["text", "layout"]). Use "none" to skip DOM output (useful when only console logs are needed).' },
             prefix: { type: 'string', description: 'Prefix for stored snapshot names (default: "fetch").' },
             getConsoleLogs: { type: 'boolean', description: 'If true, append buffered browser console output to the response.' },
           },

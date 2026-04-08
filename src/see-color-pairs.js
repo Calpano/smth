@@ -51,13 +51,21 @@ Usage: paste into browser DevTools console — result is logged and returned.
     const map = {};
 
     document.querySelectorAll('*').forEach(el => {
-        if (!el.offsetParent && el.tagName !== 'BODY') return;
+        if (!el.offsetParent && el.tagName !== 'BODY' && !el.closest('svg')) {
+            const r = el.getBoundingClientRect();
+            if (!r.width && !r.height) return;
+        }
+        const isSvg = el.closest('svg') || el.tagName === 'svg';
         const hasText = Array.from(el.childNodes).some(
             n => n.nodeType === Node.TEXT_NODE && n.textContent.trim()
         );
-        if (!hasText) return;
+        // For SVG elements, treat fill as a foreground color even without text nodes
+        const svgFill = isSvg ? window.getComputedStyle(el).fill : null;
+        const hasSvgFill = svgFill && svgFill !== 'none' && !/rgba?\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)/.test(svgFill);
+        if (!hasText && !hasSvgFill) return;
 
-        const text = window.getComputedStyle(el).color;
+        const style = window.getComputedStyle(el);
+        const text = hasText ? style.color : svgFill;
         const bg   = effectiveBg(el);
         const key  = `${text}|||${bg}`;
 

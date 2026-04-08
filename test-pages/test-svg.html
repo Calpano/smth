@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>smth test — SVG</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #fff; color: #222; }
+    .content { max-width: 800px; margin: 40px auto; padding: 0 24px; }
+    h1 { color: #1a1a2e; }
+    h2 { color: #333; margin-top: 32px; }
+    .svg-row { display: flex; gap: 24px; align-items: center; margin: 16px 0; }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1 id="page-title">SVG Test Page</h1>
+
+    <!-- Interactive SVG icon buttons -->
+    <h2>Interactive SVG Icons</h2>
+    <div class="svg-row">
+      <svg id="icon-heart" width="48" height="48" viewBox="0 0 24 24" role="button" aria-label="Like" style="cursor: pointer;">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#e74c3c" />
+      </svg>
+
+      <svg id="icon-star" width="48" height="48" viewBox="0 0 24 24" role="button" aria-label="Favorite" style="cursor: pointer;">
+        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#f1c40f" stroke="#e67e22" stroke-width="1" />
+      </svg>
+
+      <svg id="icon-settings" width="48" height="48" viewBox="0 0 24 24" onclick="document.getElementById('settings-status').textContent='Settings clicked!'" aria-label="Settings">
+        <circle cx="12" cy="12" r="3" fill="none" stroke="#333" stroke-width="2" />
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" fill="none" stroke="#333" stroke-width="2" />
+      </svg>
+      <span id="settings-status"></span>
+    </div>
+
+    <!-- Simple shapes with colors -->
+    <h2>Colored Shapes</h2>
+    <svg id="shapes" width="400" height="120" viewBox="0 0 400 120">
+      <rect id="shape-rect" x="10" y="10" width="80" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="8" />
+      <circle id="shape-circle" cx="160" cy="50" r="40" fill="#2ecc71" stroke="#27ae60" stroke-width="2" />
+      <ellipse id="shape-ellipse" cx="270" cy="50" rx="50" ry="30" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" />
+      <line id="shape-line" x1="330" y1="10" x2="390" y2="100" stroke="#e74c3c" stroke-width="3" />
+    </svg>
+
+    <!-- SVG text -->
+    <h2>SVG Text</h2>
+    <svg id="svg-text" width="400" height="80" viewBox="0 0 400 80">
+      <text x="10" y="35" font-size="24" fill="#1a1a2e" font-family="Arial">SVG Label</text>
+      <text x="10" y="65" font-size="16" fill="#666">Secondary text in SVG</text>
+    </svg>
+
+    <!-- Chart-like SVG with interactive bars -->
+    <h2>Bar Chart</h2>
+    <svg id="chart" width="300" height="200" viewBox="0 0 300 200">
+      <g id="chart-bars">
+        <rect id="bar-a" x="20" y="40" width="40" height="140" fill="#3498db" role="img" aria-label="Category A: 140" style="cursor: pointer;" />
+        <rect id="bar-b" x="80" y="80" width="40" height="100" fill="#e74c3c" role="img" aria-label="Category B: 100" style="cursor: pointer;" />
+        <rect id="bar-c" x="140" y="20" width="40" height="160" fill="#2ecc71" role="img" aria-label="Category C: 160" style="cursor: pointer;" />
+        <rect id="bar-d" x="200" y="100" width="40" height="80" fill="#f1c40f" role="img" aria-label="Category D: 80" style="cursor: pointer;" />
+      </g>
+      <g id="chart-labels">
+        <text x="40" y="195" text-anchor="middle" font-size="12" fill="#333">A</text>
+        <text x="100" y="195" text-anchor="middle" font-size="12" fill="#333">B</text>
+        <text x="160" y="195" text-anchor="middle" font-size="12" fill="#333">C</text>
+        <text x="220" y="195" text-anchor="middle" font-size="12" fill="#333">D</text>
+      </g>
+      <!-- Axis lines -->
+      <line x1="10" y1="180" x2="260" y2="180" stroke="#999" stroke-width="1" />
+      <line x1="10" y1="0" x2="10" y2="180" stroke="#999" stroke-width="1" />
+    </svg>
+
+    <!-- Gradient example -->
+    <h2>Gradients</h2>
+    <svg id="gradient-demo" width="200" height="100" viewBox="0 0 200 100">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#3498db" />
+          <stop offset="100%" stop-color="#9b59b6" />
+        </linearGradient>
+      </defs>
+      <rect x="10" y="10" width="180" height="80" fill="url(#grad1)" rx="10" />
+    </svg>
+
+    <!-- Nested groups with transforms -->
+    <h2>Transforms</h2>
+    <svg id="transform-demo" width="200" height="200" viewBox="0 0 200 200">
+      <g transform="translate(100, 100)">
+        <g transform="rotate(45)">
+          <rect x="-40" y="-40" width="80" height="80" fill="#e67e22" opacity="0.7" />
+        </g>
+        <circle cx="0" cy="0" r="20" fill="#2c3e50" />
+      </g>
+    </svg>
+
+    <!-- Use/symbol example -->
+    <h2>Symbols</h2>
+    <svg id="symbol-demo" width="200" height="60" viewBox="0 0 200 60">
+      <defs>
+        <symbol id="arrow-right" viewBox="0 0 24 24">
+          <path d="M5 12h14M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" />
+        </symbol>
+      </defs>
+      <use href="#arrow-right" x="0" y="10" width="40" height="40" style="color: #333;" />
+      <use href="#arrow-right" x="50" y="10" width="40" height="40" style="color: #e74c3c;" />
+      <use href="#arrow-right" x="100" y="10" width="40" height="40" style="color: #3498db;" />
+    </svg>
+  </div>
+</body>
+</html>
