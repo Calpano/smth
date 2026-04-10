@@ -1,6 +1,6 @@
 ## browser_see_fonts
 
-Returns a JSON report of all fonts in use on the current page, grouped by family.
+Returns a JSON report of all fonts in use on the current page, grouped by family. SVG `<text>` elements are included.
 
 No parameters.
 

@@ -6,7 +6,7 @@ Returns a lens-filtered view of the live DOM as compact HTML, or — with `justC
 
 | param | type | default | description |
 |-------|------|---------|-------------|
-| `lens` | `string[]` | `null` | Active lenses. Omit for the full DOM. Any combination of `"text"`, `"media"`, `"layout"`, `"code"`. |
+| `lens` | `string[]` | `null` | Active lenses. Omit for the full DOM. Any combination of `"text"`, `"media"`, `"layout"`, `"code"`, `"svg"`. |
 | `search` | `string[]` | `null` | Search terms. When provided, returns text matches with 3 lines of context instead of serialized HTML. Mutually exclusive with `lens`. |
 | `custom` | `object` | `null` | Extra element/attribute classifications merged (union) with the built-ins. |
 | `justCount` | `boolean` | `false` | Return counts only instead of the HTML. |
@@ -21,6 +21,7 @@ Returns a lens-filtered view of the live DOM as compact HTML, or — with `justC
 | `media` | Non-text visuals — `<img>`, `<svg>`, `<path>`, `<canvas>` and their visual attributes (`src`, `d`, `fill`, …) |
 | `layout` | Structure — `<div>`, `<table>`, `<tr>`, `<td>`, `class`, `style`, `colspan`, `viewBox`, … |
 | `code` | Behavior — `<script>`, event handlers (`on*`), `data-*`, form wiring (`name`, `for`, `type`), `href`, `src` |
+| `svg` | All SVG elements and attributes — `<svg>`, `<g>`, `<path>`, `<circle>`, `<rect>`, `<ellipse>`, `<line>`, `<polyline>`, `<polygon>`, `<text>`, `<tspan>`, `<use>`, `<defs>`, `<symbol>`, `<clippath>`, `<mask>`, `<marker>`, `<lineargradient>`, `<radialgradient>`, `<stop>`, `<foreignobject>`, `<image>` with coordinates, fills, strokes, transforms, gradients, clip-paths |
 
 `id` and `class` are active in all lenses (they serve as anchors, CSS targets, and JS hooks simultaneously).
 
@@ -96,6 +97,7 @@ The full classification lives in `src/see-dom.js` (`BUILTIN` constant) and is do
 | `media` | `img`, `svg`, `path`, `canvas` | `src`, `d`, `fill`, `stroke` |
 | `layout` | `div`, `table`, `tr`, `td`, `header`, `footer`, `nav` | `class`, `style`, `colspan`, `viewBox`, `width`, `height` |
 | `code` | `script`, `a`, `button`, `input`, `select` | `on*`, `data-*`, `href`, `name`, `for`, `type` |
+| `svg` | `svg`, `g`, `path`, `circle`, `rect`, `ellipse`, `line`, `polyline`, `polygon`, `text`, `tspan`, `use`, `defs`, `symbol`, `clippath`, `mask`, `marker`, `lineargradient`, `radialgradient`, `stop`, `foreignobject`, `image` | `cx`, `cy`, `r`, `rx`, `ry`, `x`, `y`, `x1`, `y1`, `x2`, `y2`, `d`, `points`, `fill`, `stroke`, `stroke-width`, `transform`, `clip-path`, `opacity`, `viewBox`, `href`, `text-anchor`, `font-size`, `stop-color`, `stop-opacity`, `gradientUnits`, `offset` |
 
 ## search
 
@@ -140,6 +142,11 @@ browser_see_dom lens=["layout"]
 Interaction map:
 ```
 browser_see_dom lens=["code"]
+```
+
+SVG structure (shapes, gradients, transforms):
+```
+browser_see_dom lens=["svg"]
 ```
 
 Estimate token cost before fetching:

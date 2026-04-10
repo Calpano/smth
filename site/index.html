@@ -687,7 +687,7 @@
           </svg>
         </div>
         <h3>See</h3>
-        <p>Read any page without touching it. Screenshots at any viewport, visible text as Markdown, DOM through focused lenses, fonts, colors, and WCAG contrast ratios — all returned as structured data.</p>
+        <p>Read any page without touching it. Screenshots at any viewport, visible text as Markdown, DOM through focused lenses (including a dedicated SVG lens), fonts, colors with SVG fill/stroke support, and WCAG contrast ratios — all returned as structured data.</p>
         <div class="tag-row">
           <a class="tag" href="#tool-browser_see_visual">browser_see_visual</a>
           <a class="tag" href="#tool-browser_read_text">browser_read_text</a>
@@ -879,7 +879,7 @@
       name: 'browser_read_text',
       cat: 'see',
       pfx: 'browser_', action: 'read_text',
-      short: 'Page text as Markdown + interactive elements',
+      short: 'Page text as Markdown + interactive elements (incl. SVG)',
       prompt: 'What quotes are on this page?',
       input: {},
       outputType: 'text',
@@ -889,11 +889,11 @@
       name: 'browser_see_dom',
       cat: 'see',
       pfx: 'browser_', action: 'see_dom',
-      short: 'Lens-filtered compact HTML of the live DOM',
-      prompt: 'Show me the text content of the page.',
-      input: { lens: ['text'] },
+      short: 'Lens-filtered compact HTML (text/media/layout/code/svg)',
+      prompt: 'Show me the SVG structure of the page.',
+      input: { lens: ['svg'] },
       outputType: 'text',
-      output: '<h1><a>Quotes to Scrape</a></h1><p><a>Login</a></p><span class="text">"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."</span><span>by Albert Einstein<a>(about)</a></span>Tags:<a class="tag">change</a><a class="tag">deep-thoughts</a><a class="tag">thinking</a><a class="tag">world</a><span class="text">"It is our choices, Harry, that show what we truly are, far more than our abilities."</span>...',
+      output: '<svg id="chart" viewBox="0 0 300 200" width="300" height="200">\n<g id="chart-bars">\n<rect id="bar-a" x="20" y="40" width="40" height="140" fill="#3498db"/>\n<rect id="bar-b" x="80" y="80" width="40" height="100" fill="#e74c3c"/>\n<rect id="bar-c" x="140" y="20" width="40" height="160" fill="#2ecc71"/>\n</g>\n<g id="chart-labels">\n<text x="40" y="195" text-anchor="middle" font-size="12" fill="#333">A</text>\n<text x="100" y="195" text-anchor="middle" font-size="12" fill="#333">B</text>\n</g>\n<line x1="10" y1="180" x2="260" y2="180" stroke="#999" stroke-width="1"/>\n</svg>\n...',
     },
     {
       name: 'browser_see_fonts',
@@ -912,7 +912,7 @@
       name: 'browser_see_colors',
       cat: 'see',
       pfx: 'browser_', action: 'see_colors',
-      short: 'All computed colors with usage counts',
+      short: 'All computed colors incl. SVG fill/stroke',
       prompt: 'What colors are used on this page?',
       input: {},
       outputType: 'json',

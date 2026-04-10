@@ -3,7 +3,8 @@
     "text":   "Readable text visible on screen — headings, labels, button labels, form values, tooltips.",
     "media":  "Non-text visual content — images, SVG shapes, canvas, icons.",
     "layout": "Structural — influences position, size, or arrangement of elements, independent of specific content.",
-    "code":   "Behavioral — does not affect the static visual page; affects how the page reacts to users or scripts."
+    "code":   "Behavioral — does not affect the static visual page; affects how the page reacts to users or scripts.",
+    "svg":    "All SVG elements and their attributes — shapes, paths, gradients, transforms, clip-paths, masks, symbols."
   },
 
   "notes": {
@@ -53,8 +54,29 @@
     "tr":       ["layout"],
     "th":       ["text", "layout"],
     "td":       ["text", "layout"],
-    "svg":      ["media", "layout"],
-    "path":     ["media"],
+    "svg":            ["media", "layout", "svg"],
+    "path":           ["media", "svg"],
+    "g":              ["svg"],
+    "circle":         ["svg"],
+    "rect":           ["svg"],
+    "ellipse":        ["svg"],
+    "line":           ["svg"],
+    "polyline":       ["svg"],
+    "polygon":        ["svg"],
+    "text":           ["text", "svg"],
+    "tspan":          ["text", "svg"],
+    "use":            ["svg"],
+    "defs":           ["svg"],
+    "symbol":         ["svg"],
+    "clippath":       ["svg"],
+    "mask":           ["svg"],
+    "pattern":        ["svg"],
+    "marker":         ["svg"],
+    "lineargradient": ["svg"],
+    "radialgradient": ["svg"],
+    "stop":           ["svg"],
+    "foreignobject":  ["svg"],
+    "image":          ["media", "svg"],
     "canvas":   ["media", "code"],
     "img":      ["media", "layout"],
     "header":   ["layout"],
@@ -97,14 +119,89 @@
         "type": ["code"]
       },
       "svg": {
-        "viewBox": ["layout"],
-        "xmlns":   ["code"]
+        "viewBox": ["layout", "svg"],
+        "xmlns":   ["code"],
+        "width":   ["layout", "svg"],
+        "height":  ["layout", "svg"]
       },
       "path": {
-        "d":            ["media"],
-        "fill":         ["media"],
-        "stroke":       ["media"],
-        "stroke-width": ["layout"]
+        "d":            ["media", "svg"],
+        "fill":         ["media", "svg"],
+        "stroke":       ["media", "svg"],
+        "stroke-width": ["layout", "svg"],
+        "transform":    ["svg"],
+        "clip-path":    ["svg"]
+      },
+      "g": {
+        "fill":      ["svg"],
+        "stroke":    ["svg"],
+        "transform": ["svg"],
+        "clip-path": ["svg"],
+        "opacity":   ["svg"]
+      },
+      "circle": {
+        "cx": ["svg"], "cy": ["svg"], "r": ["svg"],
+        "fill": ["svg"], "stroke": ["svg"], "stroke-width": ["svg"]
+      },
+      "rect": {
+        "x": ["svg"], "y": ["svg"], "width": ["svg"], "height": ["svg"],
+        "rx": ["svg"], "ry": ["svg"],
+        "fill": ["svg"], "stroke": ["svg"], "stroke-width": ["svg"]
+      },
+      "ellipse": {
+        "cx": ["svg"], "cy": ["svg"], "rx": ["svg"], "ry": ["svg"],
+        "fill": ["svg"], "stroke": ["svg"]
+      },
+      "line": {
+        "x1": ["svg"], "y1": ["svg"], "x2": ["svg"], "y2": ["svg"],
+        "stroke": ["svg"], "stroke-width": ["svg"]
+      },
+      "polyline": {
+        "points": ["svg"], "fill": ["svg"], "stroke": ["svg"], "stroke-width": ["svg"]
+      },
+      "polygon": {
+        "points": ["svg"], "fill": ["svg"], "stroke": ["svg"]
+      },
+      "text": {
+        "x": ["svg"], "y": ["svg"], "text-anchor": ["svg"], "font-size": ["svg"], "fill": ["svg"]
+      },
+      "tspan": {
+        "x": ["svg"], "y": ["svg"], "dx": ["svg"], "dy": ["svg"]
+      },
+      "use": {
+        "href": ["svg"], "xlink:href": ["svg"],
+        "x": ["svg"], "y": ["svg"], "width": ["svg"], "height": ["svg"]
+      },
+      "symbol": {
+        "viewBox": ["svg"]
+      },
+      "clippath": {},
+      "mask": {
+        "x": ["svg"], "y": ["svg"], "width": ["svg"], "height": ["svg"]
+      },
+      "marker": {
+        "viewBox": ["svg"], "refX": ["svg"], "refY": ["svg"],
+        "markerWidth": ["svg"], "markerHeight": ["svg"]
+      },
+      "lineargradient": {
+        "x1": ["svg"], "y1": ["svg"], "x2": ["svg"], "y2": ["svg"],
+        "gradientUnits": ["svg"]
+      },
+      "radialgradient": {
+        "cx": ["svg"], "cy": ["svg"], "r": ["svg"], "fx": ["svg"], "fy": ["svg"],
+        "gradientUnits": ["svg"]
+      },
+      "stop": {
+        "offset": ["svg"], "stop-color": ["svg"], "stop-opacity": ["svg"]
+      },
+      "foreignobject": {
+        "x": ["svg"], "y": ["svg"], "width": ["svg"], "height": ["svg"]
+      },
+      "image": {
+        "href": ["svg", "media"], "xlink:href": ["svg", "media"],
+        "x": ["svg"], "y": ["svg"],
+        "width": ["svg", "layout"], "height": ["svg", "layout"],
+        "preserveAspectRatio": ["svg"]
       },
       "button": {
         "type":    ["code"],

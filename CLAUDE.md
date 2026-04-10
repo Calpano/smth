@@ -12,19 +12,19 @@ Stateless. Lists device names for use with `browser_see_visual`.
 Navigates the existing session to a new URL without relaunching the browser.
 
 ## browser_read_text
-Returns page text as Markdown + list of interactive elements, each with a CSS selector usable with `browser_click`, `browser_hover`, and `browser_type`.
+Returns page text as Markdown + list of interactive elements, each with a CSS selector usable with `browser_click`, `browser_hover`, and `browser_type`. SVG elements with `cursor: pointer`, click handlers, or ARIA roles are included.
 
 ## browser_see_fonts
-Returns JSON: fonts grouped by family with size/weight/usage count.
+Returns JSON: fonts grouped by family with size/weight/usage count. Includes SVG `<text>` elements.
 
 ## browser_see_colors
-Returns JSON: all computed colors (text, background, border) with usage counts per color. Different alpha values are distinct entries.
+Returns JSON: all computed colors (text, background, border, SVG fill, SVG stroke) with usage counts per color. Different alpha values are distinct entries.
 
 ## browser_see_color_pairs
-Returns JSON array: every text/background color pair found on the page, with WCAG 2.2 contrast ratio and AA/AAA pass/fail flags. Effective background is resolved by walking up the DOM.
+Returns JSON array: every text/background color pair found on the page, with WCAG 2.2 contrast ratio and AA/AAA pass/fail flags. Effective background is resolved by walking up the DOM. SVG elements with fill are included as foreground colors.
 
 ## browser_see_dom
-Returns lens-filtered compact HTML of the live DOM. Pass `search=["term"]` to get text matches with surrounding context lines instead.
+Returns lens-filtered compact HTML of the live DOM. Lenses: `text`, `media`, `layout`, `code`, `svg` (all SVG elements/attributes), `css-classes`, `none`. Pass `search=["term"]` to get text matches with surrounding context lines instead.
 
 ## browser_click
 Clicks an element by `id` or CSS `selector`. Waits for navigation to complete before returning.

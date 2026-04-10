@@ -6,7 +6,7 @@ No parameters.
 
 Headings become `#`/`##`/etc., list items become `- `, paragraphs are separated by blank lines. Elements with an `id` get a `{#id}` annotation.
 
-Appends an **Interactive Elements** section listing every `a[href]`, `button`, `input`, `select`, `textarea`, `[onclick]`, `[onmouseover]` with tag, selector, and label. Elements with an `id` show `#id`; elements without one show a generated CSS path selector. These selectors can be passed directly to `browser_click`, `browser_hover`, and `browser_type`.
+Appends an **Interactive Elements** section listing every `a[href]`, `button`, `input`, `select`, `textarea`, `[onclick]`, `[onmouseover]`, `[role="button"]`, `[role="link"]`, `[role="tab"]`, `[role="menuitem"]` with tag, selector, and label. SVG elements with `cursor: pointer`, click handlers, or ARIA roles are also included. Elements with an `id` show `#id`; elements without one show a generated CSS path selector. These selectors can be passed directly to `browser_click`, `browser_hover`, and `browser_type`.
 
 ### Example
 

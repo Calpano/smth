@@ -6,7 +6,7 @@ No parameters.
 
 ## Behaviour
 
-- Visits every visible element that has at least one direct text node (same `offsetParent` visibility check as `browser_see_fonts`)
+- Visits every visible element that has at least one direct text node, or SVG elements with a non-transparent `fill` (SVG elements inside `<svg>` are included even without `offsetParent`)
 - **Text color**: `getComputedStyle(el).color`
 - **Effective background**: walks up the DOM from the element until a non-transparent `background-color` is found; falls back to `rgb(255, 255, 255)` (browser default) if none is found
 - Contrast ratio computed using the WCAG 2.2 relative luminance formula: `(L_hi + 0.05) / (L_lo + 0.05)`
