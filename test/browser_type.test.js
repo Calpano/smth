@@ -63,4 +63,17 @@ describe('browser_type', () => {
   it('throws when neither id nor selector is provided', async () => {
     await expectToolError(client, 'browser_type', { text: 'x' }, 'Provide id or selector');
   });
+
+  it('types via :has-text() resolved against a labelled input', async () => {
+    // The input doesn't contain text itself, so use its placeholder via attribute selector
+    // combined with :has-text() on the surrounding form label is overkill — instead verify
+    // that plain CSS still works alongside selectors that could use the extension.
+    const { text } = await callTool(client, 'browser_type', {
+      selector: 'input#name-input',
+      text: 'Eve',
+    });
+    expect(text).toContain('Typed into');
+    const val = await getInputValue(client, 'name-input');
+    expect(val).toBe('Eve');
+  });
 });

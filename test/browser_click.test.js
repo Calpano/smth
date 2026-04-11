@@ -39,4 +39,42 @@ describe('browser_click', () => {
   it('throws when neither id nor selector is provided', async () => {
     await expectToolError(client, 'browser_click', {}, 'Provide id or selector');
   });
+
+  it('clicks via :has-text() extension (single quotes)', async () => {
+    const { text } = await callTool(client, 'browser_click', {
+      selector: "button:has-text('No ID button')",
+    });
+    expect(text).toContain("Clicked button:has-text('No ID button')");
+  });
+
+  it('clicks via :has-text() extension (double quotes, case-insensitive)', async () => {
+    const { text } = await callTool(client, 'browser_click', {
+      selector: 'button:has-text("CLICK ME")',
+    });
+    expect(text).toContain('Clicked button:has-text');
+  });
+
+  it(':has-text() picks the innermost matching element and triggers navigation', async () => {
+    const { text } = await callTool(client, 'browser_click', {
+      selector: "button:has-text('Submit form')",
+    });
+    expect(text).toContain('articles');
+  });
+
+  it(':has-text() with no base selector matches any element', async () => {
+    // "No ID button" appears only in the button element, so the innermost match is the button.
+    const { text } = await callTool(client, 'browser_click', {
+      selector: ":has-text('No ID button')",
+    });
+    expect(text).toContain('Clicked');
+  });
+
+  it(':has-text() throws when no element matches the text', async () => {
+    await expectToolError(
+      client,
+      'browser_click',
+      { selector: "button:has-text('definitely not on page')" },
+      /not found/i,
+    );
+  });
 });

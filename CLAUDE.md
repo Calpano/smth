@@ -27,13 +27,16 @@ Returns JSON array: every text/background color pair found on the page, with WCA
 Returns lens-filtered compact HTML of the live DOM. Lenses: `text`, `media`, `layout`, `code`, `svg` (all SVG elements/attributes), `css-classes`, `none`. Pass `search=["term"]` to get text matches with surrounding context lines instead.
 
 ## browser_click
-Clicks an element by `id` or CSS `selector`. Waits for navigation to complete before returning.
+Clicks an element by `id` or CSS `selector`. Waits for navigation to complete before returning. Selector accepts `:has-text('substring')` at the end (see below).
 
 ## browser_hover
-Hovers an element by `id` or CSS `selector`. Returns a before/after diff of the text+code lens.
+Hovers an element by `id` or CSS `selector`. Returns a before/after diff of the text+code lens. Selector accepts `:has-text('substring')` at the end.
 
 ## browser_type
-Types text into a form field by `id` or CSS `selector`. Clears first by default.
+Types text into a form field by `id` or CSS `selector`. Clears first by default. Selector accepts `:has-text('substring')` at the end.
+
+### `:has-text('...')` selector extension (click/hover/type)
+Append `:has-text('substring')` to the end of any CSS selector to match the innermost element whose visible text contains the substring (case-insensitive). Example: `button:has-text('Submit')`, `:has-text('Accept all')`. Both single and double quotes work. Only one `:has-text()` per selector, always at the end.
 
 ## browser_remember_dom
 Captures a named DOM snapshot for later comparison. Params: `name`, optional `lens`, `exclude`, `max_chars`.

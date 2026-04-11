@@ -69,3 +69,20 @@ The `.mcp.json` file is read when Claude Code starts the session. If the smth co
 ### Finding elements without an id
 
 `browser_read_text` lists every interactive element with a CSS selector. Pass that selector directly to `browser_click`, `browser_hover`, or `browser_type` via the `selector` param when an element has no `id`.
+
+### `:has-text('...')` selector extension
+
+`browser_click`, `browser_hover`, and `browser_type` accept an extended selector syntax: append `:has-text('substring')` at the end of a CSS selector to match the innermost element whose visible text contains the substring (case-insensitive).
+
+```
+browser_click selector="button:has-text('Submit')"
+browser_click selector="a.nav-link:has-text('Pricing')"
+browser_hover selector="li:has-text('Settings')"
+browser_click selector=":has-text('Accept all')"     # any element
+```
+
+Rules:
+- Only one `:has-text()` per selector, always at the end.
+- Both `'single'` and `"double"` quotes work.
+- Matching uses `el.innerText` (falls back to `textContent`) and is case-insensitive substring.
+- When multiple elements contain the substring, the innermost one (no matching descendant) wins.

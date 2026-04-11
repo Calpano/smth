@@ -45,4 +45,12 @@ describe('browser_hover', () => {
   it('throws when neither id nor selector is provided', async () => {
     await expectToolError(client, 'browser_hover', {}, 'Provide id or selector');
   });
+
+  it('hovers via :has-text() extension to reveal the tooltip', async () => {
+    // The .tip span contains "hover over me" — match via :has-text on the span.
+    const { text } = await callTool(client, 'browser_hover', {
+      selector: "span:has-text('hover over me')",
+    });
+    expect(text).toContain('Tooltip appeared!');
+  });
 });

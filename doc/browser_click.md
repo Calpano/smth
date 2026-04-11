@@ -15,6 +15,18 @@ If the click triggers navigation, the tool waits for `networkidle0` before retur
 
 Use `browser_read_text` — the Interactive Elements section lists a CSS selector for every clickable element, even those without an `id`.
 
+### `:has-text()` selector extension
+
+When an element has no stable id/class but has distinctive visible text, append `:has-text('substring')` to any CSS selector. Matching is case-insensitive substring and picks the **innermost** element that contains the text.
+
+```
+browser_click selector="button:has-text('Submit')"
+browser_click selector="a:has-text('Learn more')"
+browser_click selector=":has-text('Accept all')"     # any element
+```
+
+Supports both single and double quotes. Only one `:has-text()` per selector, always at the end. Also available in `browser_hover` and `browser_type`.
+
 ### Example
 
 Site: `https://quotes.toscrape.com/login`

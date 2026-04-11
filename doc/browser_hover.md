@@ -13,6 +13,10 @@ The diff uses the `text` + `code` lens, so it surfaces meaningful changes (toolt
 
 For a full before/after comparison of the entire DOM, use `browser_remember_dom` + `browser_dom_compare` instead.
 
+### `:has-text()` selector extension
+
+Append `:has-text('substring')` to a selector to match the innermost element whose visible text contains the substring (case-insensitive). Example: `span:has-text('hover over me')`. See `browser_click.md` for full details.
+
 ### Example
 
 Site: `https://quotes.toscrape.com/login`
