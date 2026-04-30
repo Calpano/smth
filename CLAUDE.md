@@ -35,6 +35,12 @@ Hovers an element by `id` or CSS `selector`. Returns a before/after diff of the 
 ## browser_type
 Types text into a form field by `id` or CSS `selector`. Clears first by default. Selector accepts `:has-text('substring')` at the end.
 
+## browser_select_option
+Picks an option from a `<select>` by `value` or visible `label`. Label match is case-insensitive (exact match preferred, substring fallback). Dispatches `input` and `change` events. Element resolved by `id` or `selector`.
+
+## browser_press_key
+Presses a single key (e.g. `Enter`, `Escape`, `Tab`, `ArrowDown`, `Backspace`, or a character like `a`), optionally with `modifiers` (`Control`/`Shift`/`Alt`/`Meta`) and a `count`. Optionally focuses an element first via `id` or `selector`. Waits for navigation triggered by the press.
+
 ### `:has-text('...')` selector extension (click/hover/type)
 Append `:has-text('substring')` to the end of any CSS selector to match the innermost element whose visible text contains the substring (case-insensitive). Example: `button:has-text('Submit')`, `:has-text('Accept all')`. Both single and double quotes work. Only one `:has-text()` per selector, always at the end.
 

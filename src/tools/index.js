@@ -12,6 +12,8 @@ import seeDom         from './seeDom.js';
 import click          from './click.js';
 import hover          from './hover.js';
 import type_          from './type.js';
+import selectOption   from './selectOption.js';
+import pressKey       from './pressKey.js';
 import rememberDom    from './rememberDom.js';
 import listDoms       from './listDoms.js';
 import domCompare     from './domCompare.js';
@@ -30,6 +32,8 @@ export const tools = [
   click,
   hover,
   type_,
+  selectOption,
+  pressKey,
   rememberDom,
   listDoms,
   domCompare,

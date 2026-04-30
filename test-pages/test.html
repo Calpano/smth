@@ -50,6 +50,15 @@
         <input id="name-input" type="text" placeholder="Enter your name" />
         <label for="email-input">Email:</label>
         <input id="email-input" type="email" placeholder="Enter email" />
+        <label for="country-select">Country:</label>
+        <select id="country-select" name="country">
+          <option value="">-- pick one --</option>
+          <option value="us">United States</option>
+          <option value="de">Germany</option>
+          <option value="fr">France</option>
+          <option value="jp">Japan</option>
+        </select>
+        <span id="country-echo"></span>
         <button id="submit-btn" type="submit">Submit form</button>
       </form>
     </div>
@@ -67,5 +76,10 @@
     <a href="test-b.html">Articles</a>
     <span>&copy; 2024 smth test site</span>
   </footer>
+  <script>
+    document.getElementById('country-select').addEventListener('change', e => {
+      document.getElementById('country-echo').textContent = 'picked:' + e.target.value;
+    });
+  </script>
 </body>
 </html>

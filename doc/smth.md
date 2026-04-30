@@ -31,6 +31,8 @@ All tools are stateful and share one Puppeteer session per MCP connection. Alway
 | `browser_click`           | [browser_click.md](browser_click.md)                     |
 | `browser_hover`           | [browser_hover.md](browser_hover.md)                     |
 | `browser_type`            | [browser_type.md](browser_type.md)                       |
+| `browser_select_option`   | [browser_select_option.md](browser_select_option.md)     |
+| `browser_press_key`       | [browser_press_key.md](browser_press_key.md)             |
 | `browser_see_visual`      | [browser_see_visual.md](browser_see_visual.md)           |
 | `browser_remember_dom`    | [browser_remember_dom.md](browser_remember_dom.md)       |
 | `browser_doms`            | [browser_doms.md](browser_doms.md)                       |
