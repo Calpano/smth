@@ -12,6 +12,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "express": "^5.0.0",
-    "puppeteer-core": "^22.0.0"
+    "puppeteer-core": "^24.0.0"
   }
 }
