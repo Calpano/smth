@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim
+FROM node:25-bookworm-slim
 WORKDIR /app
 COPY test/package.json test/package-lock.json ./
 # vitest.config.js must be writable (Vite writes a .timestamp-*.mjs file next to it).
