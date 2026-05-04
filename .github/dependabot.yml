@@ -1,0 +1,48 @@
+version: 2
+updates:
+  # Production runtime deps (root package.json).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      production-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    # Major bumps (express 4→5, puppeteer-core 22→24) need manual review,
+    # but still surface as individual PRs rather than being silently skipped.
+
+  # Test-only deps (test/package.json). One grouped PR per week.
+  - package-ecosystem: npm
+    directory: /test
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      test:
+        patterns: ["*"]
+
+  # Workflow actions — keep hash-pins fresh.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # Base image (node:20-bookworm-slim) in both Dockerfiles.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+  - package-ecosystem: docker
+    directory: /test
+    schedule:
+      interval: weekly
+      day: monday
