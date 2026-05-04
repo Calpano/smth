@@ -25,6 +25,12 @@ services:
       - PORT=3000
       - PAGES_DIR=/pages
       - HOST_PAGES_DIR=${PAGES_DIR:-}
+      # Dev/test-friendly lifecycle: aggressive reaper so abandoned vitest
+      # clients don't accumulate. Production defaults (in src/lifecycle.js)
+      # are slower and apply when the bundle is installed standalone.
+      - SMTH_MAX_SESSIONS=${SMTH_MAX_SESSIONS:-100}
+      - SMTH_SESSION_IDLE_MS=${SMTH_SESSION_IDLE_MS:-30000}
+      - SMTH_REAPER_INTERVAL_MS=${SMTH_REAPER_INTERVAL_MS:-3000}
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/health').then(r=>r.ok?process.exit(0):process.exit(1)).catch(()=>process.exit(1))\""]
