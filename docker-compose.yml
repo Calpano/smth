@@ -21,10 +21,13 @@ services:
       - "${SMTH_PORT:-3000}:3000"
     volumes:
       - ${PAGES_DIR:-./test-pages}:/pages:ro
+      - ${CODE_DIR:-./src}:/code:ro
+      - ./test-fixtures:/test-fixtures:ro
     environment:
       - PORT=3000
       - PAGES_DIR=/pages
       - HOST_PAGES_DIR=${PAGES_DIR:-}
+      - CODE_DIR=/code
       # Dev/test-friendly lifecycle: aggressive reaper so abandoned vitest
       # clients don't accumulate. Production defaults (in src/lifecycle.js)
       # are slower and apply when the bundle is installed standalone.

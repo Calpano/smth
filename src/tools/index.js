@@ -19,6 +19,7 @@ import listDoms       from './listDoms.js';
 import domCompare     from './domCompare.js';
 import fetchDomContent from './fetchDomContent.js';
 import seeVisual      from './seeVisual.js';
+import codeMine       from './codeMine.js';
 
 export const tools = [
   listDevices,
@@ -39,6 +40,7 @@ export const tools = [
   domCompare,
   fetchDomContent,
   seeVisual,
+  codeMine,
 ];
 
 export const toolsByName = new Map(tools.map(t => [t.schema.name, t]));
