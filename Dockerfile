@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim
+FROM node:25-bookworm-slim
 
 # Install Chromium and its dependencies
 RUN apt-get update && apt-get install -y \
