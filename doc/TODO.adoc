@@ -1,0 +1,168 @@
+= smth TODO
+
+== New site-health tools
+
+Two MCP tools to support automated "is the site working?" checks
+(see `biz/doc/eval.adoc`).
+
+=== browser_check_console
+
+Goal:: Navigate to a URL, wait for it to settle, and return all console
+errors / warnings + uncaught page exceptions captured during the load.
+
+Public surface::
+[source,json]
+----
+{
+  "name": "browser_check_console",
+  "inputSchema": {
+    "url":          "string  (required)",
+    "wait_until":   "string  (default 'networkidle2')",
+    "include":      "array   (default ['error','warning','pageerror'])",
+    "timeout_ms":   "number  (default 15000)"
+  }
+}
+----
+
+Returns::
+[source,json]
+----
+{
+  "url": "https://ddot.it/",
+  "title": "ddot.it",
+  "counts": { "error": 0, "warning": 1, "pageerror": 0 },
+  "entries": [
+    { "level": "warning", "text": "...", "source": "https://.../app.js:42",
+      "stack": "..." }
+  ]
+}
+----
+
+Implementation::
+* `src/browser/session.js`
+** Already pushes `page.on('console', ...)` into `consoleLogs`. Extend to also
+   capture `page.on('pageerror', e => ...)` into the same buffer (tagged
+   `type: 'pageerror'`) and store `location()` / `args()` info, not just text.
+** Replace the current `{ type, text }` shape with a richer record:
+   `{ type, text, location: { url, lineNumber, columnNumber }, stack? }`.
+** Add `drainLogsStructured(session)` returning that array (keep `drainLogs`
+   for the existing text formatter so other tools don't break).
+* `src/tools/checkConsole.js` (new)
+** Drain any leftover logs from the session first (clear slate).
+** Call `gotoPage(page, args.url)` with `waitUntil: args.wait_until`.
+** Drain again -> filter by `args.include` -> build the JSON response.
+* `src/tools/index.js`: register the new tool.
+* Docs: `doc/browser_check_console.md` + example JSON.
+
+Edge cases::
+* SPAs that keep loading after `networkidle2` — let the caller pass a longer
+  `timeout_ms` or use `domcontentloaded` and a manual `wait` follow-up call.
+* Same-page navigations: this tool always *navigates*; for an in-place check
+  the caller can use `browser_goto` with `getConsoleLogs: true` (already works).
+* Mixed-content warnings: caller decides via `include` whether to fail on them.
+
+Out of scope::
+* No automatic retry; deterministic single-shot result.
+* No deduplication across entries (caller can group by `text`).
+
+
+=== browser_check_imprint
+
+Goal:: Verify a site has a German-law-conformant imprint reachable from the
+home page and that the imprint page contains the required §5 TMG / §18 MStV
+fields.
+
+Public surface::
+[source,json]
+----
+{
+  "name": "browser_check_imprint",
+  "inputSchema": {
+    "url":             "string  (required, usually the site root)",
+    "link_text":       "array   (default ['Impressum','Imprint','Legal'])",
+    "required_fields": "array   (default ['name','address','email'])",
+    "also_check":      "array   (default ['Datenschutz'])  -- optional sibling links"
+  }
+}
+----
+
+Returns::
+[source,json]
+----
+{
+  "site": "https://ddot.it/",
+  "imprint": {
+    "found": true,
+    "link_text": "Impressum",
+    "url": "https://ddot.it/impressum.html",
+    "status": 200,
+    "fields": {
+      "name":    { "ok": true,  "match": "Max Voelkel" },
+      "address": { "ok": true,  "match": "...strasse..." },
+      "email":   { "ok": false, "match": null }
+    }
+  },
+  "also_check": [
+    { "label": "Datenschutz", "found": true, "url": "..." }
+  ],
+  "ok": false,
+  "reason": "email missing on imprint page"
+}
+----
+
+Field detection rules::
+[cols="1,3"]
+|===
+| field   | regex / heuristic
+| `name`  | line containing a capitalised word pair near "Verantwortlich" /
+            "Anbieter" / "Inhaber" (configurable)
+| `address` | one line matches `\b\d{4,5}\b.*\b[A-Za-zÄÖÜäöü]+\b`
+              (postal code + city); plus a street pattern
+              `\b[A-Za-zÄÖÜäöü.-]+(?:straße|str\.|weg|allee|platz)\s+\d+`
+| `email` | `mailto:` link OR text matching standard email regex
+| `phone` | optional; `\+?[\d\s().-]{7,}` near "Tel" / "Telefon"
+|===
+Rules live in `src/checks/imprint-rules.js` so callers can extend them
+without touching the tool itself.
+
+Implementation::
+* `src/checks/imprint.js` (new pure module)
+** `findImprintLink(page, linkTexts) -> { href, text } | null` —
+   query selector + visible-text scan; prefer footer `<a>` elements.
+** `checkRequiredFields(html, rules) -> { name, address, email, ... }`.
+** Reusable so we can call from CLI / tests without MCP plumbing.
+* `src/tools/checkImprint.js` (new)
+** `gotoPage(page, args.url)` -> `findImprintLink` -> click / navigate.
+** Capture final URL + HTTP status (use `page.on('response')` to grab the
+   main-frame response status during navigation).
+** Read page HTML (`page.content()`) -> run field rules -> build response.
+** For each entry in `also_check`, just verify a matching link exists
+   (don't follow).
+* `src/tools/index.js`: register the new tool.
+* Docs: `doc/browser_check_imprint.md` + example JSON.
+
+Edge cases::
+* Footer link only visible after scroll / lazy load — `gotoPage` already
+  waits for network idle; if needed, call `page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))` before the link scan.
+* Cookie banners covering the footer link — out of scope for the check;
+  caller can dismiss with `browser_click` beforehand.
+* Imprint embedded on the home page itself (single-page sites) —
+  fallback: if no link found, run field rules on the home-page HTML.
+* Non-German sites: `link_text` and `required_fields` are parameters,
+  so `['Imprint','Legal notice']` works for English sites.
+
+Out of scope::
+* Verifying that the listed company *actually exists* (Handelsregister
+  lookup) — too brittle / network-heavy.
+* PDF-only imprints — assert and fail; PDF parsing is a separate concern.
+
+
+== Not in smth: link-crawl / 404 check
+
+Reasoning is in `biz/doc/eval.adoc`. A page-at-a-time Puppeteer browser
+is the wrong shape for crawling hundreds of URLs. Two options if we
+later want it bundled:
+
+* Add `lychee` (Rust binary) to the Dockerfile and expose
+  `browser_check_links url=... depth=2` as a thin shell-out tool.
+* Or keep it out of smth entirely and run `lychee` from CI directly.

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>smth test — console</title>
+</head>
+<body>
+  <h1>console fixture</h1>
+  <p>Deliberately emits an error, a warning, and an uncaught exception.</p>
+  <script>
+    console.error('boom-error');
+    console.warn('soft-warning');
+    // Uncaught — becomes a pageerror entry.
+    setTimeout(() => { throw new Error('uncaught-explosion'); }, 0);
+  </script>
+</body>
+</html>

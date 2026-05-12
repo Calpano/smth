@@ -38,6 +38,8 @@ All tools are stateful and share one Puppeteer session per MCP connection. Alway
 | `browser_doms`            | [browser_doms.md](browser_doms.md)                       |
 | `browser_dom_compare`     | [browser_dom_compare.md](browser_dom_compare.md)         |
 | `fetch_dom_content`       | [fetch_dom_content.md](fetch_dom_content.md)             |
+| `browser_check_console`   | [browser_check_console.md](browser_check_console.md)     |
+| `browser_check_imprint`   | [browser_check_imprint.md](browser_check_imprint.md)     |
 
 ## Container management
 

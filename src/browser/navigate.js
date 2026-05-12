@@ -30,11 +30,12 @@ export function resolveTarget(target) {
 
 // Navigate an existing page to a URL, handling the localhost→host.docker.internal
 // fallback when the host's loopback is unreachable from inside the container.
-// Returns the final URL navigated to.
-export async function gotoPage(page, url) {
+// Returns the final URL navigated to. `waitUntil` and `timeout` are forwarded
+// to Puppeteer (defaults: networkidle0 / 30s).
+export async function gotoPage(page, url, { waitUntil = 'networkidle0', timeout = 30000 } = {}) {
   const resolved = resolveTarget(url);
   try {
-    await page.goto(resolved, { waitUntil: 'networkidle0', timeout: 30000 });
+    await page.goto(resolved, { waitUntil, timeout });
     return resolved;
   } catch (err) {
     const isConnRefused = err.message && (
@@ -44,7 +45,7 @@ export async function gotoPage(page, url) {
     const isLocalhost = /^https?:\/\/localhost[:/]/i.test(resolved);
     if (isConnRefused && isLocalhost) {
       const fallback = resolved.replace(/^(https?:\/\/)localhost([:/])/i, '$1host.docker.internal$2');
-      await page.goto(fallback, { waitUntil: 'networkidle0', timeout: 30000 });
+      await page.goto(fallback, { waitUntil, timeout });
       return fallback;
     }
     throw err;

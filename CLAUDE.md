@@ -60,5 +60,11 @@ All-in-one: open a URL, auto-detect background (by visiting a similar same-site 
 Screenshots the current page and returns the image as embedded content (base64 PNG).
 Params: `zoom`, `device`, `width`, `height`, `full_page`, `element_id`.
 
+## browser_check_console
+Navigates to a URL, waits for it to settle, and returns structured console errors/warnings + uncaught page exceptions captured during the load. Single-shot. Params: `url`, `wait_until` (default `networkidle2`), `include` (default `['error','warning','pageerror']`), `timeout_ms` (default 15000).
+
+## browser_check_imprint
+Checks a site for a German-law-conformant imprint reachable from a footer link, and verifies the imprint page contains required §5 TMG / §18 MStV fields (default: name, address, email). Returns `{ ok, reason, imprint, also_check }`. Params: `url`, `link_text`, `required_fields`, `also_check`.
+
 **Always call `browser_launch` before any other browser_ tool.**
 See `doc/smth.md` for full details.

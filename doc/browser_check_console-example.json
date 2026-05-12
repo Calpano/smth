@@ -1,0 +1,12 @@
+{
+  "input": {
+    "url": "https://example.com/",
+    "include": ["error", "warning", "pageerror"]
+  },
+  "output": {
+    "url": "https://example.com/",
+    "title": "Example Domain",
+    "counts": { "error": 0, "warning": 0, "pageerror": 0 },
+    "entries": []
+  }
+}

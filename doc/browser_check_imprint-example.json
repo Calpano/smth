@@ -1,0 +1,24 @@
+{
+  "input": {
+    "url": "https://ddot.it/"
+  },
+  "output": {
+    "site": "https://ddot.it/",
+    "imprint": {
+      "found": true,
+      "link_text": "Impressum",
+      "url": "https://ddot.it/impressum.html",
+      "status": 200,
+      "fields": {
+        "name":    { "ok": true,  "match": "Max Voelkel" },
+        "address": { "ok": true,  "match": "Beispielstraße 1, 76131 Karlsruhe" },
+        "email":   { "ok": true,  "match": "info@ddot.it" }
+      }
+    },
+    "also_check": [
+      { "label": "Datenschutz", "found": true, "url": "https://ddot.it/datenschutz.html" }
+    ],
+    "ok": true,
+    "reason": null
+  }
+}
