@@ -4,6 +4,9 @@
   "description": "smth MCP tool — as reliable as Agent Smith",
   "type": "module",
   "main": "src/server.js",
+  "bin": {
+    "smth": "bin/smth.js"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "docker compose --profile test run --rm test",

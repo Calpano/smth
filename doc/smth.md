@@ -18,6 +18,8 @@ Add `.mcp.json` to the project root:
 
 All tools are stateful and share one Puppeteer session per MCP connection. Always call `browser_launch` first.
 
+A shell CLI (`smth …`) wraps every tool. See [cli.md](cli.md).
+
 | Tool                      | Doc                                                      |
 |---------------------------|----------------------------------------------------------|
 | `browser_list_devices`    | [browser_list_devices.md](browser_list_devices.md)       |

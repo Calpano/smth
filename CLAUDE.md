@@ -68,3 +68,14 @@ Checks a site for a German-law-conformant imprint reachable from a footer link, 
 
 **Always call `browser_launch` before any other browser_ tool.**
 See `doc/smth.md` for full details.
+
+## CLI (host-side)
+A `smth` CLI wraps the MCP server for shell use. Subcommands match tool names; flags come from each tool's JSON schema. Auto-starts the docker container when it's down. Session ID is persisted in `~/.smth/session` so chained invocations share the same browser. See `doc/cli.md`.
+
+```bash
+smth list                         # list tools
+smth browser_launch --url=…       # call a tool
+smth browser_check_console --url=… --include=error,pageerror
+smth up | down | status
+smth session reset
+```
