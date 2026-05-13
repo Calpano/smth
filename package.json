@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node src/server.js",
     "test": "docker compose --profile test run --rm test",
-    "test:build": "docker compose --profile test build test"
+    "test:build": "docker compose --profile test build test",
+    "test:cli": "./run-cli-tests.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

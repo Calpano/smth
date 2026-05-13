@@ -74,3 +74,17 @@ smth browser_read_text
 | Var        | Default                  | Purpose |
 |------------|--------------------------|---------|
 | `SMTH_URL` | `http://localhost:3000`  | Override the server URL (e.g. point at a different port). |
+| `HOME`     | system default           | Determines where the session id file lives (`$HOME/.smth/session`). Override per-shell to keep parallel CLI sessions isolated. |
+
+## Tests
+
+```bash
+./run-cli-tests.sh    # or: npm run test:cli
+```
+
+The suite lives in `test-cli/`:
+* `parseArgs.test.mjs` — unit tests for the flag parser (no server).
+* `cli.test.mjs` — integration: subcommands, dispatch, JSON output, error propagation.
+* `session.test.mjs` — session-id persistence, reset, stale-id recovery, HOME isolation.
+
+Tests use `node --test` (no dev-dependencies). Each test runs in a temp `HOME` so the saved session id can't bleed between cases. The integration tests require the smth container to be reachable on `http://localhost:3000`; `run-cli-tests.sh` starts it if needed.
