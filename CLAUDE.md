@@ -66,6 +66,9 @@ Navigates to a URL, waits for it to settle, and returns structured console error
 ## browser_check_imprint
 Checks a site for a German-law-conformant imprint reachable from a footer link, and verifies the imprint page contains required §5 TMG / §18 MStV fields (default: name, address, email). Returns `{ ok, reason, imprint, also_check }`. Params: `url`, `link_text`, `required_fields`, `also_check`.
 
+## browser_check_favicon
+Navigates to a URL, scans `<link rel="icon">` / `apple-touch-icon` declarations plus the default `/favicon.ico`, fetches each, and reports whether at least one returns a valid image. Supports http(s), file:// and data: URLs. Params: `url`, `check_default`.
+
 **Always call `browser_launch` before any other browser_ tool.**
 See `doc/smth.md` for full details.
 

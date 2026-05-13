@@ -42,6 +42,7 @@ A shell CLI (`smth …`) wraps every tool. See [cli.md](cli.md).
 | `fetch_dom_content`       | [fetch_dom_content.md](fetch_dom_content.md)             |
 | `browser_check_console`   | [browser_check_console.md](browser_check_console.md)     |
 | `browser_check_imprint`   | [browser_check_imprint.md](browser_check_imprint.md)     |
+| `browser_check_favicon`   | [browser_check_favicon.md](browser_check_favicon.md)     |
 
 ## Container management
 

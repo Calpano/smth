@@ -1,0 +1,29 @@
+{
+  "input": {
+    "url": "https://ddot.it"
+  },
+  "output": {
+    "url": "https://ddot.it",
+    "favicons": [
+      {
+        "rel": "icon",
+        "href": "https://ddot.it/assets/images/favicon.svg",
+        "type": "image/x-icon",
+        "sizes": null,
+        "status": 200,
+        "contentType": "image/svg+xml",
+        "bytes": 113,
+        "ok": true
+      }
+    ],
+    "default": {
+      "url": "https://ddot.it/favicon.ico",
+      "status": 404,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 9379,
+      "ok": false
+    },
+    "ok": true,
+    "reason": null
+  }
+}

@@ -21,6 +21,7 @@ import fetchDomContent from './fetchDomContent.js';
 import seeVisual      from './seeVisual.js';
 import checkConsole   from './checkConsole.js';
 import checkImprint   from './checkImprint.js';
+import checkFavicon   from './checkFavicon.js';
 
 export const tools = [
   listDevices,
@@ -43,6 +44,7 @@ export const tools = [
   seeVisual,
   checkConsole,
   checkImprint,
+  checkFavicon,
 ];
 
 export const toolsByName = new Map(tools.map(t => [t.schema.name, t]));

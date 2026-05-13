@@ -2,8 +2,7 @@
 
 == New site-health tools
 
-Two MCP tools to support automated "is the site working?" checks
-(see `biz/doc/eval.adoc`).
+Two MCP tools to support automated "is the site working?" checks.
 
 === browser_check_console
 
