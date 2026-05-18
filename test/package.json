@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.6.0",
-    "vitest": "^4.1.2"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "vitest": "^4.1.6"
   }
 }
