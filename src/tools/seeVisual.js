@@ -53,7 +53,7 @@ export default {
       await page.evaluate(() => { document.documentElement.style.zoom = ''; });
     }
 
-    const content = [{ type: 'image', data: buffer.toString('base64'), mimeType: 'image/png' }];
+    const content = [{ type: 'image', data: Buffer.from(buffer).toString('base64'), mimeType: 'image/png' }];
     if (args.getConsoleLogs) {
       const logs = drainLogs(session);
       if (logs) content.push({ type: 'text', text: logs.trimStart() });
