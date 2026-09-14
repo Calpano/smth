@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "smth",
   "display_name": "smth — Browser MCP Server",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Give Claude a full browser: screenshots, DOM inspection, WCAG contrast analysis, and page interaction via a persistent Puppeteer/Chromium session.",
   "long_description": "smth exposes 21 MCP tools across four areas:\n\n**See** — read and analyze any web page: screenshots (`browser_see_visual`), visible text (`browser_read_text`), filtered DOM (`browser_see_dom`), fonts, colors, and WCAG contrast pairs.\n\n**Act** — drive the browser like a user: navigate, click, hover, type, switch devices.\n\n**Compare** — capture named DOM snapshots and diff them, or use `fetch_dom_content` to automatically strip shared chrome (nav, footer) and return only the unique content of a page.\n\n**Check** — answer one question about a page in a single call: console errors (`browser_check_console`), a German-law imprint (`browser_check_imprint`), a working favicon (`browser_check_favicon`).",
   "author": {

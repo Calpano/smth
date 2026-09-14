@@ -5,7 +5,7 @@ GitHub release. What each release changed is written down here, because the
 generated release notes only see pull requests and most work lands straight on
 `main`.
 
-## Unreleased
+## 1.0.7 — 2026-09-14
 
 ### The action pins say what they are pinned to
 
