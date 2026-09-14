@@ -1,6 +1,6 @@
 {
   "name": "smth",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "smth MCP tool — as reliable as Agent Smith",
   "type": "module",
   "main": "src/server.js",

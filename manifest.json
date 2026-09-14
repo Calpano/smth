@@ -2,9 +2,9 @@
   "manifest_version": "0.3",
   "name": "smth",
   "display_name": "smth — Browser MCP Server",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Give Claude a full browser: screenshots, DOM inspection, WCAG contrast analysis, and page interaction via a persistent Puppeteer/Chromium session.",
-  "long_description": "smth exposes 16 MCP tools across three areas:\n\n**See** — read and analyze any web page: screenshots (`browser_see_visual`), visible text (`browser_read_text`), filtered DOM (`browser_see_dom`), fonts, colors, and WCAG contrast pairs.\n\n**Act** — drive the browser like a user: navigate, click, hover, type, switch devices.\n\n**Compare** — capture named DOM snapshots and diff them, or use `fetch_dom_content` to automatically strip shared chrome (nav, footer) and return only the unique content of a page.",
+  "long_description": "smth exposes 21 MCP tools across four areas:\n\n**See** — read and analyze any web page: screenshots (`browser_see_visual`), visible text (`browser_read_text`), filtered DOM (`browser_see_dom`), fonts, colors, and WCAG contrast pairs.\n\n**Act** — drive the browser like a user: navigate, click, hover, type, switch devices.\n\n**Compare** — capture named DOM snapshots and diff them, or use `fetch_dom_content` to automatically strip shared chrome (nav, footer) and return only the unique content of a page.\n\n**Check** — answer one question about a page in a single call: console errors (`browser_check_console`), a German-law imprint (`browser_check_imprint`), a working favicon (`browser_check_favicon`).",
   "author": {
     "name": "Calpano",
     "url": "https://github.com/Calpano"
@@ -49,11 +49,16 @@
     { "name": "browser_click",        "description": "Click an element by id or CSS selector." },
     { "name": "browser_hover",        "description": "Hover an element and return a before/after diff." },
     { "name": "browser_type",         "description": "Type text into a form field." },
+    { "name": "browser_select_option", "description": "Pick an option from a <select> by value or visible label." },
+    { "name": "browser_press_key",    "description": "Press a key, with optional modifiers and repeat count." },
     { "name": "browser_remember_dom", "description": "Save a named DOM snapshot." },
     { "name": "browser_doms",         "description": "List all saved snapshots." },
     { "name": "browser_dom_compare",  "description": "Diff two snapshots or subtract a background snapshot." },
     { "name": "fetch_dom_content",    "description": "Open a URL, auto-detect shared chrome, return only unique page content." },
-    { "name": "browser_list_devices", "description": "List device names for browser_see_visual." }
+    { "name": "browser_list_devices", "description": "List device names for browser_see_visual." },
+    { "name": "browser_check_console", "description": "Load a URL and return console errors and uncaught page exceptions." },
+    { "name": "browser_check_imprint", "description": "Check a site for a German-law-conformant imprint and its required fields." },
+    { "name": "browser_check_favicon", "description": "Check that a site serves at least one valid favicon." }
   ],
   "user_config": {
     "chromium_path": {

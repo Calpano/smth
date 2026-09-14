@@ -6,16 +6,19 @@ A local MCP server that gives Claude a full browser: screenshots, DOM inspection
 
 ## What it does
 
-smth exposes 16 MCP tools across three areas:
+smth exposes 21 MCP tools across four areas:
 
 **See** — read and analyze any web page without interacting with it
 `browser_see_visual` · `browser_read_text` · `browser_see_dom` · `browser_see_fonts` · `browser_see_colors` · `browser_see_color_pairs`
 
-w**Act** — drive the browser like a user
-`browser_launch` · `browser_goto` · `browser_click` · `browser_hover` · `browser_type`
+**Act** — drive the browser like a user
+`browser_launch` · `browser_goto` · `browser_click` · `browser_hover` · `browser_type` · `browser_select_option` · `browser_press_key`
 
 **Compare** — capture and diff DOM snapshots
 `browser_remember_dom` · `browser_doms` · `browser_dom_compare` · `fetch_dom_content` · `browser_list_devices`
+
+**Check** — answer one question about a page in a single call
+`browser_check_console` · `browser_check_imprint` · `browser_check_favicon`
 
 ## Requirements
 
@@ -25,7 +28,7 @@ w**Act** — drive the browser like a user
 ## Installation
 
 ```bash
-git clone https://github.com/maxvolkel/smth.git
+git clone https://github.com/Calpano/smth.git
 cd smth
 docker compose up -d
 ```
@@ -123,11 +126,16 @@ Full documentation for every tool lives in [`doc/smth.md`](doc/smth.md).
 | `browser_click` | no | Clicks an element by id or CSS selector |
 | `browser_hover` | no | Hovers and returns a before/after diff |
 | `browser_type` | no | Types text into a form field |
+| `browser_select_option` | no | Picks an option from a `<select>` by value or label |
+| `browser_press_key` | no | Presses a key, with optional modifiers and repeat count |
 | `browser_remember_dom` | no | Saves a named DOM snapshot |
 | `browser_doms` | yes | Lists all saved snapshots |
 | `browser_dom_compare` | yes | Diffs two snapshots or subtracts a background |
 | `fetch_dom_content` | no | Opens a URL and returns only its foreground content |
 | `browser_see_visual` | yes | Screenshot (viewport or full page, any device) |
+| `browser_check_console` | no | Loads a URL and returns the console errors and page exceptions |
+| `browser_check_imprint` | no | Checks a site for a §5 TMG / §18 MStV conformant imprint |
+| `browser_check_favicon` | no | Checks that a site serves at least one valid favicon |
 
 ## Container management
 
@@ -154,6 +162,10 @@ that check the header: vite, webpack-dev-server and Next answer an unexpected `H
 with *"Blocked request. This host is not allowed"*, which is what rewriting the URL to
 `host.docker.internal` used to produce. `host.docker.internal` still works if you prefer
 to name the host explicitly.
+
+## Changes
+
+What each release changed is in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Privacy
 

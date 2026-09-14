@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>smth — Browser MCP Server</title>
-  <meta name="description" content="Give your agent its own browser. smth is a local MCP server with 16 tools for screenshots, DOM inspection, WCAG analysis, and page interaction via Puppeteer.">
+  <meta name="description" content="Give your agent its own browser. smth is a local MCP server with 21 tools for screenshots, DOM inspection, WCAG analysis, and page interaction via Puppeteer.">
   <meta property="og:title" content="smth — Browser MCP Server">
-  <meta property="og:description" content="Give your agent its own (phantom) browser. 16 MCP tools for screenshots, DOM inspection, WCAG contrast, and page interaction.">
+  <meta property="og:description" content="Give your agent its own (phantom) browser. 21 MCP tools for screenshots, DOM inspection, WCAG contrast, and page interaction.">
   <meta property="og:image" content="https://calpano.github.io/smth/hero-image.png">
   <meta property="og:url" content="https://calpano.github.io/smth/">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="smth — Browser MCP Server">
-  <meta name="twitter:description" content="Give your agent its own (phantom) browser. 16 MCP tools for screenshots, DOM inspection, and page interaction.">
+  <meta name="twitter:description" content="Give your agent its own (phantom) browser. 21 MCP tools for screenshots, DOM inspection, and page interaction.">
   <meta name="twitter:image" content="https://calpano.github.io/smth/hero-image.png">
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23080c10'/%3E%3Ctext x='3' y='24' font-family='monospace' font-size='20' font-weight='900' fill='%2300d4b4'%3Es%3C/text%3E%3C/svg%3E">
@@ -42,6 +42,7 @@
       --green:        #00e87a;
       --green-bg:     rgba(0,232,122,.07);
       --amber:        #ffb340;
+      --amber-bg:     rgba(255,179,64,.07);
       --mono:         'JetBrains Mono', 'Fira Code', monospace;
       --display:      'Chakra Petch', sans-serif;
       --body:         'Outfit', sans-serif;
@@ -370,6 +371,7 @@
     .feat-see .feat-icon    { background: var(--accent-bg); color: var(--accent); }
     .feat-act .feat-icon    { background: var(--purple-bg); color: var(--purple); }
     .feat-compare .feat-icon{ background: var(--green-bg);  color: var(--green);  }
+    .feat-check .feat-icon  { background: var(--amber-bg);  color: var(--amber);  }
 
     .feat-card h3 {
       font-family: var(--display); font-size: 1.15rem; font-weight: 700;
@@ -585,7 +587,7 @@
   <div class="hero-text">
     <div class="hero-pill">
       <div class="hero-pill-dot"></div>
-      MCP Server &nbsp;·&nbsp; 16 tools &nbsp;·&nbsp; MIT
+      MCP Server &nbsp;·&nbsp; 21 tools &nbsp;·&nbsp; MIT
     </div>
 
     <h1>Give your agent its own <em>(phantom)</em> browser.</h1>
@@ -736,6 +738,22 @@
         </div>
       </div>
 
+      <div class="feat-card feat-check">
+        <div class="feat-icon">
+          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <h3>Check</h3>
+        <p>Ask one question about a page and get one answer. Load a URL and collect the console errors and uncaught exceptions it produced, verify a German-law Impressum is reachable from the footer and carries its §5 TMG fields, or confirm the favicon a site declares actually resolves to an image.</p>
+        <div class="tag-row">
+          <a class="tag" href="#tool-browser_check_console">browser_check_console</a>
+          <a class="tag" href="#tool-browser_check_imprint">browser_check_imprint</a>
+          <a class="tag" href="#tool-browser_check_favicon">browser_check_favicon</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -805,7 +823,7 @@
   <div class="wrap">
     <div class="sec-head">
       <div class="sec-label">Reference</div>
-      <h2 class="sec-h2">All 16 tools</h2>
+      <h2 class="sec-h2">All 21 tools</h2>
     </div>
 
     <div class="tool-cards" id="tool-cards"></div>
@@ -988,6 +1006,26 @@
       output: 'Typed into #username',
     },
     {
+      name: 'browser_select_option',
+      cat: 'act',
+      pfx: 'browser_', action: 'select_option',
+      short: 'Pick an option from a <select> by value or label',
+      prompt: 'Set the country to Germany.',
+      input: { id: 'country', label: 'Germany' },
+      outputType: 'text',
+      output: 'Selected "Germany" (value="de") in #country',
+    },
+    {
+      name: 'browser_press_key',
+      cat: 'act',
+      pfx: 'browser_', action: 'press_key',
+      short: 'Press a key, with modifiers and repeat count',
+      prompt: 'Focus the search box and hit Enter.',
+      input: { selector: 'input[name=q]', key: 'Enter' },
+      outputType: 'text',
+      output: 'Pressed Enter on input[name=q]',
+    },
+    {
       name: 'browser_remember_dom',
       cat: 'compare',
       pfx: 'browser_', action: 'remember_dom',
@@ -1026,6 +1064,65 @@
       input: { url: 'https://quotes.toscrape.com/', prefix: 'quotes' },
       outputType: 'text',
       output: '# fetch_dom_content: https://quotes.toscrape.com/\n# peer: https://quotes.toscrape.com/login\n# background: 19 lines stripped, 105 lines remain\n# snapshots: quotes_page, quotes_peer, quotes_background\n\n<div class="quote">\n<span class="text">"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking."</span>\n<span>by Albert Einstein\n<a>(about)</a></span>\n<div class="tags">Tags:\n<a class="tag">change</a>\n<a class="tag">deep-thoughts</a>\n<a class="tag">thinking</a>\n<a class="tag">world</a></div></div>\n...',
+    },
+    {
+      name: 'browser_check_console',
+      cat: 'check',
+      pfx: 'browser_', action: 'check_console',
+      short: 'Console errors and uncaught exceptions from one page load',
+      prompt: 'Does this page log any errors?',
+      input: { url: 'https://example.com/', include: ['error', 'warning', 'pageerror'] },
+      outputType: 'json',
+      output: {
+        url: 'https://example.com/',
+        title: 'Example Domain',
+        counts: { error: 0, warning: 0, pageerror: 0 },
+        entries: [],
+      },
+    },
+    {
+      name: 'browser_check_imprint',
+      cat: 'check',
+      pfx: 'browser_', action: 'check_imprint',
+      short: 'German-law imprint reachable from the footer, with its required fields',
+      prompt: 'Does this site have a proper Impressum?',
+      input: { url: 'https://ddot.it/' },
+      outputType: 'json',
+      output: {
+        site: 'https://ddot.it/',
+        imprint: {
+          found: true,
+          link_text: 'Impressum',
+          url: 'https://ddot.it/impressum.html',
+          status: 200,
+          fields: {
+            name: { ok: true, match: 'Max Voelkel' },
+            address: { ok: true, match: 'Beispielstra\u00dfe 1, 76131 Karlsruhe' },
+            email: { ok: true, match: 'info@ddot.it' },
+          },
+        },
+        also_check: [{ label: 'Datenschutz', found: true, url: 'https://ddot.it/datenschutz.html' }],
+        ok: true,
+        reason: null,
+      },
+    },
+    {
+      name: 'browser_check_favicon',
+      cat: 'check',
+      pfx: 'browser_', action: 'check_favicon',
+      short: 'At least one declared favicon actually resolves to an image',
+      prompt: 'Is the favicon working?',
+      input: { url: 'https://ddot.it' },
+      outputType: 'json',
+      output: {
+        url: 'https://ddot.it',
+        favicons: [
+          { rel: 'icon', href: 'https://ddot.it/assets/images/favicon.svg', type: 'image/x-icon', sizes: null, status: 200, contentType: 'image/svg+xml', bytes: 113, ok: true },
+        ],
+        default: { url: 'https://ddot.it/favicon.ico', status: 404, contentType: 'text/html; charset=utf-8', bytes: 9379, ok: false },
+        ok: true,
+        reason: null,
+      },
     },
   ];
 
@@ -1108,8 +1205,9 @@
     see:     `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
     act:     `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6-6 6 6"/><path d="M6 12h12"/><path d="M8 15h2M14 15h2M8 18h2M14 18h2"/></svg>`,
     compare: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1"/><rect x="14" y="3" width="7" height="18" rx="1"/><line x1="7" y1="8" x2="17" y2="8" stroke-dasharray="2 3" opacity=".5"/><line x1="7" y1="12" x2="17" y2="12" stroke-dasharray="2 3" opacity=".5"/><line x1="7" y1="16" x2="17" y2="16" stroke-dasharray="2 3" opacity=".5"/></svg>`,
+    check:   `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg>`,
   };
-  const CAT_COLOR = { see: 'var(--accent)', act: 'var(--purple)', compare: 'var(--green)' };
+  const CAT_COLOR = { see: 'var(--accent)', act: 'var(--purple)', compare: 'var(--green)', check: 'var(--amber)' };
 
   function renderTool(tool) {
     const icon = tool.cat ? `<span class="tc-cat" style="color:${CAT_COLOR[tool.cat]}">${CAT_ICON[tool.cat]}</span>` : '';
