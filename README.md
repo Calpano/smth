@@ -142,15 +142,18 @@ After a `--force-recreate`, the MCP session token is invalidated. The first tool
 
 ## Accessing a local dev server
 
-Docker cannot reach the host's `localhost`. Use `host.docker.internal` instead:
+Use the URL you would type into your own browser:
 
 ```
-# Wrong
 browser_launch url="http://localhost:4000/"
-
-# Correct
-browser_launch url="http://host.docker.internal:4000/"
 ```
+
+The browser inside the container resolves `localhost` and `127.0.0.1` to the host, so
+the address and the `Host` header stay as you wrote them. That matters for dev servers
+that check the header: vite, webpack-dev-server and Next answer an unexpected `Host`
+with *"Blocked request. This host is not allowed"*, which is what rewriting the URL to
+`host.docker.internal` used to produce. `host.docker.internal` still works if you prefer
+to name the host explicitly.
 
 ## Privacy
 

@@ -3,7 +3,21 @@
 import puppeteer from 'puppeteer-core';
 import { CHROMIUM_PATH } from '../config.js';
 import { browserSessions } from '../state.js';
-import { resolveTarget } from './navigate.js';
+import { gotoPage } from './navigate.js';
+
+// What the host is called from inside the container, and what `localhost` is made
+// to mean.
+//
+// Chromium is told to resolve the loopback names to the host rather than the URL
+// being rewritten to this name, and the difference is the whole point: a rewritten
+// URL carries a rewritten `Host` header, and every dev server with a host allowlist
+// — vite, webpack-dev-server, Next — answers that with "Blocked request. This host
+// is not allowed." So the URL and the header stay exactly as the caller wrote them,
+// and only the DNS answer changes. `http://localhost:5173/` now works from here.
+//
+// `host.docker.internal` is Docker Desktop's own name for the host; on Linux it is
+// the `extra_hosts: host-gateway` line in docker-compose.yml that supplies it.
+const HOST_RULES = 'MAP localhost host.docker.internal, MAP 127.0.0.1 host.docker.internal';
 
 // Launch (or relaunch) a browser for the given MCP session and open the URL.
 // Returns a human-readable status string used by browser_launch's response.
@@ -15,36 +29,26 @@ export async function launchBrowser(sessionId, url) {
   }
   const browser = await puppeteer.launch({
     executablePath: CHROMIUM_PATH,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage', '--disable-gpu', '--allow-file-access-from-files'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--allow-file-access-from-files',
+      `--host-resolver-rules=${HOST_RULES}`,
+    ],
     headless: true,
   });
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 720 });
 
-  const resolved = resolveTarget(url);
-  let finalUrl = resolved;
-  try {
-    await page.goto(resolved, { waitUntil: 'networkidle0', timeout: 30000 });
-  } catch (err) {
-    const isConnRefused = err.message && (
-      err.message.includes('ERR_CONNECTION_REFUSED') ||
-      err.message.includes('ECONNREFUSED')
-    );
-    const isLocalhost = /^https?:\/\/localhost[:/]/i.test(resolved);
-    if (isConnRefused && isLocalhost) {
-      finalUrl = resolved.replace(/^(https?:\/\/)localhost([:/])/i, '$1host.docker.internal$2');
-      await page.goto(finalUrl, { waitUntil: 'networkidle0', timeout: 30000 });
-    } else {
-      throw err;
-    }
-  }
+  await gotoPage(page, url);
 
   const consoleLogs = [];
   attachConsoleListeners(page, consoleLogs);
   browserSessions.set(sessionId, { browser, page, snapshots: new Map(), consoleLogs });
   const title = await page.title();
-  const note = finalUrl !== resolved ? ` (localhost unreachable; use host.docker.internal)` : '';
-  return `Launched: ${title}${note}`;
+  return `Launched: ${title}`;
 }
 
 // Attach the console + pageerror listeners that push structured records into

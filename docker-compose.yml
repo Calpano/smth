@@ -17,6 +17,11 @@ services:
     build: .
     image: smth:latest
     container_name: smth
+    # What `localhost` is mapped to for the browser -- see HOST_RULES in
+    # src/browser/session.js. Docker Desktop supplies the name itself; on Linux this
+    # line is what makes it resolve, and without it a localhost URL cannot be opened.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "${SMTH_PORT:-3000}:3000"
     volumes:

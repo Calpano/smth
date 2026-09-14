@@ -1,5 +1,5 @@
 import { drainLogs } from '../browser/session.js';
-import { resolveTarget, gotoPage } from '../browser/navigate.js';
+import { gotoPage } from '../browser/navigate.js';
 
 export default {
   schema: {
@@ -17,10 +17,9 @@ export default {
   },
   async handler({ session }, args) {
     const { page } = session;
-    const finalUrl = await gotoPage(page, args.url);
+    await gotoPage(page, args.url);
     const title = await page.title();
-    const note = finalUrl !== resolveTarget(args.url) ? ` (localhost unreachable; use host.docker.internal)` : '';
     const logs = args.getConsoleLogs ? drainLogs(session) : '';
-    return { content: [{ type: 'text', text: `Navigated to: ${title}${note}` + logs }] };
+    return { content: [{ type: 'text', text: `Navigated to: ${title}` + logs }] };
   },
 };

@@ -28,26 +28,34 @@ export function resolveTarget(target) {
   return `file://${join(PAGES_DIR, target)}`;
 }
 
-// Navigate an existing page to a URL, handling the localhost→host.docker.internal
-// fallback when the host's loopback is unreachable from inside the container.
-// Returns the final URL navigated to. `waitUntil` and `timeout` are forwarded
-// to Puppeteer (defaults: networkidle0 / 30s).
+// The two waits that mean "until the network goes quiet". They are the ones that
+// cannot be asked of a page that keeps a connection open on purpose.
+const IDLE = new Set(['networkidle0', 'networkidle2']);
+
+// Navigate an existing page to a URL. Returns the final URL navigated to.
+// `waitUntil` and `timeout` are forwarded to Puppeteer (defaults: networkidle0 / 30s).
+//
+// An idle wait is done in two steps rather than handed to `page.goto`, because a
+// page with a stream in it — server-sent events, a websocket, a long poll — never
+// goes quiet, and asking `goto` to wait for that turns every such page into a
+// 30-second timeout and no page at all. Live-reloading dev servers are the common
+// case: vite, webpack and SvelteKit all hold a connection open, and so does any
+// app with an /events endpoint. So the navigation is committed on its own terms
+// and the quiet is waited for separately, with the wait — not the page — being
+// what is given up on.
 export async function gotoPage(page, url, { waitUntil = 'networkidle0', timeout = 30000 } = {}) {
   const resolved = resolveTarget(url);
-  try {
+  if (!IDLE.has(waitUntil)) {
     await page.goto(resolved, { waitUntil, timeout });
     return resolved;
-  } catch (err) {
-    const isConnRefused = err.message && (
-      err.message.includes('ERR_CONNECTION_REFUSED') ||
-      err.message.includes('ECONNREFUSED')
-    );
-    const isLocalhost = /^https?:\/\/localhost[:/]/i.test(resolved);
-    if (isConnRefused && isLocalhost) {
-      const fallback = resolved.replace(/^(https?:\/\/)localhost([:/])/i, '$1host.docker.internal$2');
-      await page.goto(fallback, { waitUntil, timeout });
-      return fallback;
-    }
-    throw err;
   }
+  await page.goto(resolved, { waitUntil: 'domcontentloaded', timeout });
+  await page
+    .waitForNetworkIdle({
+      idleTime: 500,
+      concurrency: waitUntil === 'networkidle2' ? 2 : 0,
+      timeout: Math.min(timeout, 10000),
+    })
+    .catch(() => {});
+  return resolved;
 }

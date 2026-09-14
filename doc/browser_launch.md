@@ -13,7 +13,8 @@ Returns: page title string.
 ### URL formats accepted
 
 - `https://` URL — fetched directly
-- `http://host.docker.internal:<port>/path` — local dev server (use this instead of `localhost`)
+- `http://localhost:<port>/path` — a dev server on your machine; the browser resolves the loopback names to the host, so the `Host` header stays `localhost` and a host allowlist accepts it
+- `http://host.docker.internal:<port>/path` — the same host, named explicitly
 - Absolute host path: `/Users/you/project/index.html`
 - `file://` URL: `file:///Users/you/project/index.html`
 - Relative path (resolved under the `/pages` mount): `index.html`, `dist/app/index.html`

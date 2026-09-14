@@ -59,15 +59,16 @@ After `--force-recreate`, the MCP SSE session token is invalidated. The first to
 
 ### Accessing a local dev server
 
-Docker cannot reach the host's `localhost`. Use `host.docker.internal` instead:
+Use the URL you would type into your own browser:
 
 ```
-# Wrong — connection refused
 http://localhost:4000/page.html
-
-# Correct
-http://host.docker.internal:4000/page.html
 ```
+
+The browser resolves `localhost` and `127.0.0.1` to the host, so the address and the
+`Host` header arrive as you wrote them — which is what a dev server with a host
+allowlist (vite, webpack-dev-server, Next) needs in order to answer at all.
+`host.docker.internal` also works, and names the host explicitly.
 
 ### MCP tools only appear if the server was running at session start
 
