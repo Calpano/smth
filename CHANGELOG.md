@@ -5,6 +5,31 @@ GitHub release. What each release changed is written down here, because the
 generated release notes only see pull requests and most work lands straight on
 `main`.
 
+## Unreleased
+
+### Every open security advisory cleared
+
+`npm audit` reports zero vulnerabilities in both lockfiles, down from 38 open
+Dependabot alerts. Every one was transitive — nothing smth depends on directly —
+so only the lockfiles changed; no declared range in either `package.json` moved.
+`hono` 4.12.33 → 4.13.7, `@hono/node-server` 1.19.13 → 2.1.1 (a range the MCP SDK
+declares itself, as `^1.19.9 || ^2.0.5`), `fast-uri` 3.1.5 → 3.1.7, `ip-address`
+10.2.0 → 10.7.0, `qs` 6.15.2 → 6.16.0, and in the test lockfile `vitest` 4.1.11,
+`postcss` 8.5.28 and `nanoid` 3.3.19.
+
+Of the 38, one was reachable in the shipped image: `qs`, which Express uses to
+parse query strings. The rest were not — `hono` ships in the image but the server
+never loads it (the SDK imports only `getRequestListener` from
+`@hono/node-server`, which does not pull the framework), `fast-uri` is reached
+through ajv, which never parses a URL because no tool schema declares a `uri`
+format, and `ip-address` comes via `express-rate-limit`, which smth never
+instantiates. The 21 alerts against `test/package-lock.json` were never in the
+image at all: the Dockerfile installs with `npm ci --omit=dev` and the test deps
+live in a separate `test/package.json`.
+
+Dependabot now groups security updates, so the next advisory wave arrives as one
+pull request per lockfile instead of the thirteen this one opened.
+
 ## 1.0.5 — 2026-09-14
 
 ### A dev server on `localhost` can finally be opened

@@ -11,6 +11,11 @@ updates:
       production-minor-patch:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+      # Without this, every advisory opens its own PR: the 1.0.5 wave produced
+      # thirteen, all of them transitive and all fixed by one lockfile refresh.
+      production-security:
+        applies-to: security-updates
+        patterns: ["*"]
     # Major bumps (express 4→5, puppeteer-core 22→24) need manual review,
     # but still surface as individual PRs rather than being silently skipped.
 
@@ -23,6 +28,9 @@ updates:
     open-pull-requests-limit: 3
     groups:
       test:
+        patterns: ["*"]
+      test-security:
+        applies-to: security-updates
         patterns: ["*"]
 
   # Workflow actions — keep hash-pins fresh.
