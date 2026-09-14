@@ -5,6 +5,39 @@ GitHub release. What each release changed is written down here, because the
 generated release notes only see pull requests and most work lands straight on
 `main`.
 
+## Unreleased
+
+### The action pins say what they are pinned to
+
+Every `uses:` in both workflows is pinned by commit hash, and every comment
+naming the version that hash stood for was wrong — by one to three major
+versions. `actions/checkout` and `actions/upload-artifact` read `# v4` and were
+v7.0.1; `actions/configure-pages` read `# v5` and was v6.0.0;
+`upload-pages-artifact` read `# v3` and was v5.0.0; `deploy-pages` read `# v4`
+and was v5.0.0; `action-gh-release` read `# v2` and was v3.0.2. Dependabot had
+been keeping the hashes current and leaving the hand-written comments behind,
+which is the failure mode hash pinning invites: the hash is the security
+control, the comment is the only thing a reader can understand, and nothing
+checked that they agreed. Each comment now names the exact release, and each
+workflow says so once at the top.
+
+`action-gh-release` moves to v3.0.3 and `deploy-pages` to v5.0.1 — both patch
+bumps, and both hashes verified against the upstream tag list rather than taken
+on trust.
+
+### puppeteer-core 25.3.0 → 25.10.0
+
+Among the fixes: a websocket connection that dies without a close is now
+detected, which is the transport smth holds open for the lifetime of a session.
+
+### The bundle no longer claims to run on Node 18
+
+`manifest.json` advertised `node >=18.0.0` while puppeteer-core 25.x has
+required `>=22.12.0` the whole time, so the compatibility line the installer
+reads had been wrong since 1.0.0. Both it and a new `engines` field in
+`package.json` now say `>=22.12.0`. The Docker image was never affected — it
+runs node 26.
+
 ## 1.0.6 — 2026-09-14
 
 ### Every open security advisory cleared

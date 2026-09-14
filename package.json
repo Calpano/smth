@@ -3,6 +3,9 @@
   "version": "1.0.6",
   "description": "smth MCP tool — as reliable as Agent Smith",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "main": "src/server.js",
   "bin": {
     "smth": "bin/smth.js"
@@ -16,6 +19,6 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "express": "^5.0.0",
-    "puppeteer-core": "^25.3.0"
+    "puppeteer-core": "^25.10.0"
   }
 }

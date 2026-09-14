@@ -15,8 +15,11 @@ jobs:
   bundle:
     runs-on: ubuntu-latest
     steps:
+      # Actions are pinned by commit hash, never by tag: a tag can be moved to
+      # point at different code, a hash cannot. The comment after each one is the
+      # release that hash *is* -- keep the two in step when bumping.
       - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4 (hash-pinned for security)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Build smth.mcpb bundle
         run: |
@@ -29,7 +32,7 @@ jobs:
             LICENSE
 
       - name: Upload bundle as artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v4 (hash-pinned for security)
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: smth-mcpb
           path: smth.mcpb
@@ -55,7 +58,7 @@ jobs:
 
       - name: Create release and attach bundle
         if: github.event_name == 'push'
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v2 (hash-pinned for security)
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           files: smth.mcpb
           body_path: release-body.md
