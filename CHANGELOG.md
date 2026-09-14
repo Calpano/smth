@@ -5,7 +5,7 @@ GitHub release. What each release changed is written down here, because the
 generated release notes only see pull requests and most work lands straight on
 `main`.
 
-## Unreleased
+## 1.0.6 — 2026-09-14
 
 ### Every open security advisory cleared
 
