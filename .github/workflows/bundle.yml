@@ -34,9 +34,30 @@ jobs:
           name: smth-mcpb
           path: smth.mcpb
 
+      # The generated notes only see pull requests, and most work lands straight on
+      # main, so the section CHANGELOG.md carries for this tag goes above them.
+      - name: Extract this tag's changelog section
+        if: github.event_name == 'push'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          {
+            awk -v v="$version" '
+              $0 ~ "^## " v " " || $0 == "## " v { found = 1; next }
+              found && /^## / { exit }
+              found { print }
+            ' CHANGELOG.md
+          } > release-body.md
+          if [ ! -s release-body.md ]; then
+            echo "No CHANGELOG.md section for $version" >&2
+            exit 1
+          fi
+          cat release-body.md
+
       - name: Create release and attach bundle
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v2 (hash-pinned for security)
         with:
           files: smth.mcpb
+          body_path: release-body.md
           generate_release_notes: true
+          append_body: true
