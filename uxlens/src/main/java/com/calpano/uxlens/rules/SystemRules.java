@@ -100,6 +100,8 @@ public final class SystemRules {
         private static final double REQUIRED_PEAK = 7.0;
         /** Enough text to be judging a page rather than a fragment. */
         private static final int MIN_TEXT_ELEMENTS = 6;
+        /** Share of the page's text whose colour must be resolvable before judging the range. */
+        private static final double MIN_RESOLVED_SHARE = 0.5;
 
         @Override public String id() { return "no-tonal-anchor"; }
 
@@ -113,10 +115,14 @@ public final class SystemRules {
         }
 
         @Override public List<Finding> check(Analysis a) {
-            List<Elem> texts = a.snapshot().textElements().stream()
-                    .filter(e -> e.textContrast() > 0)
-                    .toList();
+            List<Elem> all = a.snapshot().textElements();
+            List<Elem> texts = all.stream().filter(e -> e.textContrast() > 0).toList();
             if (texts.size() < MIN_TEXT_ELEMENTS) return List.of();
+            // If most of the page's colours could not be resolved, the strongest contrast
+            // found says nothing about the page -- only about the parser. Staying silent is
+            // the honest answer; this rule once reported 1.00:1 on a page whose colours it
+            // simply could not read.
+            if (texts.size() < all.size() * MIN_RESOLVED_SHARE) return List.of();
 
             Elem strongest = texts.stream()
                     .max(Comparator.comparingDouble(Elem::textContrast)).orElseThrow();

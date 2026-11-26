@@ -38,6 +38,8 @@ public final class BokRules {
         private static final double SEPARATION = 1.08;
         /** Big enough to be a panel rather than a highlighted word. */
         private static final double MIN_AREA = 4000;
+        /** At or below this the two surfaces are the same colour, which is not a defect. */
+        private static final double IDENTICAL = 1.002;
 
         @Override public String id() { return "invisible-surface"; }
 
@@ -69,6 +71,14 @@ public final class BokRules {
                 Rgba painted = own.over(behind);
                 double separation = painted.contrastRatio(behind);
                 if (separation >= SEPARATION) continue;
+                // Exactly the same colour is the same surface -- a grid row carrying the app's
+                // own background, which is ordinary and costs nothing. The defect is a surface
+                // that tried to differ and failed, so there has to be an attempt to detect.
+                if (separation <= IDENTICAL) continue;
+                // And it has to look like something meant to read as a panel.
+                boolean looksLikeAPanel = e.borderRadius >= 2
+                        || (e.padTop >= 8 && e.padLeft >= 8);
+                if (!looksLikeAPanel) continue;
 
                 out.add(finding(Severity.LOW, String.format(
                         "%s paints a %s surface on a %s background -- %.3f:1, which is no "

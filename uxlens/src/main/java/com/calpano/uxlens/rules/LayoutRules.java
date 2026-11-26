@@ -75,6 +75,9 @@ public final class LayoutRules {
 
     /** Text taller than the box that holds it, with the overflow hidden. */
     public static final class ClippedText implements Rule {
+        /** Overflow below this is line-height rounding rather than content. */
+        private static final int MIN_HIDDEN_PX = 4;
+
         @Override public String id() { return "clipped-text"; }
 
         @Override public String title() { return "Text is clipped by its container"; }
@@ -90,6 +93,9 @@ public final class LayoutRules {
             for (Elem e : a.snapshot().elements) {
                 if (!e.textClipped) continue;
                 int hidden = e.scrollHeight - e.clientHeight;
+                // Sub-pixel line-height rounding leaves a pixel or two of phantom overflow on
+                // perfectly fine controls. Hidden content means a line of it, not a rounding.
+                if (hidden < Math.max(MIN_HIDDEN_PX, e.fontSize * 0.5)) continue;
                 boolean deliberate = e.lines != null && e.lines.lineCount <= 2 && hidden < e.fontSize * 1.2;
                 out.add(finding(deliberate ? Severity.LOW : Severity.HIGH, String.format(
                         "%s hides %dpx of its content (%dpx of text in a %dpx box).",
@@ -228,8 +234,10 @@ public final class LayoutRules {
         @Override public List<Finding> check(Analysis a) {
             double min = a.viewport().mobile() ? a.config().minTouchTargetPx : a.config().minPointerTargetPx;
             List<Finding> out = new ArrayList<>();
-            for (Elem e : a.snapshot().interactiveElements()) {
-                if (e.disabled || e.childCount > 2) continue;
+            for (Elem e : a.snapshot().elements) {
+                // Actionable, not merely interactive: cursor:pointer inherits, so the <svg>
+                // and <path> drawn inside a button look interactive and are not targets.
+                if (!e.actionable || e.disabled || e.childCount > 2) continue;
                 if ("label".equals(e.tag)) continue;              // focuses its field; not a target itself
                 if (isInlineLink(a.snapshot(), e)) continue;      // WCAG exempts links inside prose
                 double shortest = Math.min(e.w, e.h);

@@ -20,34 +20,72 @@
 
   /* ---------- color ---------- */
 
+  /* Resolving a colour is the browser's job, not a regular expression's.
+     getComputedStyle hands back whatever notation the stylesheet used, and modern design
+     systems are written in oklch() -- shadcn and Tailwind v4 among them. A parser that
+     understands only rgb() and hex returns null for every colour on such a page, and then
+     every contrast check silently does not run. So the fast paths stay for the common
+     notations, and anything else is painted onto a one-pixel canvas and read back, which
+     works for oklch, lab, color(), color-mix() and named colours alike. */
+  const colorCanvas = document.createElement('canvas');
+  colorCanvas.width = 1;
+  colorCanvas.height = 1;
+  const colorCtx = colorCanvas.getContext('2d', { willReadFrequently: true });
+  const colorCache = new Map();
+
   function parseColor(s) {
     if (!s) return null;
     s = s.trim();
+    if (!s || s === 'none') return null;
     if (s === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
+    if (colorCache.has(s)) return colorCache.get(s);
+    let value = parseSimpleColor(s);
+    if (value === null) value = paintAndRead(s);
+    colorCache.set(s, value);
+    return value;
+  }
+
+  /* The notations a browser hands back most of the time, parsed directly because the
+     canvas round trip is comparatively slow and this runs thousands of times. */
+  function parseSimpleColor(s) {
     let m = s.match(/^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)\s*(?:[,/]\s*([\d.%]+)\s*)?\)$/i);
     if (m) {
-      let a = m[4] === undefined ? 1 : (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : parseFloat(m[4]));
+      const a = m[4] === undefined ? 1
+          : (m[4].endsWith('%') ? parseFloat(m[4]) / 100 : parseFloat(m[4]));
       return { r: +m[1], g: +m[2], b: +m[3], a: a };
     }
     m = s.match(/^#([0-9a-f]{3,8})$/i);
     if (m) {
       const h = m[1];
       const ex = h.length <= 4 ? h.split('').map(c => c + c).join('') : h;
+      if (ex.length !== 6 && ex.length !== 8) return null;
       return {
-        r: parseInt(ex.slice(0, 2), 16), g: parseInt(ex.slice(2, 4), 16), b: parseInt(ex.slice(4, 6), 16),
+        r: parseInt(ex.slice(0, 2), 16),
+        g: parseInt(ex.slice(2, 4), 16),
+        b: parseInt(ex.slice(4, 6), 16),
         a: ex.length >= 8 ? parseInt(ex.slice(6, 8), 16) / 255 : 1
       };
     }
-    // color(), lab(), oklch() etc. -- let the browser normalize it for us
-    try {
-      const probe = document.createElement('span');
-      probe.style.color = s;
-      document.body.appendChild(probe);
-      const norm = getComputedStyle(probe).color;
-      document.body.removeChild(probe);
-      if (norm && norm !== s) return parseColor(norm);
-    } catch (e) { /* ignore */ }
     return null;
+  }
+
+  /* Paints the colour and reads the pixel back. An unparseable value leaves fillStyle
+     untouched, so it is detected by trying it against two different starting values. */
+  function paintAndRead(value) {
+    try {
+      colorCtx.fillStyle = '#000000';
+      colorCtx.fillStyle = value;
+      const fromBlack = colorCtx.fillStyle;
+      colorCtx.fillStyle = '#ffffff';
+      colorCtx.fillStyle = value;
+      if (colorCtx.fillStyle !== fromBlack) return null;
+      colorCtx.clearRect(0, 0, 1, 1);
+      colorCtx.fillRect(0, 0, 1, 1);
+      const d = colorCtx.getImageData(0, 0, 1, 1).data;
+      return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+    } catch (e) {
+      return null;
+    }
   }
 
   function over(fg, bg) { // alpha-composite fg over opaque-ish bg
