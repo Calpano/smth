@@ -69,23 +69,51 @@
     return null;
   }
 
-  /* Paints the colour and reads the pixel back. An unparseable value leaves fillStyle
-     untouched, so it is detected by trying it against two different starting values. */
+  /* Resolves a colour by painting it over two known opaque backdrops and solving.
+     Reading a half-transparent pixel back directly does not work: the canvas stores
+     premultiplied values, and un-premultiplying an 8-bit sample quantises badly at low
+     alpha -- rgba(200,100,50,0.1) comes back as 196,98,49. Painted over black the sample is
+     colour*alpha and over white it is colour*alpha + 255*(1-alpha), which gives alpha from
+     the difference and the colour from the first. Both samples are fully opaque, so neither
+     is quantised, and the composite -- which is the quantity every contrast check actually
+     uses -- is exact. */
   function paintAndRead(value) {
     try {
+      // An unparseable value leaves fillStyle untouched, so trying it against two different
+      // starting values tells us whether the browser understood it.
       colorCtx.fillStyle = '#000000';
       colorCtx.fillStyle = value;
       const fromBlack = colorCtx.fillStyle;
       colorCtx.fillStyle = '#ffffff';
       colorCtx.fillStyle = value;
       if (colorCtx.fillStyle !== fromBlack) return null;
-      colorCtx.clearRect(0, 0, 1, 1);
-      colorCtx.fillRect(0, 0, 1, 1);
-      const d = colorCtx.getImageData(0, 0, 1, 1).data;
-      return { r: d[0], g: d[1], b: d[2], a: d[3] / 255 };
+
+      const onBlack = paintOver(value, '#000000');
+      const onWhite = paintOver(value, '#ffffff');
+
+      let lost = 0;
+      for (let i = 0; i < 3; i++) lost += onWhite[i] - onBlack[i];
+      const alpha = Math.max(0, Math.min(1, 1 - (lost / 3) / 255));
+      if (alpha < 0.002) return { r: 0, g: 0, b: 0, a: 0 };
+      return {
+        r: Math.min(255, onBlack[0] / alpha),
+        g: Math.min(255, onBlack[1] / alpha),
+        b: Math.min(255, onBlack[2] / alpha),
+        a: alpha
+      };
     } catch (e) {
       return null;
     }
+  }
+
+  function paintOver(value, backdrop) {
+    colorCtx.clearRect(0, 0, 1, 1);
+    colorCtx.fillStyle = backdrop;
+    colorCtx.fillRect(0, 0, 1, 1);
+    colorCtx.fillStyle = value;
+    colorCtx.fillRect(0, 0, 1, 1);
+    const d = colorCtx.getImageData(0, 0, 1, 1).data;
+    return [d[0], d[1], d[2]];
   }
 
   function over(fg, bg) { // alpha-composite fg over opaque-ish bg
