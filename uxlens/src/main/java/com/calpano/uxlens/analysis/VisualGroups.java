@@ -57,6 +57,7 @@ public final class VisualGroups {
         Map<Integer, List<Elem>> byParent = new HashMap<>();
         for (Elem e : snapshot.elements) {
             if (e.parentId < 0) continue;
+            if (e.fixedLayer) continue;
             if (e.position != null && (e.position.equals("absolute") || e.position.equals("fixed"))) continue;
             byParent.computeIfAbsent(e.parentId, k -> new ArrayList<>()).add(e);
         }
@@ -114,6 +115,7 @@ public final class VisualGroups {
         double minWidth = snapshot.viewportWidth() * 0.5;
         List<Elem> blocks = new ArrayList<>();
         for (Elem e : snapshot.elements) {
+            if (e.fixedLayer) continue;
             if (e.w < minWidth || e.h < 24) continue;
             if (depth(snapshot, e) > 3) continue;
             blocks.add(e);
@@ -161,9 +163,11 @@ public final class VisualGroups {
      */
     public static List<Elem> content(PageSnapshot snapshot) {
         return snapshot.elements.stream()
+                // The page's own surface is a backdrop, not something to look at.
+                .filter(e -> !"body".equals(e.tag) && !"html".equals(e.tag) && !"main".equals(e.tag))
                 .filter(e -> e.hasOwnText() || e.img != null
                         || (e.interactive && e.childCount == 0)
-                        || (e.hasBackgroundImage && e.area() > 400)
+                        || (e.hasBackgroundImage && e.childCount == 0 && e.area() > 400)
                         // a painted leaf block: a rule, a swatch, a divider, a coloured band
                         || (e.childCount == 0 && e.area() > 400 && paintsItsOwnSurface(e)))
                 .toList();

@@ -141,6 +141,9 @@ public final class Prominence {
             double score = comps.values().stream().mapToDouble(Double::doubleValue).sum();
             // An interactive element reads louder than inert content of the same weight.
             if (e.interactive) score *= 1.08;
+            // A washed-out element is quiet however large it is: a 30%-opacity watermark
+            // the size of a headline does not compete with the headline.
+            score *= snapshot.effectiveOpacity(e);
             scored.add(new Scored(e, round(score), comps, isolations.get(i), contrasts.get(i),
                     e.rect().intersects(fold)));
         }

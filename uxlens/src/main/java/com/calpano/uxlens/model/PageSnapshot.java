@@ -14,6 +14,14 @@ public class PageSnapshot {
     public int innerWidth, innerHeight;
     public double devicePixelRatio = 1;
     public int scrollWidth, scrollHeight;
+    /**
+     * How far the page can actually be scrolled sideways, measured by trying it.
+     *
+     * <p>{@code scrollWidth} does not answer this: a fixed element wider than the viewport
+     * inflates it, and under mobile emulation {@code window.innerWidth} too, while leaving
+     * the page unscrollable. Only moving the viewport settles it.
+     */
+    public int maxScrollX;
     public String documentBackground;
     public String prefersColorScheme;
     /** True when the page had more elements than the probe's cap. */
@@ -84,5 +92,23 @@ public class PageSnapshot {
                 .max(java.util.Comparator.comparingDouble(Elem::typographicWeight));
     }
 
-    public boolean hasHorizontalOverflow() { return scrollWidth > viewportWidth() + 1; }
+    /** True when a visitor can actually scroll the page sideways. */
+    public boolean hasHorizontalOverflow() { return maxScrollX > 1; }
+
+    /**
+     * How opaque an element actually renders: the product of its own opacity and every
+     * ancestor's.
+     *
+     * <p>{@code opacity} is not an inherited property, so a child of a 30% watermark
+     * reports 1.0 while painting at 0.3. Anything judging how loud an element is, or
+     * whether it collides with another, has to use this rather than the raw value.
+     */
+    public double effectiveOpacity(Elem e) {
+        double acc = 1;
+        for (Elem cur = e; cur != null; cur = cur.parentId < 0 ? null : byId(cur.parentId)) {
+            acc *= cur.opacity;
+            if (acc < 0.001) break;
+        }
+        return acc;
+    }
 }

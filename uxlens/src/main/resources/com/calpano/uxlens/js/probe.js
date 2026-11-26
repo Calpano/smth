@@ -169,6 +169,11 @@
 
   const out = [];
   const idOf = new Map();
+  /* Whether an element sits in a viewport-pinned layer. `position` is per element, so a
+     static child of a fixed <footer> reports "static" while painting in a layer that does
+     not live in document space at all. Carried down the tree: the walker is in document
+     order, so a parent is always recorded before its children. */
+  const fixedLayer = new WeakMap();
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
   const sx = window.scrollX, sy = window.scrollY;
 
@@ -182,6 +187,10 @@
         tag === 'HEAD' || tag === 'META' || tag === 'LINK' || tag === 'TITLE') continue;
 
     const st = getComputedStyle(el);
+    const inFixedLayer = (el.parentElement && fixedLayer.get(el.parentElement) === true)
+        || st.position === 'fixed' || st.position === 'sticky';
+    fixedLayer.set(el, inFixedLayer);
+
     if (st.display === 'none' || st.visibility === 'hidden' || st.visibility === 'collapse') continue;
     const opacity = parseFloat(st.opacity);
     if (!(opacity > 0.01)) continue;
@@ -236,6 +245,9 @@
       // layout participation
       display: st.display,
       position: st.position,
+      /* True when this element paints in a viewport-pinned layer, so its document
+         coordinates say nothing about what it sits on top of. */
+      fixedLayer: inFixedLayer,
       flexDirection: st.display.includes('flex') ? st.flexDirection : null,
       zIndex: st.zIndex === 'auto' ? 0 : (parseInt(st.zIndex, 10) || 0),
       opacity: +opacity.toFixed(3),
@@ -272,6 +284,10 @@
                     st.textOverflow === 'ellipsis' || st.webkitLineClamp !== 'none')
                    && el.scrollHeight > el.clientHeight + 1,
       childCount: el.children.length,
+      /* How many boxes this element actually paints. An inline element that wraps paints
+         one per line, and its bounding rect is their union -- a rectangle covering text
+         that belongs to its neighbours. Anything comparing geometry has to know. */
+      clientRectCount: el.getClientRects().length,
       lines: null,
       img: null
     };
@@ -297,6 +313,20 @@
 
   /* ---------- page level ---------- */
 
+  /* Whether the page really scrolls sideways, asked by trying it.
+     scrollWidth is not the answer: a fixed element wider than the viewport inflates
+     documentElement.scrollWidth (and, under mobile emulation, window.innerWidth too)
+     while creating no scrollable area at all. The only trustworthy test is whether the
+     viewport actually moves. */
+  function measureMaxScrollX() {
+    const before = window.scrollX;
+    window.scrollTo(1e7, window.scrollY);
+    const max = window.scrollX;
+    window.scrollTo(before, window.scrollY);
+    return max;
+  }
+  const maxScrollX = measureMaxScrollX();
+
   const de = document.documentElement;
   return {
     url: location.href,
@@ -305,6 +335,7 @@
     innerHeight: window.innerHeight,
     devicePixelRatio: window.devicePixelRatio,
     scrollWidth: Math.max(de.scrollWidth, document.body.scrollWidth),
+    maxScrollX: maxScrollX,
     scrollHeight: Math.max(de.scrollHeight, document.body.scrollHeight),
     documentBackground: css(effectiveBackground(document.body).color),
     prefersColorScheme: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',

@@ -33,6 +33,14 @@ public class Elem {
     public double gap, columnGap;
 
     public String display, position, flexDirection;
+    /**
+     * True when this element, or an ancestor, is {@code position:fixed} or {@code sticky}.
+     *
+     * <p>Such an element paints in a layer pinned to the viewport, so its document
+     * coordinates do not describe what it sits above or beside. A fixed footer bar
+     * "overlaps" every paragraph it scrolls past, and means nothing by it.
+     */
+    public boolean fixedLayer;
     public int zIndex;
     public double opacity = 1;
     public String overflowX, overflowY, textAlign;
@@ -64,6 +72,12 @@ public class Elem {
     public int scrollWidth, scrollHeight, clientWidth, clientHeight;
     public boolean textClipped;
     public int childCount;
+    /**
+     * How many boxes this element paints. Greater than one for an inline element that
+     * wraps across lines, whose bounding rect is then the union of its line boxes and
+     * describes a shape it never paints.
+     */
+    public int clientRectCount = 1;
 
     public Lines lines;
     public Img img;
@@ -105,6 +119,9 @@ public class Elem {
     }
 
     public boolean hasOwnText() { return text != null && !text.isBlank(); }
+
+    /** True when {@link #rect()} is the union of several line boxes rather than a real shape. */
+    public boolean rectIsUnionOfLineBoxes() { return clientRectCount > 1; }
 
     /** True when the element paints a visible border on all sides. */
     public boolean hasVisibleBorder() {

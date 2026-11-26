@@ -137,6 +137,20 @@ fails AA; reading the stylesheet tells you 21:1.
 **Near-misses only.** A 2px offset is a bug; a 40px offset is a layout decision. Every
 alignment rule reports offsets *inside* a tolerance window and stays silent outside it.
 
+**Pinned layers are not part of the document.** A `position:fixed` bar scrolls over every
+paragraph on the page and means nothing by it, so the probe marks every element in a fixed
+or sticky subtree — including the `static` children of a fixed ancestor, which report their
+own position as `static` — and the document-space rules leave them alone.
+
+**A wrapped inline element's bounding box is a shape it never paints.** `<a>` text that
+wraps across two lines returns the *union* of its line boxes, a rectangle that swallows the
+neighbours sharing those lines. Overlap comparisons skip those boxes rather than believe
+them.
+
+**Opacity counts.** A 30%-opacity watermark the size of a headline is not competing with
+the headline, so prominence is scaled by rendered opacity — the product down the ancestor
+chain, since `opacity` is not inherited as a value but is cumulative in rendering.
+
 ---
 
 ## The perceptual layer
@@ -286,6 +300,19 @@ hide the other thirty-one.
 **No finding without a fix.** Tested: every finding carries a message stating its
 measurement and a suggestion naming what to change. Contrast findings go further and
 compute a replacement colour that would pass.
+
+**Horizontal overflow is asked, not inferred.** Neither `scrollWidth` nor
+`window.innerWidth` answers "does this fit the device width": in mobile emulation Chrome
+widens *both* rather than letting the page pan, and a fixed element wider than the viewport
+inflates `scrollWidth` while being clipped and costing the reader nothing. The rule measures
+the widest element that actually lives in the document, and the probe separately measures
+how far the viewport really moves by trying to scroll it.
+
+**A caveat on full-page screenshots.** Chromium paints a fixed element once, at its
+scroll-0 position, so in a full-page capture a pinned footer appears partway down the image
+rather than at the bottom of every screen. The `fold.png` capture is the accurate one for
+pinned UI; the geometry rules do not read either image for this, they read the fixed-layer
+flag.
 
 **False positives are the thing to fear.** A tool that cries wolf gets ignored, so
 `src/test/resources/pages/clean.html` — a deliberately well-built page — must produce

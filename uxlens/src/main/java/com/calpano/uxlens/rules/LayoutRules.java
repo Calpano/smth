@@ -35,22 +35,34 @@ public final class LayoutRules {
 
         @Override public List<Finding> check(Analysis a) {
             PageSnapshot s = a.snapshot();
-            if (!s.hasHorizontalOverflow()) return List.of();
-            double over = s.scrollWidth - s.viewportWidth();
 
-            // Name the culprits: the widest elements crossing the right edge.
+            // What is actually wrong is that the page's own content does not fit the device
+            // width. How the browser then expresses that varies and cannot be relied on:
+            // it may let the page pan sideways, or widen the layout viewport and zoom out
+            // (under mobile emulation window.innerWidth and scrollWidth both grow, while
+            // scrolling does nothing). And a fixed element wider than the viewport inflates
+            // scrollWidth while being clipped and costing the reader nothing. So the test is
+            // the content itself: the widest thing that lives in the document.
             List<Elem> culprits = s.elements.stream()
+                    .filter(e -> !e.fixedLayer)
                     .filter(e -> e.rect().right() > s.viewportWidth() + 1)
                     .sorted((x, y) -> Double.compare(y.rect().right(), x.rect().right()))
                     .limit(5).toList();
 
+            double over = culprits.isEmpty() ? 0 : culprits.get(0).rect().right() - s.viewportWidth();
+            if (over <= 1 && s.maxScrollX <= 1) return List.of();
+            if (over <= 1) over = s.maxScrollX;
+
             Finding f = finding(Severity.HIGH, String.format(
-                    "The document is %.0fpx wider than the %dpx viewport, so the page scrolls "
-                            + "horizontally.", over, s.viewportWidth()))
-                    .with("scrollWidth", s.scrollWidth)
-                    .with("viewportWidth", s.viewportWidth())
+                    "Content runs %.0fpx past the %dpx viewport, so the page does not fit the "
+                            + "device width%s.", over, s.viewportWidth(),
+                    s.maxScrollX > 1 ? " and scrolls sideways" : ""))
                     .with("overflowPx", Math.round(over))
-                    .at(new Rect(0, 0, s.scrollWidth, Math.min(s.scrollHeight, s.viewportHeight())))
+                    .with("viewportWidth", s.viewportWidth())
+                    .with("maxScrollX", s.maxScrollX)
+                    .with("scrollWidth", s.scrollWidth)
+                    .at(new Rect(0, 0, Math.max(s.scrollWidth, s.viewportWidth() + over),
+                            Math.min(s.scrollHeight, s.viewportHeight())))
                     .suggest(culprits.isEmpty()
                             ? "Find the widest element and constrain it with max-width:100% or min-width:0."
                             : "Constrain " + culprits.get(0).selector + " (right edge at "
@@ -108,6 +120,11 @@ public final class LayoutRules {
             PageSnapshot s = a.snapshot();
             List<Finding> out = new ArrayList<>();
             for (Elem e : VisualGroups.content(s)) {
+                // Only content a reader would miss. A painted band running past the edge
+                // and being clipped costs nobody anything; if it makes the page scroll,
+                // horizontal-overflow reports that instead.
+                if (!e.hasOwnText() && e.img == null && !e.interactive) continue;
+                if (e.fixedLayer) continue;                  // pinned, and clipped by design
                 Rect r = e.rect();
                 double offRight = r.right() - s.viewportWidth();
                 double offLeft = -r.x();
@@ -131,6 +148,9 @@ public final class LayoutRules {
 
     /** Two pieces of text painted on top of each other. */
     public static final class TextOverlap implements Rule {
+        /** Below this rendered opacity an element reads as a watermark, not a collision. */
+        private static final double WATERMARK_OPACITY = 0.6;
+
         @Override public String id() { return "text-overlap"; }
 
         @Override public String title() { return "Text overlaps other content"; }
@@ -149,17 +169,38 @@ public final class LayoutRules {
                 for (int j = i + 1; j < texts.size(); j++) {
                     Elem x = texts.get(i), y = texts.get(j);
                     if (related(s, x, y)) continue;
+                    // A viewport-pinned bar scrolls over every paragraph on the page. It is
+                    // a separate layer, not a collision; only compare within one layer.
+                    if (x.fixedLayer != y.fixedLayer) continue;
+                    // A wrapped inline element's box is the union of its line boxes, so it
+                    // swallows the neighbours sharing those lines without painting over them.
+                    if (x.rectIsUnionOfLineBoxes() || y.rectIsUnionOfLineBoxes()) continue;
                     double inter = x.rect().intersectionArea(y.rect());
                     if (inter <= 0) continue;
                     double share = inter / Math.min(x.area(), y.area());
                     if (share < a.config().overlapTolerance) continue;
-                    out.add(finding(share > 0.4 ? Severity.HIGH : Severity.MEDIUM, String.format(
-                            "%s and %s overlap over %.0f%% of the smaller box.",
-                            x.label(), y.label(), share * 100))
+
+                    // One of them washed out means a watermark under content -- usually a
+                    // deliberate device, and never the broken-layout emergency that two
+                    // fully opaque pieces of text on top of each other is.
+                    double faintest = Math.min(s.effectiveOpacity(x), s.effectiveOpacity(y));
+                    boolean watermark = faintest < WATERMARK_OPACITY;
+                    Severity severity = watermark ? Severity.LOW
+                            : share > 0.4 ? Severity.HIGH : Severity.MEDIUM;
+
+                    out.add(finding(severity, watermark
+                            ? String.format("%s sits over %s at %.0f%% opacity, covering %.0f%% of the "
+                                    + "smaller box.", x.label(), y.label(), faintest * 100, share * 100)
+                            : String.format("%s and %s overlap over %.0f%% of the smaller box.",
+                                    x.label(), y.label(), share * 100))
                             .about(x, y)
                             .with("overlapShare", Math.round(share * 100) / 100.0)
-                            .suggest("Give the two elements their own space in the flow, or raise one "
-                                    + "out of the other's way; at this viewport they collide."));
+                            .with("opacity", Math.round(faintest * 100) / 100.0)
+                            .suggest(watermark
+                                    ? "If this is a deliberate watermark, check it still leaves the text "
+                                      + "legible at this viewport; otherwise move it out from under the text."
+                                    : "Give the two elements their own space in the flow, or raise one "
+                                      + "out of the other's way; at this viewport they collide."));
                 }
             }
             return out;
