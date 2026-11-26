@@ -15,6 +15,21 @@ import java.awt.image.BufferedImage;
  *
  * <p>This is the computation an LLM cannot do by looking at a screenshot, and the
  * reason to compute it here and hand the agent the answer.
+ *
+ * <p><b>A caveat the literature insists on.</b> Models of this family were derived on, and
+ * validated against, photographs of natural scenes. Work on attention in graphic designs
+ * and interfaces finds that they transfer poorly: a user interface is not a natural scene,
+ * its statistics are dominated by text and flat regions, and what draws the eye in one is
+ * substantially governed by learned convention -- where the navigation lives, what a button
+ * looks like -- which no bottom-up model represents at all. Purpose-built models for designs
+ * and visualisations do markedly better.
+ *
+ * <p>So this map should be read as a weak prior on pre-attentive pop-out, not as a
+ * prediction of where a visitor will look. It is at its most trustworthy saying "this
+ * region is the strongest contrast island on the page" and at its least trustworthy saying
+ * "therefore it is what gets attention". The rules built on it are correspondingly
+ * conservative: {@code primary-action-not-salient} requires both this and the measured
+ * prominence ranking to agree before it reports anything.
  */
 public final class Saliency {
 

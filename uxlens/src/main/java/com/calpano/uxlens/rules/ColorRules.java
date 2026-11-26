@@ -18,7 +18,69 @@ public final class ColorRules {
 
     public static List<Rule> all() {
         return List.of(new TextContrast(), new ControlBorderContrast(),
-                new PaletteSprawl(), new NearDuplicateColors());
+                new PaletteSprawl(), new NearDuplicateColors(), new ContrastModelDisagreement());
+    }
+
+    /**
+     * Where the WCAG 2 ratio and the perceptual model disagree about the same pair.
+     *
+     * <p>Not a failure, and deliberately not reported as one: WCAG 2 is what teams are
+     * audited against. But the research literature is clear that its ratio of luminances
+     * mispredicts perceived contrast in systematic ways, and this says where that is
+     * happening on this page -- which is overwhelmingly light text on dark backgrounds.
+     */
+    public static final class ContrastModelDisagreement implements Rule {
+
+        /** Report at most this many; the pattern matters more than the instances. */
+        private static final int MAX_REPORTED = 8;
+
+        @Override public String id() { return "contrast-model-disagreement"; }
+
+        @Override public String title() { return "WCAG and the perceptual model disagree"; }
+
+        @Override public String rationale() {
+            return "The WCAG 2 contrast ratio is a ratio of relative luminances, and it is "
+                    + "known to mispredict perceived contrast: too lenient on light grey on "
+                    + "white, too flattering to light text on dark grounds, and blind to font "
+                    + "weight. APCA, the candidate method for WCAG 3, models that asymmetry. "
+                    + "Where the two agree there is nothing to discuss; where they disagree, the "
+                    + "pair clears the audit and may still be hard to read, which is worth "
+                    + "knowing before dark mode ships.";
+        }
+
+        @Override public List<Finding> check(Analysis a) {
+            List<Finding> out = new ArrayList<>();
+            for (Elem e : a.snapshot().textElements()) {
+                if (out.size() >= MAX_REPORTED) break;
+                double ratio = e.textContrast();
+                if (ratio <= 0) continue;
+                Rgba fg = e.fg(), bg = e.bg();
+                if (fg == null) continue;
+
+                double lightness = com.calpano.uxlens.model.Apca.lightnessContrast(fg.over(bg), bg);
+                if (!com.calpano.uxlens.model.Apca.disagreesWithWcag(
+                        lightness, ratio, e.isLargeText())) continue;
+
+                boolean wcagPasses = ratio >= (e.isLargeText() ? 3.0 : 4.5);
+                out.add(finding(Severity.INFO, String.format(
+                        "%s measures %.2f:1 by WCAG 2 (%s) but Lc %.0f perceptually (%s). %s",
+                        e.label(), ratio, wcagPasses ? "a pass" : "a fail",
+                        lightness, Math.abs(lightness) >= (e.isLargeText() ? 60 : 75)
+                                ? "readable" : "below the perceptual guideline",
+                        bg.relativeLuminance() < fg.over(bg).relativeLuminance()
+                                ? "Light text on a dark ground, which is where the ratio formula "
+                                  + "is most optimistic."
+                                : "Dark text on a light ground."))
+                        .about(e)
+                        .with("wcagRatio", Math.round(ratio * 100) / 100.0)
+                        .with("apcaLc", Math.round(lightness * 10) / 10.0)
+                        .with("wcagPasses", wcagPasses)
+                        .suggest("Treat WCAG as the requirement and this as a warning. Where they "
+                                + "disagree on light-on-dark, raising the text lightness a little "
+                                + "usually satisfies both."));
+            }
+            return out;
+        }
     }
 
     /** Text that does not meet WCAG contrast against what is actually painted behind it. */
@@ -58,6 +120,9 @@ public final class ColorRules {
                         .with("fontSize", e.fontSize)
                         .with("fontWeight", e.fontWeight)
                         .with("largeText", e.isLargeText())
+                        .with("apcaLc", Math.round(
+                                com.calpano.uxlens.model.Apca.lightnessContrast(
+                                        fg.over(bg), bg) * 10) / 10.0)
                         .suggest(suggestion(fg, bg, required, e));
                 if (e.backgroundUncertain) {
                     f.severity = sev == Severity.HIGH ? Severity.MEDIUM : Severity.LOW;

@@ -192,6 +192,37 @@
     return out;
   }
 
+  /* The name a screen reader would announce, by the accessible-name precedence that
+     matters in practice: aria-label, then aria-labelledby, then the element's own text,
+     then alt, then title. Not the full HTML-AAM algorithm, which needs the whole tree --
+     this covers the cases the rules below actually ask about. */
+  function accessibleName(el) {
+    const label = el.getAttribute('aria-label');
+    if (label && label.trim()) return label.trim();
+
+    const labelledBy = el.getAttribute('aria-labelledby');
+    if (labelledBy) {
+      const parts = labelledBy.split(/\s+/)
+          .map(id => document.getElementById(id))
+          .filter(Boolean)
+          .map(n => n.textContent.replace(/\s+/g, ' ').trim())
+          .filter(Boolean);
+      if (parts.length) return parts.join(' ');
+    }
+
+    const own = el.textContent.replace(/\s+/g, ' ').trim();
+    if (own) return own;
+
+    const img = el.tagName === 'IMG' ? el : el.querySelector('img[alt]');
+    if (img) {
+      const alt = img.getAttribute('alt');
+      if (alt && alt.trim()) return alt.trim();
+    }
+
+    const title = el.getAttribute('title');
+    return title && title.trim() ? title.trim() : '';
+  }
+
   /* ---------- text ---------- */
 
   function ownText(el) {
@@ -339,6 +370,17 @@
       selector: shortSelector(el),
       role: role || null,
       ariaLabel: el.getAttribute('aria-label') || null,
+      title: el.getAttribute('title') || null,
+      /* What a screen reader would announce. Empty when the element has no name at all,
+         which for a control is the defect itself. */
+      accessibleName: accessibleName(el),
+      ariaHidden: el.getAttribute('aria-hidden') === 'true',
+      /* Visible text of the element and everything inside it, which is what a sighted user
+         reads off a control -- distinct from `text`, which is the element's own nodes. */
+      visibleText: (function () {
+        const s = el.textContent.replace(/\s+/g, ' ').trim();
+        return s.length > 120 ? s.slice(0, 120) : s;
+      })(),
       text: text.length > 200 ? text.slice(0, 200) + '…' : text,
       textLength: text.length,
 

@@ -171,6 +171,11 @@ public final class RuleReferences {
                         "Leading and measure are one decision: the longer the line, the more leading the return sweep needs."),
                 Reference.of(Reference.Source.HOUSE, null,
                         "The 60-character and 1.5 thresholds are ours.")));
+        BY_RULE.put("contrast-model-disagreement", List.of(
+                Reference.of(Reference.Source.WCAG, "1.4.3 Contrast (Minimum)",
+                        "The ratio of relative luminances that is the audited requirement."),
+                Reference.of(Reference.Source.HOUSE, null,
+                        "Reporting the disagreement rather than either figure alone is ours.")));
     }
 
     /** What this rule is grounded in. Empty when the rule is not registered. */

@@ -17,6 +17,12 @@ public class Elem {
     public String selector;
     public String role;
     public String ariaLabel;
+    public String title;
+    /** What a screen reader would announce. Empty when the element has no name at all. */
+    public String accessibleName;
+    public boolean ariaHidden;
+    /** Visible text of this element and its descendants -- what a sighted user reads off it. */
+    public String visibleText;
     /** The element's own text nodes only -- not its descendants'. */
     public String text = "";
     public int textLength;
@@ -130,6 +136,17 @@ public class Elem {
     }
 
     public boolean hasOwnText() { return text != null && !text.isBlank(); }
+
+    /** True when a screen reader would announce nothing for this element. */
+    public boolean hasNoAccessibleName() {
+        return accessibleName == null || accessibleName.isBlank();
+    }
+
+    /** True when the control shows no words at all -- an icon, a glyph, or nothing. */
+    public boolean isIconOnly() {
+        return visibleText == null || visibleText.isBlank()
+                || visibleText.codePointCount(0, visibleText.length()) <= 2;
+    }
 
     /** True when {@link #rect()} is the union of several line boxes rather than a real shape. */
     public boolean rectIsUnionOfLineBoxes() { return clientRectCount > 1; }

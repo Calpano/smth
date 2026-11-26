@@ -225,6 +225,10 @@ public final class RuleContracts {
                 "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#ffffff;color:#14161a\"><p style=\"max-width:70ch;line-height:1.35\">Leading and measure are one decision rather than two, because the longer the line is the further the eye has to travel on the return sweep and the more vertical separation it needs in order to land on the right line rather than the one above or below it, which is why a figure that is comfortable at fifty characters stops being comfortable at ninety.</p></body>",
                 "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#ffffff;color:#14161a\"><p style=\"max-width:70ch;line-height:1.6\">Leading and measure are one decision rather than two, because the longer the line is the further the eye has to travel on the return sweep and the more vertical separation it needs in order to land on the right line rather than the one above or below it, which is why a figure that is comfortable at fifty characters stops being comfortable at ninety.</p></body>",
                 Viewport.DESKTOP);
+        put("contrast-model-disagreement",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#000000;color:#767676\"><p style=\"color:#767676\">Light grey on black clears the ratio and not the eye.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#ffffff;color:#14161a\"><p style=\"color:#14161a\">Dark text on white, where the two models agree.</p></body>",
+                Viewport.DESKTOP);
     }
 
     private static void put(String ruleId, String violates, String conforms, Viewport viewport) {

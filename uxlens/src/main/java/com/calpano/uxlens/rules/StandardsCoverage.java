@@ -121,6 +121,26 @@ public final class StandardsCoverage {
                                 + "loading timeline rather than the settled page this measures.",
                         "Lighthouse or the browser's own Core Web Vitals instrumentation."),
 
+                new OutOfScope("Where a visitor will actually look",
+                        Reference.Source.HOUSE,
+                        "The saliency map here is a bottom-up model derived on photographs, and "
+                                + "the literature on attention in graphic designs finds that such "
+                                + "models transfer poorly to interfaces: a page is dominated by "
+                                + "text and flat regions, and attention in one is largely governed "
+                                + "by learned convention that no bottom-up model represents. It is "
+                                + "a weak prior on pop-out, not a prediction of gaze.",
+                        "Eye tracking, or a saliency model trained on interfaces rather than on "
+                                + "natural scenes."),
+
+                new OutOfScope("Whether the page is any good",
+                        Reference.Source.HOUSE,
+                        "Every measure here is a proxy. The literature that quantifies layout "
+                                + "aesthetics -- balance, symmetry, density, regularity and the "
+                                + "rest -- reports modest correlations with judged quality, which "
+                                + "is worth having and is not the same as measuring quality. A page "
+                                + "can satisfy every rule in this tool and be the wrong page.",
+                        "People, looking at it, with a task."),
+
                 new OutOfScope("The human-centred design process itself",
                         Reference.Source.CPUX_F,
                         "ISO 9241-210 describes how to run a project, not what a page should look "
