@@ -2,7 +2,119 @@
   {
     "id": "xam-de",
     "url": "https://xam.de",
-    "viewports": ["desktop", "mobile"],
-    "note": "A hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Good at catching rules that assume a component-framework page."
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "note": "Hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Catches rules that assume a component-framework page. Owned by this project's author, so not redacted.",
+    "redact": false
+  },
+  {
+    "id": "grafana-play",
+    "url": "https://play.grafana.org",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "note": "APP. A real product dashboard, open without login: ~880 visible elements, ~180 controls, ~80 icon-sized targets. The densest application chrome in the corpus.",
+    "redact": true
+  },
+  {
+    "id": "diagrams-net",
+    "url": "https://app.diagrams.net",
+    "viewports": [
+      "desktop"
+    ],
+    "note": "APP. A drawing tool: ~90 icon-sized controls in toolbars and palettes, plus 19 form controls. The best evidence in the corpus for optical centring, icon-size consistency and small touch targets.",
+    "redact": true
+  },
+  {
+    "id": "shadcn-dashboard",
+    "url": "https://ui.shadcn.com/examples/dashboard",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": [
+      "light",
+      "dark"
+    ],
+    "note": "APP, and the false-positive detector. Built on a deliberate design system by people who know what they are doing, so findings here are suspect by default. Declares dark styles, which most app candidates do not.",
+    "redact": true
+  },
+  {
+    "id": "shadcn-tasks",
+    "url": "https://ui.shadcn.com/examples/tasks",
+    "viewports": [
+      "desktop"
+    ],
+    "schemes": [
+      "light",
+      "dark"
+    ],
+    "note": "APP. A data-table screen on the same design system as shadcn-dashboard. Two pages sharing one system is the sharpest test of the consistency family: it should stay silent across both.",
+    "redact": true
+  },
+  {
+    "id": "mastodon-explore",
+    "url": "https://mastodon.social/explore",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "note": "APP. A social timeline on a different stack: columns, cards, avatars, inline media. Real content of varying length rather than lorem ipsum.",
+    "redact": true
+  },
+  {
+    "id": "openstreetmap",
+    "url": "https://www.openstreetmap.org",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "note": "APP. A map application with a search sidebar. The most form-dense page in the corpus at 25 controls, which is where label-proximity and control-border-contrast get their evidence.",
+    "redact": true
+  },
+  {
+    "id": "todomvc-react",
+    "url": "https://todomvc.com/examples/react/dist/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "note": "APP, deliberately tiny. The canonical small application: one form, one list, filter states. A page this small should produce almost nothing, so anything it does produce is worth reading.",
+    "redact": true
+  },
+  {
+    "id": "mdn-article",
+    "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/color",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": [
+      "light",
+      "dark"
+    ],
+    "note": "Long-form editorial with a sticky header and real dark styles. Carries most of the corpus's evidence for the typography rules, which app screens barely exercise.",
+    "redact": true
+  },
+  {
+    "id": "wikipedia-ja",
+    "url": "https://ja.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E8%AA%9E",
+    "viewports": [
+      "desktop"
+    ],
+    "note": "CJK script. The measure rule counts characters per line, an assumption that does not survive contact with Japanese: the comfortable measure is roughly half the Latin figure.",
+    "redact": true
+  },
+  {
+    "id": "wikipedia-ar",
+    "url": "https://ar.wikipedia.org/wiki/%D9%84%D8%BA%D8%A9_%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
+    "viewports": [
+      "desktop"
+    ],
+    "note": "Right-to-left. Every rule that says 'left edge' means 'start edge', and this is the only page in the corpus that can tell the difference.",
+    "redact": true
   }
 ]

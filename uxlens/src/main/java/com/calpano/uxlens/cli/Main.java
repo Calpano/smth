@@ -178,12 +178,22 @@ public final class Main {
         return switch (action) {
             case "capture" -> {
                 boolean withImages = a.flag("with-images");
+                boolean redact = a.flag("redact");
                 int written;
                 try (PageProbe probe = PageProbe.launch()) {
-                    written = CorpusStore.capture(probe, dir, withImages);
+                    // Corpus captures should be patient: an application shell that is still
+                    // mounting when it is measured pins a page nobody ever sees.
+                    written = CorpusStore.capture(probe.settleMs(2500), dir, withImages, redact);
                 }
-                System.out.printf("Pinned %d capture(s) under %s%s.%n", written, dir.toAbsolutePath(),
-                        withImages ? " (with screenshots)" : " (measurements only)");
+                System.out.printf("Pinned %d capture(s) under %s (%s%s).%n", written,
+                        dir.toAbsolutePath(),
+                        withImages ? "with screenshots" : "measurements only",
+                        redact ? ", redacted" : "");
+                if (redact) {
+                    System.out.println("Words were stripped; geometry, style, text length and "
+                            + "line boxes are intact. Rules matching literal words are skipped "
+                            + "on these captures.");
+                }
                 yield 0;
             }
             case "run" -> {
@@ -332,6 +342,7 @@ public final class Main {
                 Corpus options
                   --dir DIR                  corpus directory (default ./corpus)
                   --with-images              also pin screenshots, so pixel rules can be scored
+                  --redact                   strip the words from captures of pages you do not own
                   --min-precision 0.8        'score' exits 1 if a judged rule falls below this
                   --min-severity low         ignore findings below this severity
 

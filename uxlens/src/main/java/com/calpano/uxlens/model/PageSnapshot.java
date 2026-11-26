@@ -26,6 +26,14 @@ public class PageSnapshot {
     public String prefersColorScheme;
     /** True when the page had more elements than the probe's cap. */
     public boolean truncated;
+    /**
+     * True when the words have been stripped out of this capture.
+     *
+     * <p>Geometry, computed style, text length and line boxes are all intact; only the
+     * characters were replaced. Rules that match literal words are skipped rather than
+     * being allowed to return nothing and look like a pass.
+     */
+    public boolean redacted;
     public List<Elem> elements = new ArrayList<>();
 
     /** Name of the viewport preset this was captured at, e.g. {@code desktop}. */

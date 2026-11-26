@@ -26,6 +26,13 @@ public interface Rule {
     /** True when the rule reads the rendered pixels and must be skipped without them. */
     default boolean needsPixels() { return false; }
 
+    /**
+     * True when the rule matches the literal words on the page, as opposed to their length
+     * or shape. Such a rule is skipped on a redacted capture instead of silently finding
+     * nothing in text that has had its letters replaced.
+     */
+    default boolean needsLiteralText() { return false; }
+
     List<Finding> check(Analysis analysis);
 
     /**

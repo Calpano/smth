@@ -108,7 +108,7 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 
 ## What it measures
 
-42 rules across eleven families, plus two interaction-state checks that drive the page.
+46 rules across twelve families, plus two interaction-state checks that drive the page.
 `uxlens rules` prints each with its rationale.
 
 | Family | Rules |
@@ -124,6 +124,7 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 | **Consistency** | `consistency-shape` `consistency-typography` `consistency-color` `consistency-spacing` `consistency-size` `consistency-motion` |
 | **Affordance** | `link-not-distinguishable` `false-affordance` `destructive-adjacency` |
 | **Optical** | `optical-centering` |
+| **System** | `flat-grouping-hierarchy` `no-tonal-anchor` `centred-body-copy` `cramped-prose` |
 
 Plus `focus-not-visible` and `hover-not-visible`, which drive the page rather than reading
 it — see below.
@@ -141,6 +142,19 @@ near miss**. A nav link in a *different* colour from its siblings is the active 
 link two shades off is a mistake. So a clearly different value is read as a decision and
 left alone — and, importantly, a legitimate variant does not consume the outlier budget, or
 one red danger button in a row of blue ones would suppress the real finding beside it.
+
+**But a consistent page can still be a bad one.** Consistency mining has a hard ceiling: it
+finds deviations from the page's own vocabulary, and can never find a *bad* vocabulary. A
+page can be flawlessly self-consistent and still be the one a designer looks at and says
+*nothing leads*, *the sections don't read as sections*, *there's no black on this page*,
+*stop centring the body copy*. Each of those is advice about the system, and each is
+invisible to a check that measures variance.
+
+So the **system** family measures *level* and *range* where the consistency family measures
+variance — the gap between groups against the gap inside them, the strongest contrast
+anywhere on the page, the share of running text that is centred, whitespace against type
+size. These are necessarily more opinionated, so each states the number it used and is
+easy to switch off.
 
 
 **Spacing and type are judged against the page's own system, not an external ideal.** The

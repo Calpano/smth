@@ -29,6 +29,7 @@ public final class RuleSet {
         rules.addAll(ConsistencyRules.all());
         rules.addAll(AffordanceRules.all());
         rules.addAll(OpticalRules.all());
+        rules.addAll(SystemRules.all());
         return new RuleSet(rules);
     }
 
@@ -45,9 +46,11 @@ public final class RuleSet {
     public List<Finding> run(Analysis analysis) {
         List<Finding> out = new ArrayList<>();
         boolean havePixels = analysis.fullPageImage().isPresent();
+        boolean redacted = analysis.snapshot().redacted;
         for (Rule rule : rules) {
             if (!analysis.config().runs(rule.id())) continue;
             if (rule.needsPixels() && !havePixels) continue;
+            if (rule.needsLiteralText() && redacted) continue;
             try {
                 List<Finding> found = rule.check(analysis);
                 if (found != null) out.addAll(found);

@@ -3,6 +3,7 @@ package com.calpano.uxlens.corpus;
 import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
 import com.calpano.uxlens.model.PageSnapshot;
+import com.microsoft.playwright.options.ColorScheme;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -37,8 +38,18 @@ public final class CorpusStore {
 
     private CorpusStore() { }
 
-    /** One page to capture, at one or more viewports. */
-    public record Site(String id, String url, List<String> viewports, String note) {
+    /** One page to capture, at one or more viewports and colour schemes. */
+    public record Site(String id, String url, List<String> viewports, List<String> schemes,
+                       Boolean redact, String note) {
+
+        /**
+         * Whether to strip the words from this site's captures. A site may override the
+         * run-wide setting: a page you own can keep its text, and one you do not should not
+         * be de-redacted by a careless command line.
+         */
+        public boolean redactWith(boolean runDefault) {
+            return redact == null ? runDefault : redact;
+        }
 
         public List<Viewport> resolvedViewports() {
             if (viewports == null || viewports.isEmpty()) {
@@ -46,16 +57,37 @@ public final class CorpusStore {
             }
             return viewports.stream().map(Viewport::parse).toList();
         }
+
+        /**
+         * Colour schemes to capture. Defaults to light alone -- capturing dark costs another
+         * page load, and is only worth it for a page that declares dark styles at all.
+         */
+        public List<ColorScheme> resolvedSchemes() {
+            if (schemes == null || schemes.isEmpty()) return List.of(ColorScheme.LIGHT);
+            return schemes.stream().map(s -> switch (s.trim().toLowerCase(java.util.Locale.ROOT)) {
+                case "dark" -> ColorScheme.DARK;
+                case "light" -> ColorScheme.LIGHT;
+                default -> throw new IllegalArgumentException(
+                        "Unknown colour scheme '" + s + "' for site " + id);
+            }).toList();
+        }
     }
 
-    /** One pinned capture: a page at a viewport, with pixels when they were kept. */
-    public record Entry(String siteId, String url, Viewport viewport, PageSnapshot snapshot,
-                        BufferedImage fullPage, BufferedImage fold) {
+    /** One pinned capture: a page at a viewport and scheme, with pixels when they were kept. */
+    public record Entry(String siteId, String url, Viewport viewport, ColorScheme scheme,
+                        PageSnapshot snapshot, BufferedImage fullPage, BufferedImage fold) {
 
         /** Stable identifier for this capture, used in labels. */
-        public String key() { return siteId + "|" + viewport.name(); }
+        public String key() { return siteId + "|" + captureName(viewport, scheme); }
 
         public boolean hasPixels() { return fullPage != null && fold != null; }
+
+        public boolean isDark() { return scheme == ColorScheme.DARK; }
+    }
+
+    /** Directory name for one capture: {@code desktop}, or {@code desktop-dark}. */
+    static String captureName(Viewport viewport, ColorScheme scheme) {
+        return scheme == ColorScheme.DARK ? viewport.name() + "-dark" : viewport.name();
     }
 
     /** Reads {@code sites.json} from the corpus directory. */
@@ -80,23 +112,41 @@ public final class CorpusStore {
      * @return how many captures were written
      */
     public static int capture(PageProbe probe, Path dir, boolean withImages) {
+        return capture(probe, dir, withImages, false);
+    }
+
+    /**
+     * Visits every site and pins what it measures.
+     *
+     * @param withImages also store screenshots, so pixel-reading rules can be scored too
+     * @param redact     strip the words out, keeping everything the rules measure. Use this
+     *                   for pages you do not own: a corpus is something you commit and share,
+     *                   and it does not need anybody else's copy to do its job
+     * @return how many captures were written
+     */
+    public static int capture(PageProbe probe, Path dir, boolean withImages, boolean redact) {
         int written = 0;
         for (Site site : sites(dir)) {
             for (Viewport viewport : site.resolvedViewports()) {
-                PageProbe.Capture capture = probe.capture(site.url(), viewport);
-                Path target = dir.resolve(site.id()).resolve(viewport.name());
-                try {
-                    Files.createDirectories(target);
-                    Files.writeString(target.resolve("snapshot.json"),
-                            GSON.toJson(capture.snapshot()), StandardCharsets.UTF_8);
-                    if (withImages) {
-                        Files.write(target.resolve("fold.png"), capture.foldPng());
-                        Files.write(target.resolve("full.png"), capture.fullPagePng());
+                for (ColorScheme scheme : site.resolvedSchemes()) {
+                    PageProbe.Capture capture = probe.capture(site.url(), viewport, scheme);
+                    PageSnapshot snapshot = site.redactWith(redact)
+                            ? Redaction.redact(capture.snapshot())
+                            : capture.snapshot();
+                    Path target = dir.resolve(site.id()).resolve(captureName(viewport, scheme));
+                    try {
+                        Files.createDirectories(target);
+                        Files.writeString(target.resolve("snapshot.json"),
+                                GSON.toJson(snapshot), StandardCharsets.UTF_8);
+                        if (withImages) {
+                            Files.write(target.resolve("fold.png"), capture.foldPng());
+                            Files.write(target.resolve("full.png"), capture.fullPagePng());
+                        }
+                    } catch (IOException e) {
+                        throw new UncheckedIOException("Could not write " + target, e);
                     }
-                } catch (IOException e) {
-                    throw new UncheckedIOException("Could not write " + target, e);
+                    written++;
                 }
-                written++;
             }
         }
         return written;
@@ -107,17 +157,20 @@ public final class CorpusStore {
         List<Entry> out = new ArrayList<>();
         for (Site site : sites(dir)) {
             for (Viewport viewport : site.resolvedViewports()) {
-                Path target = dir.resolve(site.id()).resolve(viewport.name());
-                Path snapshotFile = target.resolve("snapshot.json");
-                if (!Files.exists(snapshotFile)) continue;
-                try {
-                    PageSnapshot snapshot = GSON.fromJson(
-                            Files.readString(snapshotFile, StandardCharsets.UTF_8), PageSnapshot.class);
-                    out.add(new Entry(site.id(), site.url(), viewport, snapshot,
-                            readImage(target.resolve("full.png")).orElse(null),
-                            readImage(target.resolve("fold.png")).orElse(null)));
-                } catch (IOException e) {
-                    throw new UncheckedIOException("Could not read " + snapshotFile, e);
+                for (ColorScheme scheme : site.resolvedSchemes()) {
+                    Path target = dir.resolve(site.id()).resolve(captureName(viewport, scheme));
+                    Path snapshotFile = target.resolve("snapshot.json");
+                    if (!Files.exists(snapshotFile)) continue;
+                    try {
+                        PageSnapshot snapshot = GSON.fromJson(
+                                Files.readString(snapshotFile, StandardCharsets.UTF_8),
+                                PageSnapshot.class);
+                        out.add(new Entry(site.id(), site.url(), viewport, scheme, snapshot,
+                                readImage(target.resolve("full.png")).orElse(null),
+                                readImage(target.resolve("fold.png")).orElse(null)));
+                    } catch (IOException e) {
+                        throw new UncheckedIOException("Could not read " + snapshotFile, e);
+                    }
                 }
             }
         }

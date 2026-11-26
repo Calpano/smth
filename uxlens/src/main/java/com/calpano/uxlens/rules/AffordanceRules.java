@@ -131,6 +131,8 @@ public final class AffordanceRules {
 
         @Override public String title() { return "A destructive control is flush against a benign one"; }
 
+        @Override public boolean needsLiteralText() { return true; }
+
         @Override public String rationale() {
             return "Pointing is imprecise -- that is Fitts's law, and it is why an irreversible "
                     + "action should not share an edge with a reversible one. The cost of a miss "
