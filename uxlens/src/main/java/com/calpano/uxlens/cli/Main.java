@@ -15,7 +15,9 @@ import com.calpano.uxlens.perception.VisualDiff;
 import com.calpano.uxlens.report.AgentBriefing;
 import com.calpano.uxlens.report.HtmlReport;
 import com.calpano.uxlens.report.JsonReport;
+import com.calpano.uxlens.rules.Reference;
 import com.calpano.uxlens.rules.Rule;
+import com.calpano.uxlens.rules.StandardsCoverage;
 import com.calpano.uxlens.rules.RuleSet;
 
 import javax.imageio.ImageIO;
@@ -66,6 +68,7 @@ public final class Main {
             case "diff" -> diff(rest);
             case "corpus" -> corpus(rest);
             case "rules" -> rules();
+            case "standards" -> standards();
             default -> throw new IllegalArgumentException("Unknown command '" + command
                     + "'. Try: audit, focus, diff, rules.");
         };
@@ -179,16 +182,28 @@ public final class Main {
             case "capture" -> {
                 boolean withImages = a.flag("with-images");
                 boolean redact = a.flag("redact");
-                int written;
+                boolean skipExisting = a.flag("skip-existing");
+                CorpusStore.CaptureReport report;
                 try (PageProbe probe = PageProbe.launch()) {
                     // Corpus captures should be patient: an application shell that is still
                     // mounting when it is measured pins a page nobody ever sees.
-                    written = CorpusStore.capture(probe.settleMs(2500), dir, withImages, redact);
+                    report = CorpusStore.capture(probe.settleMs(2500), dir, withImages, redact,
+                            skipExisting);
                 }
-                System.out.printf("Pinned %d capture(s) under %s (%s%s).%n", written,
+                System.out.printf("Pinned %d capture(s) under %s (%s%s).%n", report.written(),
                         dir.toAbsolutePath(),
                         withImages ? "with screenshots" : "measurements only",
                         redact ? ", redacted" : "");
+                if (report.skipped() > 0) {
+                    System.out.printf("Skipped %d already pinned.%n", report.skipped());
+                }
+                for (CorpusStore.Failure failure : report.failures()) {
+                    System.out.printf("FAILED %s/%s: %s%n", failure.siteId(),
+                            failure.captureName(), failure.reason());
+                }
+                if (!report.isComplete()) {
+                    System.out.println("Re-run with --skip-existing to fill the gaps.");
+                }
                 if (redact) {
                     System.out.println("Words were stripped; geometry, style, text length and "
                             + "line boxes are intact. Rules matching literal words are skipped "
@@ -254,7 +269,35 @@ public final class Main {
         for (Rule rule : RuleSet.standard().rules()) {
             System.out.printf("%-28s %s%s%n", rule.id(), rule.title(),
                     rule.needsPixels() ? "  [needs pixels]" : "");
-            System.out.printf("%-28s %s%n%n", "", wrap(rule.rationale(), 88, 29));
+            System.out.printf("%-28s %s%n", "", wrap(rule.rationale(), 88, 29));
+            for (Reference reference : rule.references()) {
+                System.out.printf("%-28s - %s%n", "",
+                        wrap(reference.toString(), 88, 31));
+            }
+            System.out.println();
+        }
+        return 0;
+    }
+
+    /** What of the body of knowledge is covered, and -- more usefully -- what is not. */
+    private static int standards() {
+        System.out.println("COVERED\n");
+        for (StandardsCoverage.SourceCoverage c : StandardsCoverage.coverage()) {
+            System.out.printf("%-46s %d rule%s%n", c.source().title(), c.ruleCount(),
+                    c.ruleCount() == 1 ? "" : "s");
+            System.out.printf("%-46s %s%n%n", "", wrap(String.join(", ", c.ruleIds()), 88, 47));
+        }
+
+        List<String> house = StandardsCoverage.houseOnly();
+        System.out.printf("RESTING ON NOTHING BUT THIS PROJECT'S JUDGEMENT (%d)%n%n", house.size());
+        System.out.printf("   %s%n%n", wrap(String.join(", ", house), 88, 3));
+        System.out.println("   These are the thresholds to argue with first.\n");
+
+        System.out.println("NOT CHECKED, DELIBERATELY\n");
+        for (StandardsCoverage.OutOfScope o : StandardsCoverage.outOfScope()) {
+            System.out.printf("%s  [%s]%n", o.area(), o.source().title());
+            System.out.printf("   why not: %s%n", wrap(o.why(), 86, 12));
+            System.out.printf("   instead: %s%n%n", wrap(o.insteadUse(), 86, 12));
         }
         return 0;
     }
@@ -325,7 +368,8 @@ public final class Main {
                   uxlens states URL [options]    check focus and hover states (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
                   uxlens corpus ACTION [options] capture / run / score the calibration corpus
-                  uxlens rules                   list every check with its rationale
+                  uxlens rules                   list every check with its rationale and sources
+                  uxlens standards               what of the UX body of knowledge is and is not covered
 
                 Options
                   --viewport desktop,mobile  presets (desktop laptop tablet mobile wide) or 1440x900[@2x]
@@ -343,6 +387,7 @@ public final class Main {
                   --dir DIR                  corpus directory (default ./corpus)
                   --with-images              also pin screenshots, so pixel rules can be scored
                   --redact                   strip the words from captures of pages you do not own
+                  --skip-existing            only capture what is not pinned yet
                   --min-precision 0.8        'score' exits 1 if a judged rule falls below this
                   --min-severity low         ignore findings below this severity
 

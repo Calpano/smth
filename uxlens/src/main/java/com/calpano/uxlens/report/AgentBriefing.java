@@ -110,6 +110,16 @@ public final class AgentBriefing {
                     md.append('\n');
                 }
                 if (f.suggestion != null) md.append("  - fix: ").append(f.suggestion).append('\n');
+                List<com.calpano.uxlens.rules.Reference> refs =
+                        com.calpano.uxlens.rules.RuleReferences.forRule(f.ruleId);
+                if (!refs.isEmpty()) {
+                    md.append("  - grounded in: ");
+                    for (int i = 0; i < refs.size(); i++) {
+                        if (i > 0) md.append("; ");
+                        md.append(refs.get(i));
+                    }
+                    md.append('\n');
+                }
                 if (!f.data.isEmpty()) md.append("  - measured: `").append(f.data).append("`\n");
             }
             md.append('\n');
@@ -216,6 +226,10 @@ public final class AgentBriefing {
                    targets are listed as HIGH. These are bugs, not opinions; fix them first.
                 9. **Across viewports.** A finding present at one viewport and absent at another
                    is a responsive bug. Compare the viewport sections above before concluding.
+               10. **Weigh the authority.** Each finding says what it is grounded in. A WCAG
+                   criterion is not negotiable; a threshold marked as this project's own
+                   judgement is, and if it does not suit the design, say so rather than
+                   complying.
 
                 ### How to report back
 

@@ -111,9 +111,23 @@ public final class CorpusStore {
      * @param withImages also store screenshots, so pixel-reading rules can be scored too
      * @return how many captures were written
      */
-    public static int capture(PageProbe probe, Path dir, boolean withImages) {
-        return capture(probe, dir, withImages, false);
+    public static CaptureReport capture(PageProbe probe, Path dir, boolean withImages) {
+        return capture(probe, dir, withImages, false, false);
     }
+
+    public static CaptureReport capture(PageProbe probe, Path dir, boolean withImages,
+                                        boolean redact) {
+        return capture(probe, dir, withImages, redact, false);
+    }
+
+    /** What a capture run managed, and what it did not. */
+    public record CaptureReport(int written, int skipped, List<Failure> failures) {
+
+        public boolean isComplete() { return failures.isEmpty(); }
+    }
+
+    /** One capture that could not be taken, and why. */
+    public record Failure(String siteId, String captureName, String reason) { }
 
     /**
      * Visits every site and pins what it measures.
@@ -124,32 +138,49 @@ public final class CorpusStore {
      *                   and it does not need anybody else's copy to do its job
      * @return how many captures were written
      */
-    public static int capture(PageProbe probe, Path dir, boolean withImages, boolean redact) {
+    public static CaptureReport capture(PageProbe probe, Path dir, boolean withImages,
+                                        boolean redact, boolean skipExisting) {
         int written = 0;
+        int skipped = 0;
+        List<Failure> failures = new ArrayList<>();
         for (Site site : sites(dir)) {
             for (Viewport viewport : site.resolvedViewports()) {
                 for (ColorScheme scheme : site.resolvedSchemes()) {
-                    PageProbe.Capture capture = probe.capture(site.url(), viewport, scheme);
-                    PageSnapshot snapshot = site.redactWith(redact)
-                            ? Redaction.redact(capture.snapshot())
-                            : capture.snapshot();
-                    Path target = dir.resolve(site.id()).resolve(captureName(viewport, scheme));
+                    String name = captureName(viewport, scheme);
+                    Path target = dir.resolve(site.id()).resolve(name);
+                    if (skipExisting && hasSnapshot(target)) {
+                        skipped++;
+                        continue;
+                    }
                     try {
+                        PageProbe.Capture capture = probe.capture(site.url(), viewport, scheme);
+                        PageSnapshot snapshot = site.redactWith(redact)
+                                ? Redaction.redact(capture.snapshot())
+                                : capture.snapshot();
                         Files.createDirectories(target);
-                        Files.writeString(target.resolve("snapshot.json"),
-                                GSON.toJson(snapshot), StandardCharsets.UTF_8);
+                        writeSnapshot(target, snapshot);
                         if (withImages) {
                             Files.write(target.resolve("fold.png"), capture.foldPng());
                             Files.write(target.resolve("full.png"), capture.fullPagePng());
                         }
+                        written++;
                     } catch (IOException e) {
                         throw new UncheckedIOException("Could not write " + target, e);
+                    } catch (RuntimeException e) {
+                        // One site that times out, refuses automation or changes under us
+                        // must not cost the whole run. Record it and carry on.
+                        failures.add(new Failure(site.id(), name, shortReason(e)));
                     }
-                    written++;
                 }
             }
         }
-        return written;
+        return new CaptureReport(written, skipped, List.copyOf(failures));
+    }
+
+    private static String shortReason(RuntimeException e) {
+        String message = e.getMessage() == null ? e.toString() : e.getMessage();
+        int cut = message.indexOf('\n');
+        return cut > 0 ? message.substring(0, cut) : message;
     }
 
     /** Loads every pinned capture. Captures stored without images come back without pixels. */
@@ -159,17 +190,14 @@ public final class CorpusStore {
             for (Viewport viewport : site.resolvedViewports()) {
                 for (ColorScheme scheme : site.resolvedSchemes()) {
                     Path target = dir.resolve(site.id()).resolve(captureName(viewport, scheme));
-                    Path snapshotFile = target.resolve("snapshot.json");
-                    if (!Files.exists(snapshotFile)) continue;
+                    if (!hasSnapshot(target)) continue;
                     try {
-                        PageSnapshot snapshot = GSON.fromJson(
-                                Files.readString(snapshotFile, StandardCharsets.UTF_8),
-                                PageSnapshot.class);
-                        out.add(new Entry(site.id(), site.url(), viewport, scheme, snapshot,
+                        out.add(new Entry(site.id(), site.url(), viewport, scheme,
+                                readSnapshot(target),
                                 readImage(target.resolve("full.png")).orElse(null),
                                 readImage(target.resolve("fold.png")).orElse(null)));
                     } catch (IOException e) {
-                        throw new UncheckedIOException("Could not read " + snapshotFile, e);
+                        throw new UncheckedIOException("Could not read " + target, e);
                     }
                 }
             }
@@ -185,6 +213,36 @@ public final class CorpusStore {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /** Where a capture's measurements live. Plain JSON is still read, for older corpora. */
+    private static final String GZIPPED = "snapshot.json.gz";
+    private static final String PLAIN = "snapshot.json";
+
+    static boolean hasSnapshot(Path target) {
+        return Files.exists(target.resolve(GZIPPED)) || Files.exists(target.resolve(PLAIN));
+    }
+
+    private static void writeSnapshot(Path target, PageSnapshot snapshot) throws IOException {
+        try (java.io.OutputStream out = Files.newOutputStream(target.resolve(GZIPPED));
+             java.util.zip.GZIPOutputStream gzip = new java.util.zip.GZIPOutputStream(out);
+             java.io.Writer writer = new java.io.OutputStreamWriter(gzip, StandardCharsets.UTF_8)) {
+            GSON.toJson(snapshot, writer);
+        }
+        Files.deleteIfExists(target.resolve(PLAIN));
+    }
+
+    private static PageSnapshot readSnapshot(Path target) throws IOException {
+        Path gzipped = target.resolve(GZIPPED);
+        if (Files.exists(gzipped)) {
+            try (java.io.InputStream in = Files.newInputStream(gzipped);
+                 java.util.zip.GZIPInputStream gzip = new java.util.zip.GZIPInputStream(in);
+                 java.io.Reader reader = new java.io.InputStreamReader(gzip, StandardCharsets.UTF_8)) {
+                return GSON.fromJson(reader, PageSnapshot.class);
+            }
+        }
+        return GSON.fromJson(Files.readString(target.resolve(PLAIN), StandardCharsets.UTF_8),
+                PageSnapshot.class);
     }
 
     private static Optional<BufferedImage> readImage(Path file) throws IOException {

@@ -143,18 +143,27 @@ public class PageProbe implements AutoCloseable {
     }
 
     private Capture measure(Page page, Viewport viewport) {
+        boolean frozen = freezeAnimations;
         try {
             page.waitForLoadState(LoadState.NETWORKIDLE);
         } catch (RuntimeException ignored) {
             // A page with a long-poll or analytics beacon never goes idle; LOAD is enough.
         }
         page.evaluate("() => document.fonts ? document.fonts.ready : null");
-        if (freezeAnimations) page.addStyleTag(new Page.AddStyleTagOptions().setContent(
-                "*,*::before,*::after{animation-play-state:paused!important;"
-                        // transition-property, not `transition`: the shorthand resets
-                        // transition-duration to 0s and the page's declared timing -- which
-                        // is part of its design system -- becomes unmeasurable.
-                        + "transition-property:none!important;caret-color:transparent!important}"));
+        if (freezeAnimations) {
+            try {
+                page.addStyleTag(new Page.AddStyleTagOptions().setContent(
+                        "*,*::before,*::after{animation-play-state:paused!important;"
+                                // transition-property, not `transition`: the shorthand resets
+                                // transition-duration to 0s and the page's declared timing --
+                                // which is part of its design system -- becomes unmeasurable.
+                                + "transition-property:none!important;caret-color:transparent!important}"));
+            } catch (RuntimeException e) {
+                // A strict Content-Security-Policy refuses injected styles. Steadying the
+                // page is worth having, not worth losing the page over: measure it moving.
+                frozen = false;
+            }
+        }
         if (settleMs > 0) page.waitForTimeout(settleMs);
 
         Object raw = page.evaluate(PROBE_JS);
@@ -165,6 +174,7 @@ public class PageProbe implements AutoCloseable {
         snapshot.viewportName = viewport.name();
         snapshot.requestedWidth = viewport.width();
         snapshot.requestedHeight = viewport.height();
+        snapshot.animationsFrozen = frozen;
         snapshot.capturedAtEpochMs = System.currentTimeMillis();
 
         byte[] full = page.screenshot(new Page.ScreenshotOptions().setFullPage(true));

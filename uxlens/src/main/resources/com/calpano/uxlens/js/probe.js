@@ -165,6 +165,37 @@
     } catch (e) { return null; }
   }
 
+  /* True for the screen-reader-only idiom: a box clipped down to nothing. */
+  function isClippedToNothing(st) {
+    const path = st.clipPath;
+    if (path && path !== 'none' && /^inset\(\s*(50%|100%)/.test(path)) return true;
+    const clip = st.clip;
+    if (clip && clip !== 'auto') {
+      const nums = clip.match(/-?[\d.]+/g);
+      if (nums && nums.length === 4) {
+        const [top, right, bottom, left] = nums.map(Number);
+        if (Math.abs(right - left) <= 1 || Math.abs(bottom - top) <= 1) return true;
+      }
+    }
+    return false;
+  }
+
+  /* True when an ancestor that clips its overflow has scrolled or collapsed this element
+     entirely out of sight. Partially visible content still counts as visible. */
+  function isHiddenByAncestorOverflow(el, rect) {
+    for (let n = el.parentElement; n && n !== document.documentElement; n = n.parentElement) {
+      const s = getComputedStyle(n);
+      const clipsX = s.overflowX !== 'visible';
+      const clipsY = s.overflowY !== 'visible';
+      if (!clipsX && !clipsY) continue;
+      const r = n.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return true;
+      if (clipsY && (rect.bottom <= r.top + 0.5 || rect.top >= r.bottom - 0.5)) return true;
+      if (clipsX && (rect.right <= r.left + 0.5 || rect.left >= r.right - 0.5)) return true;
+    }
+    return false;
+  }
+
   /* ---------- main walk ---------- */
 
   const out = [];
@@ -197,6 +228,19 @@
 
     const b = el.getBoundingClientRect();
     if (b.width < MIN_SIDE || b.height < MIN_SIDE) continue;
+
+    /* Hidden by being put somewhere nobody can look. Two idioms, both common and both
+       invisible to a display/visibility/opacity check:
+         - off-canvas: position:absolute with a large negative offset, the usual way a
+           collapsed menu is kept in the accessibility tree while off the screen;
+         - the screen-reader-only clip, which crushes the box to nothing while leaving it
+           nominally laid out.
+       Measuring either as painted content poisons everything downstream -- a collapsed
+       sidebar alone produced over a thousand phantom overlaps on one real page. */
+    if (b.right + sx <= 0 || b.bottom + sy <= 0) continue;
+    if (isClippedToNothing(st)) continue;
+
+    if (isHiddenByAncestorOverflow(el, b)) continue;
 
     const text = ownText(el);
     const role = el.getAttribute('role');

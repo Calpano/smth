@@ -34,6 +34,13 @@ public class PageSnapshot {
      * being allowed to return nothing and look like a pass.
      */
     public boolean redacted;
+    /**
+     * Whether animations and transitions were paused before measuring.
+     *
+     * <p>False when the page's Content-Security-Policy refused the injected stylesheet, in
+     * which case anything mid-animation was measured where it happened to be.
+     */
+    public boolean animationsFrozen = true;
     public List<Elem> elements = new ArrayList<>();
 
     /** Name of the viewport preset this was captured at, e.g. {@code desktop}. */

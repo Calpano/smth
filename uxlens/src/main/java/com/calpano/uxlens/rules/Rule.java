@@ -45,6 +45,16 @@ public interface Rule {
      */
     default java.util.Optional<RuleContract> contract() { return RuleContracts.forRule(id()); }
 
+    /**
+     * What this rule is grounded in: a standard, a principle, the typographic canon, or
+     * nothing but this project's judgement.
+     *
+     * <p>Carried into the report so a team can see whether they are arguing with WCAG or
+     * with us, and enforced by {@code RuleReferenceTest} so that adding a rule forces
+     * somebody to answer the question.
+     */
+    default List<Reference> references() { return RuleReferences.forRule(id()); }
+
     /** Convenience for building findings that carry this rule's id. */
     default Finding finding(com.calpano.uxlens.model.Severity severity, String message) {
         return new Finding(id(), severity, message);

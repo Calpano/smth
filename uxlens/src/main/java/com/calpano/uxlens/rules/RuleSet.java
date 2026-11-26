@@ -30,6 +30,7 @@ public final class RuleSet {
         rules.addAll(AffordanceRules.all());
         rules.addAll(OpticalRules.all());
         rules.addAll(SystemRules.all());
+        rules.addAll(BokRules.all());
         return new RuleSet(rules);
     }
 
@@ -38,6 +39,29 @@ public final class RuleSet {
     public static RuleSet of(List<Rule> rules) { return new RuleSet(rules); }
 
     public List<Rule> rules() { return rules; }
+
+    /**
+     * Keeps the most severe findings and replaces the tail with a count.
+     *
+     * <p>A rule that fires five hundred times has said what it has to say; printing all of
+     * it buries every other rule in the report.
+     */
+    private static List<Finding> cap(Rule rule, List<Finding> found, int max) {
+        if (max <= 0 || found.size() <= max) return found;
+        List<Finding> kept = new ArrayList<>(found.stream()
+                .sorted(Comparator.comparing((Finding f) -> f.severity).reversed())
+                .limit(max)
+                .toList());
+        int hidden = found.size() - kept.size();
+        kept.add(new Finding(rule.id(), kept.get(kept.size() - 1).severity, String.format(
+                "%d further %s finding%s on this page were not listed.",
+                hidden, rule.id(), hidden == 1 ? "" : "s"))
+                .with("hiddenFindings", hidden)
+                .with("totalFindings", found.size())
+                .suggest("These are the same defect repeated. Fix the pattern rather than the "
+                        + "instances, or raise Config.maxFindingsPerRule to see them all."));
+        return kept;
+    }
 
     /**
      * Runs every enabled rule. A rule that throws is reported as a finding rather than
@@ -53,7 +77,7 @@ public final class RuleSet {
             if (rule.needsLiteralText() && redacted) continue;
             try {
                 List<Finding> found = rule.check(analysis);
-                if (found != null) out.addAll(found);
+                if (found != null) out.addAll(cap(rule, found, analysis.config().maxFindingsPerRule));
             } catch (RuntimeException e) {
                 out.add(new Finding(rule.id(), Severity.INFO,
                         "Rule '" + rule.id() + "' could not run: " + e));

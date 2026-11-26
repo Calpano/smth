@@ -40,7 +40,7 @@ class CalibrationTest {
 
     @Test
     void a_capture_can_be_pinned_and_read_back(PageProbe probe, @TempDir Path dir) {
-        assertEquals(2, CorpusStore.capture(probe, seedCorpus(probe, dir, false), false));
+        assertEquals(2, CorpusStore.capture(probe, seedCorpus(probe, dir, false), false).written());
 
         List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
         assertEquals(2, corpus.size());

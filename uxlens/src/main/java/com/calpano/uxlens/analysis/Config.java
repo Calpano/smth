@@ -83,6 +83,16 @@ public final class Config {
     /** Overlap area, as a fraction of the smaller element, that counts as a collision. Default 0.08. */
     public double overlapTolerance = 0.08;
 
+    /**
+     * Most findings any single rule may report, per viewport.
+     *
+     * <p>Volume is a correctness property of its own. A dense application page can produce
+     * hundreds of individually defensible findings from one rule, and a report like that is
+     * unreadable -- the forty-ninth undersized tap target buries the one clipped heading.
+     * Beyond this cap the rule reports its worst findings and says how many more there were.
+     */
+    public int maxFindingsPerRule = 25;
+
     /** Rule ids to skip. */
     public final Set<String> disabledRules = new LinkedHashSet<>();
 

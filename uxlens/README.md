@@ -108,8 +108,8 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 
 ## What it measures
 
-46 rules across twelve families, plus two interaction-state checks that drive the page.
-`uxlens rules` prints each with its rationale.
+50 rules across thirteen families, plus two interaction-state checks that drive the page.
+`uxlens rules` prints each with its rationale and the body of knowledge it rests on.
 
 | Family | Rules |
 |---|---|
@@ -125,6 +125,7 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 | **Affordance** | `link-not-distinguishable` `false-affordance` `destructive-adjacency` |
 | **Optical** | `optical-centering` |
 | **System** | `flat-grouping-hierarchy` `no-tonal-anchor` `centred-body-copy` `cramped-prose` |
+| **Body of knowledge** | `invisible-surface` `minimum-text-size` `mixed-label-placement` `leading-for-measure` |
 
 Plus `focus-not-visible` and `hover-not-visible`, which drive the page rather than reading
 it — see below.
@@ -298,6 +299,70 @@ That separates "the copy changed" from "the layout broke".
 
 ---
 
+## What it is grounded in
+
+Every rule names its authority, and `uxlens standards` prints the map:
+
+```
+COVERED
+
+uxlens (no external authority)                 22 rules
+ISO 9241-112 (presentation of information)     14 rules
+Gestalt grouping principles                    14 rules
+Typographic canon (Bringhurst and others)      12 rules
+WCAG 2.2                                        9 rules
+ISO 9241-125 (visual presentation)              7 rules
+ISO 9241-143 (forms)                            2 rules
+ISO 9241-110 (interaction principles)           2 rules
+Platform guidelines (HIG / Material / GOV.UK)   2 rules
+Fitts's law                                     1 rule
+
+RESTING ON NOTHING BUT THIS PROJECT'S JUDGEMENT (5)
+
+   near-duplicate-colors, upscaled-image, distorted-image, broken-image, no-tonal-anchor
+
+   These are the thresholds to argue with first.
+```
+
+Those numbers are worth reading carefully. **22 of 50 rules cite `HOUSE` as one of their
+sources** — meaning that even where a rule rests on a standard, the *predicate* or the
+*threshold* is usually ours. ISO 9241-112 says like information should be presented in a
+like way; it does not say that a 6px corner radius among 8px siblings is a defect while a
+red button among blue ones is not. That second part is the engineering, and it is ours.
+Only five rules rest on nothing else at all, and those are named so they can be argued with
+first.
+
+A team arguing with a threshold deserves to know whether they are arguing with WCAG, with a
+century of typographic practice, or with this project's opinion. All three are legitimate;
+dressing the third as one of the first two is not — so `Source.HOUSE` exists and is used,
+and a test fails if *no* rule admits to it, since that could not be true.
+
+WCAG is cited by exact criterion number, because those are stable and a test enforces it.
+ISO parts are cited by part and named principle rather than clause number: citing a clause
+approximately is worse than not citing one.
+
+### What it does *not* check
+
+The second half of `uxlens standards` is the more useful one. Most of what a UX
+professional knows cannot be read off a rendered page at one moment — whether the system
+keeps the user informed, whether an error can be undone, whether the vocabulary matches the
+user's, whether the task could take fewer steps. Each needs a task, a user, or both.
+
+Ten such areas are listed with *why a render cannot answer it* and *what would*. For
+example, on matching the system to the real world: **"whether the words match the user's
+vocabulary is a question about the users, and this tool has never met them. It would also
+be the easiest thing here to fake convincingly with a language model."**
+
+That last point is the reason the list is published rather than quietly skipped. A model
+will happily produce confident opinions about tone, information architecture and task flow,
+in the same register as the measured findings and resting on nothing. Keeping the two apart
+is the whole value of measuring in the first place.
+
+The honest summary: this tool addresses the **presentation layer** thoroughly and the
+**interaction layer** barely at all.
+
+---
+
 ## Proving a rule discriminates
 
 Every rule carries a **contract**: a pair of minimal pages, one it must fire on and one it
@@ -339,8 +404,18 @@ competing-focal-points              1      1      0       0       100%
 ```
 
 A live site rewrites the answer every deploy, so the corpus stores the **snapshot**, not
-the URL — small, diffable JSON, enough for every rule that works from geometry and computed
-style. Screenshots are optional (`--with-images`) because they are large.
+the URL: gzipped JSON, enough for every rule working from geometry and computed style.
+(A measured page compresses about thirtyfold — eleven pages come to under a megabyte
+instead of eighteen. Nothing is lost: a 3.5MB JSON blob was never reviewable as a diff, and
+what a pinned capture is for is reproducibility, not review.) Screenshots are optional
+(`--with-images`) because they are far larger.
+
+Pages you do not own are captured with **`--redact`**, which replaces letters case for case
+and digits with zeros, leaving length, case, punctuation and all geometry untouched. A run
+of capitals stays a run of capitals, so the rule that cares keeps working.
+`destructive-adjacency` is the one rule reading literal words; it declares
+`needsLiteralText()` and is *skipped* on a redacted capture rather than silently finding
+nothing and looking like a pass.
 
 Verdicts live in `labels.json`, keyed by capture + rule + selector so that rewording a
 finding does not throw away the judgement somebody spent time forming. `UNSURE` is a
@@ -412,6 +487,12 @@ and shared by all 32 rules, which are each cheap.
 
 **A rule that throws becomes a finding**, not a failed audit. One broken check must not
 hide the other thirty-one.
+
+**No rule may flood the report.** Volume is a correctness property of its own. A dense
+application page produced 2998 findings from one rule and 2799 from another — individually
+defensible, collectively unreadable, because the forty-ninth undersized tap target buries
+the one clipped heading. Past `Config.maxFindingsPerRule` a rule reports its worst and says
+how many more there were.
 
 **No finding without a fix.** Tested: every finding carries a message stating its
 measurement and a suggestion naming what to change. Contrast findings go further and
