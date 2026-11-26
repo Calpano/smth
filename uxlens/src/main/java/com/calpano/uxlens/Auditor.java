@@ -13,6 +13,7 @@ import com.calpano.uxlens.perception.Overlays;
 import com.calpano.uxlens.perception.Saliency;
 import com.calpano.uxlens.perception.SquintTest;
 import com.calpano.uxlens.rules.RuleSet;
+import com.microsoft.playwright.options.ColorScheme;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -54,6 +55,7 @@ public class Auditor implements AutoCloseable {
     private RuleSet ruleSet = RuleSet.standard();
     private Path artifactDir;
     private double gridStep = 8;
+    private List<ColorScheme> colorSchemes = List.of(ColorScheme.LIGHT);
 
     private Auditor(PageProbe probe, boolean ownsProbe) {
         this.probe = probe;
@@ -80,25 +82,55 @@ public class Auditor implements AutoCloseable {
     /** Grid spacing for the grid overlay, in CSS px. Default 8. */
     public Auditor gridStep(double step) { this.gridStep = step; return this; }
 
+    /**
+     * Colour schemes to audit, each viewport once per scheme. Default light only.
+     *
+     * <p>Auditing both and comparing is the cheapest way to catch a dark mode that was
+     * bolted on: see {@link Report#schemeParity()}.
+     */
+    public Auditor colorSchemes(ColorScheme... schemes) {
+        return colorSchemes(List.of(schemes));
+    }
+
+    public Auditor colorSchemes(List<ColorScheme> schemes) {
+        if (schemes.isEmpty()) throw new IllegalArgumentException("At least one colour scheme");
+        this.colorSchemes = List.copyOf(schemes);
+        return this;
+    }
+
     public Config config() { return config; }
 
-    /** Audits a URL at every configured viewport. */
+    /** Audits a URL at every configured viewport and colour scheme. */
     public Report audit(String url) {
-        return run(url, v -> probe.capture(url, v));
+        return run(url, (v, scheme) -> probe.capture(url, v, scheme));
     }
 
     /** Audits an HTML string -- for component-level tests. */
     public Report auditHtml(String html) {
-        return run("inline-html", v -> probe.captureHtml(html, v));
+        return run("inline-html", (v, scheme) -> probe.captureHtml(html, v, scheme));
     }
 
-    private Report run(String label, java.util.function.Function<Viewport, PageProbe.Capture> capturer) {
+    /** Captures one viewport in one colour scheme. */
+    private interface Capturer {
+        PageProbe.Capture capture(Viewport viewport, ColorScheme scheme);
+    }
+
+    private Report run(String label, Capturer capturer) {
         Report report = new Report();
         report.url = label;
         report.generatedAt = Instant.now().toString();
 
         for (Viewport viewport : viewports) {
-            PageProbe.Capture capture = capturer.apply(viewport);
+            for (ColorScheme scheme : colorSchemes) {
+                runOne(report, capturer, viewport, scheme);
+            }
+        }
+        return report;
+    }
+
+    private void runOne(Report report, Capturer capturer, Viewport viewport, ColorScheme scheme) {
+        {
+            PageProbe.Capture capture = capturer.capture(viewport, scheme);
             Analysis analysis = Analysis.of(capture, config);
             List<Finding> findings = ruleSet.run(analysis);
 
@@ -106,8 +138,11 @@ public class Auditor implements AutoCloseable {
             // disagrees with the table it illustrates is worse than no artifact.
             List<Saliency.Fixation> fixations = analysis.fixations(FIXATIONS);
 
+            boolean dark = scheme == ColorScheme.DARK;
             Report.ViewportResult vr = new Report.ViewportResult();
-            vr.viewportName = viewport.name();
+            vr.viewportBase = viewport.name();
+            vr.colorScheme = dark ? "dark" : "light";
+            vr.viewportName = dark ? viewport.name() + "-dark" : viewport.name();
             vr.width = viewport.width();
             vr.height = viewport.height();
             vr.elementCount = analysis.snapshot().elements.size();
@@ -120,11 +155,11 @@ public class Auditor implements AutoCloseable {
             if (report.url.equals("inline-html")) report.url = analysis.snapshot().url;
 
             if (artifactDir != null) {
-                vr.artifacts.putAll(writeArtifacts(analysis, findings, fixations, viewport));
+                vr.artifacts.putAll(writeArtifacts(analysis, findings, fixations,
+                        viewport, vr.viewportName));
             }
             report.viewports.add(vr);
         }
-        return report;
     }
 
     private List<Report.Prominence> prominenceOf(Analysis analysis) {
@@ -174,10 +209,10 @@ public class Auditor implements AutoCloseable {
     /** Writes the screenshot and every overlay for one viewport; returns kind -> relative path. */
     private java.util.Map<String, String> writeArtifacts(Analysis analysis, List<Finding> findings,
                                                          List<Saliency.Fixation> fixations,
-                                                         Viewport viewport) {
+                                                         Viewport viewport, String label) {
         java.util.Map<String, String> paths = new java.util.LinkedHashMap<>();
         try {
-            Path dir = artifactDir.resolve(viewport.name());
+            Path dir = artifactDir.resolve(label);
             Files.createDirectories(dir);
             double scale = analysis.scale();
             BufferedImage full = analysis.fullPageImage().orElseThrow();

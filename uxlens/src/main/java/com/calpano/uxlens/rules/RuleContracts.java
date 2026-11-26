@@ -1,0 +1,209 @@
+package com.calpano.uxlens.rules;
+
+import com.calpano.uxlens.browser.Viewport;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * The discrimination contract for every rule, in one place.
+ *
+ * <p>Each entry is a pair of minimal pages: one the rule must fire on, one it must stay
+ * silent on. {@code RuleContractTest} runs every pair, so a rule that stops
+ * discriminating fails the build, and a rule added without a pair fails it too.
+ *
+ * <p>This is the gate that makes it safe to mine rules from outside sources. A principle
+ * lifted from a style guide or a textbook always sounds checkable in prose; writing the
+ * conforming page is what reveals whether it is. If no page can conform, the rule is
+ * unfalsifiable. If none can violate, it is unreachable. Neither gets added.
+ */
+public final class RuleContracts {
+
+    private static final Map<String, RuleContract> BY_RULE = new LinkedHashMap<>();
+
+    private RuleContracts() { }
+
+    static {
+        put("horizontal-overflow",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"width:2000px;height:60px;background:#dde\">Too wide for the viewport.</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"width:100%;height:60px;background:#dde\">Fits the viewport.</div></body>",
+                Viewport.DESKTOP);
+        put("clipped-text",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"height:24px;overflow:hidden;width:300px\">A box with a fixed height of twenty-four pixels and a great deal more text inside it than that, so the rest is painted outside and hidden from the reader entirely.</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"width:300px\">A box with no fixed height and a great deal of text inside it, all of which is painted where the reader can see it.</div></body>",
+                Viewport.DESKTOP);
+        put("off-viewport",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"width:600px;margin-left:1100px\">This paragraph starts past the right edge.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"width:600px;margin-left:0\">This paragraph sits inside the viewport.</p></body>",
+                Viewport.DESKTOP);
+        put("text-overlap",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"position:relative;height:60px\"><span style=\"position:absolute;left:0;top:10px;font-size:18px\">Overlapping one</span><span style=\"position:absolute;left:20px;top:14px;font-size:18px\">Overlapping two</span></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"position:relative;height:60px\"><span style=\"position:absolute;left:0;top:0;font-size:18px\">Separate one</span><span style=\"position:absolute;left:0;top:30px;font-size:18px\">Separate two</span></div></body>",
+                Viewport.DESKTOP);
+        put("touch-target",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:20px;height:20px;padding:0;font-size:11px\">x</button></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:48px;height:48px;padding:0;font-size:16px\">x</button></body>",
+                Viewport.MOBILE);
+        put("edge-alignment",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"padding:8px 0\">First row of the stack</div><div style=\"padding:8px 0;margin-left:3px\">Second row of the stack</div><div style=\"padding:8px 0\">Third row of the stack</div><div style=\"padding:8px 0\">Fourth row of the stack</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"padding:8px 0\">First row of the stack</div><div style=\"padding:8px 0;\">Second row of the stack</div><div style=\"padding:8px 0\">Third row of the stack</div><div style=\"padding:8px 0\">Fourth row of the stack</div></body>",
+                Viewport.DESKTOP);
+        put("baseline-drift",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;align-items:center;gap:24px\"><span style=\"font-size:16px\">One</span><span style=\"font-size:16px\">Two</span><span style=\"font-size:16px;position:relative;top:2px\">Three</span></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;align-items:center;gap:24px\"><span style=\"font-size:16px\">One</span><span style=\"font-size:16px\">Two</span><span style=\"font-size:16px;\">Three</span></div></body>",
+                Viewport.DESKTOP);
+        put("row-center-drift",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;align-items:center;gap:24px;height:60px\"><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#0b4fd4;position:relative;top:3px\"></div></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;align-items:center;gap:24px;height:60px\"><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#0b4fd4;\"></div></div></body>",
+                Viewport.DESKTOP);
+        put("page-margin",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"height:80px;background:#f0f2f5\">Section one</div><div style=\"height:80px;background:#f0f2f5;margin-left:5px\">Section two</div><div style=\"height:80px;background:#f0f2f5\">Section three</div><div style=\"height:80px;background:#f0f2f5\">Section four</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"height:80px;background:#f0f2f5\">Section one</div><div style=\"height:80px;background:#f0f2f5;\">Section two</div><div style=\"height:80px;background:#f0f2f5\">Section three</div><div style=\"height:80px;background:#f0f2f5\">Section four</div></body>",
+                Viewport.DESKTOP);
+        put("gap-consistency",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex\"><div style=\"flex:1;margin-right:24px;background:#eef\">One</div><div style=\"flex:1;margin-right:24px;background:#eef\">Two</div><div style=\"flex:1;margin-right:17px;background:#eef\">Three</div><div style=\"flex:1;background:#eef\">Four</div></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex\"><div style=\"flex:1;margin-right:24px;background:#eef\">One</div><div style=\"flex:1;margin-right:24px;background:#eef\">Two</div><div style=\"flex:1;margin-right:24px;background:#eef\">Three</div><div style=\"flex:1;background:#eef\">Four</div></div></body>",
+                Viewport.DESKTOP);
+        put("spacing-scale",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"padding:16px;margin-bottom:32px;background:#eef\">A</div><div style=\"padding:15px;margin-bottom:32px;background:#eef\">B</div><div style=\"padding:16px;margin-bottom:32px;background:#eef\">C</div><div style=\"padding:16px;margin-bottom:32px;background:#eef\">D</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"padding:16px;margin-bottom:32px;background:#eef\">A</div><div style=\"padding:16px;margin-bottom:32px;background:#eef\">B</div><div style=\"padding:16px;margin-bottom:32px;background:#eef\">C</div><div style=\"padding:16px;margin-bottom:32px;background:#eef\">D</div></body>",
+                Viewport.DESKTOP);
+        put("flat-type-hierarchy",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:19px;margin:0 0 16px\">A heading</h1><p>Body copy at sixteen pixels.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:44px;margin:0 0 16px\">A heading</h1><p>Body copy at sixteen pixels.</p></body>",
+                Viewport.DESKTOP);
+        put("noisy-type-scale",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"font-size:12px\">Size 12px</p><p style=\"font-size:13px\">Size 13px</p><p style=\"font-size:14px\">Size 14px</p><p style=\"font-size:15px\">Size 15px</p><p style=\"font-size:16px\">Size 16px</p><p style=\"font-size:17px\">Size 17px</p><p style=\"font-size:18px\">Size 18px</p><p style=\"font-size:19px\">Size 19px</p><p style=\"font-size:20px\">Size 20px</p><p style=\"font-size:21px\">Size 21px</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"font-size:16px\">Body</p><h2 style=\"font-size:28px\">Heading</h2></body>",
+                Viewport.DESKTOP);
+        put("font-family-sprawl",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"font-family:Georgia,serif\">One</p><p style=\"font-family:cursive\">Two</p><p style=\"font-family:monospace\">Three</p><p style=\"font-family:system-ui\">Four</p><p style=\"font-family:Impact,fantasy\">Five</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"font-family:Georgia,serif\">One</p><p style=\"font-family:Georgia,serif\">Two</p><p style=\"font-family:system-ui\">Three</p></body>",
+                Viewport.DESKTOP);
+        put("measure",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"max-width:none\">Reading breaks down past about eighty-five characters a line because the eye loses its place on the return sweep, and this sentence is written at length precisely so that it will wrap several times over and demonstrate exactly that failure mode in practice.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"max-width:60ch\">Reading breaks down past about eighty-five characters a line because the eye loses its place on the return sweep, and this sentence is written at length precisely so that it will wrap several times over and demonstrate exactly that failure mode in practice.</p></body>",
+                Viewport.DESKTOP);
+        put("leading",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"line-height:1.05;max-width:40ch\">Reading breaks down past about eighty-five characters a line because the eye loses its place on the return sweep, and this sentence is written at length precisely so that it will wrap several times over and demonstrate exactly that failure mode in practice.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"line-height:1.6;max-width:40ch\">Reading breaks down past about eighty-five characters a line because the eye loses its place on the return sweep, and this sentence is written at length precisely so that it will wrap several times over and demonstrate exactly that failure mode in practice.</p></body>",
+                Viewport.DESKTOP);
+        put("orphan-line",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h3 style=\"font-family:ui-monospace,monospace;font-size:20px;width:24ch;line-height:1.4\">Reporting and analytics now</h3></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h3 style=\"font-family:ui-monospace,monospace;font-size:20px;width:24ch;line-height:1.4\">Reporting and analytics</h3></body>",
+                Viewport.DESKTOP);
+        put("all-caps-run",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"text-transform:uppercase\">Everything here is set in capital letters for emphasis.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p>Everything here is set in sentence case, as running text should be.</p></body>",
+                Viewport.DESKTOP);
+        put("text-contrast",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#bbbbbb\">Grey nobody can read against white.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#333333\">Grey anybody can read against white.</p></body>",
+                Viewport.DESKTOP);
+        put("control-border-contrast",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><input style=\"font-size:16px;padding:12px;border:1px solid #f2f2f2;background:#fff\"></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><input style=\"font-size:16px;padding:12px;border:1px solid #6b7280;background:#fff\"></body>",
+                Viewport.DESKTOP);
+        put("palette-sprawl",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;flex-wrap:wrap\"><div style=\"width:40px;height:40px;background:#ff0000\"></div><div style=\"width:40px;height:40px;background:#ee1100\"></div><div style=\"width:40px;height:40px;background:#00ff00\"></div><div style=\"width:40px;height:40px;background:#11ee00\"></div><div style=\"width:40px;height:40px;background:#0000ff\"></div><div style=\"width:40px;height:40px;background:#0011ee\"></div><div style=\"width:40px;height:40px;background:#ffff00\"></div><div style=\"width:40px;height:40px;background:#eeee11\"></div><div style=\"width:40px;height:40px;background:#ff00ff\"></div><div style=\"width:40px;height:40px;background:#ee11ee\"></div><div style=\"width:40px;height:40px;background:#00ffff\"></div><div style=\"width:40px;height:40px;background:#11eeee\"></div><div style=\"width:40px;height:40px;background:#884422\"></div><div style=\"width:40px;height:40px;background:#228844\"></div><div style=\"width:40px;height:40px;background:#442288\"></div><div style=\"width:40px;height:40px;background:#888844\"></div><div style=\"width:40px;height:40px;background:#448888\"></div><div style=\"width:40px;height:40px;background:#884488\"></div></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;flex-wrap:wrap\"><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#0b4fd4\"></div><div style=\"width:40px;height:40px;background:#14161a\"></div><div style=\"width:40px;height:40px;background:#14161a\"></div><div style=\"width:40px;height:40px;background:#f8f8f8\"></div><div style=\"width:40px;height:40px;background:#f8f8f8\"></div></div></body>",
+                Viewport.DESKTOP);
+        put("near-duplicate-colors",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#1a1a1a\">First ink.</p><p style=\"color:#1b1b1b\">Second ink.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#1a1a1a\">First ink.</p><p style=\"color:#1a1a1a\">Second ink.</p></body>",
+                Viewport.DESKTOP);
+        put("competing-focal-points",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"display:flex;gap:64px\"><h2 style=\"font-size:40px;margin:0\">Première chose</h2><h2 style=\"font-size:40px;margin:0\">Deuxieme chose</h2></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h2 style=\"font-size:56px;margin:0 0 24px;font-weight:800\">The one that leads</h2><p style=\"font-size:14px;color:#5a6270;max-width:50ch\">Quiet supporting copy, deliberately far lighter than the heading above it.</p></body>",
+                Viewport.DESKTOP);
+        put("inverted-hierarchy",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"background:#ff6a00;color:#fff;font-size:34px;font-weight:800;padding:36px\">Half price this week</div><h1 style=\"font-size:19px;margin:24px 0\">The actual subject of the page</h1></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:46px;margin:24px 0\">The actual subject of the page</h1><p style=\"font-size:14px;color:#5a6270\">A quiet note about pricing.</p></body>",
+                Viewport.DESKTOP);
+        put("primary-action-not-salient",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:64px;line-height:1.05;margin:0 0 32px\">An enormous headline that takes most of the screen</h1><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 1, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 2, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 3, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 4, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 5, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 6, carrying its share of the page's visual weight.</p><a href=\"#x\" style=\"font-size:12px;color:#9aa0aa\">continue</a></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:40px;margin:0 0 32px\">A headline of ordinary size</h1><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 1, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 2, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 3, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 4, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 5, carrying its share of the page's visual weight.</p><p style=\"font-size:17px;margin:0 0 20px;max-width:60ch\">Supporting paragraph number 6, carrying its share of the page's visual weight.</p><a href=\"#x\" style=\"display:inline-block;background:#0b4fd4;color:#fff;font-size:24px;font-weight:700;padding:24px 48px;border-radius:8px;text-decoration:none\">Get started</a></body>",
+                Viewport.DESKTOP);
+        put("squint-cohesion",
+                "<body style=\"margin:0;background:#9a9a9a;height:1200px\"><p style=\"color:#9d9d9d;font:16px system-ui;padding:40px\">Text that barely differs from its surface.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><h1 style=\"font-size:44px\">A clear headline</h1><div style=\"height:160px;background:#14161a;margin:24px 0\"></div><div style=\"height:160px;background:#0b4fd4;margin:24px 0\"></div></body>",
+                Viewport.DESKTOP);
+        put("label-proximity",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><form style=\"max-width:360px\"><label style=\"display:block;font-size:15px;margin:4px 0 16px\">Your name</label><input style=\"display:block;width:100%;font-size:16px;padding:12px;margin:0 0 4px\"><label style=\"display:block;font-size:15px;margin:4px 0 16px\">Email address</label><input style=\"display:block;width:100%;font-size:16px;padding:12px;margin:0 0 4px\"></form></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><form style=\"max-width:360px\"><label style=\"display:block;font-size:15px;margin:16px 0 4px\">Your name</label><input style=\"display:block;width:100%;font-size:16px;padding:12px;margin:0 0 4px\"><label style=\"display:block;font-size:15px;margin:16px 0 4px\">Email address</label><input style=\"display:block;width:100%;font-size:16px;padding:12px;margin:0 0 4px\"></form></body>",
+                Viewport.DESKTOP);
+        put("orphaned-heading",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"margin:0 0 0\">Preceding body copy.</p><h2 style=\"font-size:24px;margin:8px 0 40px\">A section heading</h2><p style=\"margin:0\">The copy the heading introduces.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"margin:0 0 0\">Preceding body copy.</p><h2 style=\"font-size:24px;margin:40px 0 8px\">A section heading</h2><p style=\"margin:0\">The copy the heading introduces.</p></body>",
+                Viewport.DESKTOP);
+        put("upscaled-image",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAFklEQVR42mNwy9tHEmIY1TCqYfhqAAA8OnIQRR3HxgAAAABJRU5ErkJggg==\" width=\"160\" height=\"160\" alt=\"An upscaled icon\"></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"120\" height=\"120\" alt=\"An icon at its own size\"></body>",
+                Viewport.DESKTOP);
+        put("distorted-image",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAIAAADmAupWAAAARElEQVR42u3PQQ0AAAgEoMtpEjOZ0hZ+ZKMAqelXIiwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsfGsBv/yPDzz79qQAAAAASUVORK5CYII=\" width=\"100\" height=\"100\" alt=\"Squashed\"></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAIAAADmAupWAAAARElEQVR42u3PQQ0AAAgEoMtpEjOZ0hZ+ZKMAqelXIiwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsfGsBv/yPDzz79qQAAAAASUVORK5CYII=\" width=\"100\" height=\"50\" alt=\"Undistorted\"></body>",
+                Viewport.DESKTOP);
+        put("broken-image",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"this-file-does-not-exist.png\" width=\"120\" height=\"80\" alt=\"Missing\"></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"120\" height=\"120\" alt=\"Present\"></body>",
+                Viewport.DESKTOP);
+        put("missing-alt",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"120\" height=\"120\"></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"120\" height=\"120\" alt=\"A described image\"></body>",
+                Viewport.DESKTOP);
+        put("consistency-shape",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal;border-radius:5px\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                Viewport.DESKTOP);
+        put("consistency-typography",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal;font-size:14px\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                Viewport.DESKTOP);
+        put("consistency-color",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal;background:#fbfbfb\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                Viewport.DESKTOP);
+        put("consistency-spacing",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal;padding:13px\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 1</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 2</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 3</div><div style=\"flex:1;border:1px solid #d8dce3;border-radius:8px;padding:16px;background:#ffffff;font-size:16px;font-weight:400;letter-spacing:normal\">Card 4</div></div></body>",
+                Viewport.DESKTOP);
+        put("consistency-size",
+                "<body style=\"margin:0;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 1\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 2\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"30\" height=\"30\" alt=\"Icon 3\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 4\"></div></body>",
+                "<body style=\"margin:0;background:#fff\"><div style=\"display:flex;gap:24px;padding:24px\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 1\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 2\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 3\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAIAAAC2BqGFAAAAs0lEQVR42u3QQQ0AAAgEoAtmEhMbyxb6YSMBmS4ORIFo0YgWLdqCaNGIFi3agmjRiBYtGtGiES1aNKJFI1q0aESLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGIFi0a0aIRLVo0okUjWrRoRItGtGjRiBaNaNGiES0a0f8W2Lnr9Z8gNqoAAAAASUVORK5CYII=\" width=\"24\" height=\"24\" alt=\"Icon 4\"></div></body>",
+                Viewport.DESKTOP);
+        put("consistency-motion",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:16px;padding:24px\"><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 1</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 2</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s;transition-duration:0.45s\">Action 3</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 4</button></div></body>",
+                "<body style=\"margin:0;font:16px system-ui;background:#fff\"><div style=\"display:flex;gap:16px;padding:24px\"><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 1</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 2</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 3</button><button style=\"border-radius:6px;padding:10px 16px;background:#0b4fd4;color:#fff;border:0;font-size:16px;cursor:pointer;transition-duration:0.2s\">Action 4</button></div></body>",
+                Viewport.DESKTOP);
+        put("link-not-distinguishable",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#333333\">Running text with <a href=\"#x\" style=\"color:#3a3a3a;text-decoration:none\">a link marked by colour alone</a> inside it.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p style=\"color:#333333\">Running text with <a href=\"#x\" style=\"color:#0b4fd4;text-decoration:underline\">a properly marked link</a> inside it.</p></body>",
+                Viewport.DESKTOP);
+        put("false-affordance",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p>Some copy with <span style=\"text-decoration:underline\">underlined emphasis</span>.</p></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><p>Some copy with <strong>bold emphasis</strong>.</p></body>",
+                Viewport.DESKTOP);
+        put("destructive-adjacency",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"padding:10px 16px;font-size:15px\">Save changes</button><button style=\"padding:10px 16px;font-size:15px\">Delete account</button></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"padding:10px 16px;font-size:15px\">Save changes</button><span style=\"display:inline-block;width:64px\"></span><button style=\"padding:10px 16px;font-size:15px\">Delete account</button></body>",
+                Viewport.DESKTOP);
+        put("optical-centering",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:48px;height:48px;border-radius:24px;background:#0b4fd4;border:0;display:inline-flex;align-items:center;justify-content:center;padding:0\"><span style=\"width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:17px solid #fff\"></span></button></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:48px;height:48px;border-radius:24px;background:#0b4fd4;border:0;display:inline-flex;align-items:center;justify-content:center;padding:0 0 0 6px\"><span style=\"width:0;height:0;border-top:10px solid transparent;border-bottom:10px solid transparent;border-left:17px solid #fff\"></span></button></body>",
+                Viewport.DESKTOP);
+    }
+
+    private static void put(String ruleId, String violates, String conforms, Viewport viewport) {
+        BY_RULE.put(ruleId, RuleContract.of(violates, conforms, viewport));
+    }
+
+    /** The contract for a rule, if one is registered. */
+    public static Optional<RuleContract> forRule(String ruleId) {
+        return Optional.ofNullable(BY_RULE.get(ruleId));
+    }
+
+    /** Every rule id with a registered contract. */
+    public static java.util.Set<String> covered() { return BY_RULE.keySet(); }
+}

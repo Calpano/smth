@@ -101,7 +101,11 @@ public class PageProbe implements AutoCloseable {
 
     /** Measures an HTML string -- the fast path for unit-testing a component in isolation. */
     public Capture captureHtml(String html, Viewport viewport) {
-        try (BrowserContext ctx = newContext(viewport, ColorScheme.LIGHT)) {
+        return captureHtml(html, viewport, ColorScheme.LIGHT);
+    }
+
+    public Capture captureHtml(String html, Viewport viewport, ColorScheme scheme) {
+        try (BrowserContext ctx = newContext(viewport, scheme)) {
             Page page = ctx.newPage();
             page.setContent(withViewportMeta(html));
             return measure(page, viewport);
@@ -147,7 +151,10 @@ public class PageProbe implements AutoCloseable {
         page.evaluate("() => document.fonts ? document.fonts.ready : null");
         if (freezeAnimations) page.addStyleTag(new Page.AddStyleTagOptions().setContent(
                 "*,*::before,*::after{animation-play-state:paused!important;"
-                        + "transition:none!important;caret-color:transparent!important}"));
+                        // transition-property, not `transition`: the shorthand resets
+                        // transition-duration to 0s and the page's declared timing -- which
+                        // is part of its design system -- becomes unmeasurable.
+                        + "transition-property:none!important;caret-color:transparent!important}"));
         if (settleMs > 0) page.waitForTimeout(settleMs);
 
         Object raw = page.evaluate(PROBE_JS);

@@ -108,7 +108,8 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 
 ## What it measures
 
-32 rules across eight families. `uxlens rules` prints each with its rationale.
+42 rules across eleven families, plus two interaction-state checks that drive the page.
+`uxlens rules` prints each with its rationale.
 
 | Family | Rules |
 |---|---|
@@ -120,10 +121,27 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 | **Hierarchy** | `competing-focal-points` `inverted-hierarchy` `primary-action-not-salient` `squint-cohesion` |
 | **Proximity** | `label-proximity` `orphaned-heading` |
 | **Images** | `upscaled-image` `distorted-image` `broken-image` `missing-alt` |
+| **Consistency** | `consistency-shape` `consistency-typography` `consistency-color` `consistency-spacing` `consistency-size` `consistency-motion` |
+| **Affordance** | `link-not-distinguishable` `false-affordance` `destructive-adjacency` |
+| **Optical** | `optical-centering` |
 
-Plus `focus-not-visible`, which drives the page rather than reading it — see below.
+Plus `focus-not-visible` and `hover-not-visible`, which drive the page rather than reading
+it — see below.
 
-### Three things worth calling out
+### Four things worth calling out
+
+**The page is its own specification.** The consistency family needs no outside knowledge at
+all: nobody has to decide what a card's corner radius *ought* to be, because if seven cards
+use 8px and the eighth uses 6px, the page already said. It mines sibling groups (the cards
+in a row, the links in a nav) and role cohorts (every button on the page) for radius,
+border, type, colour, padding, icon size and transition timing.
+
+What keeps it quiet is the same discrimination the alignment rules use: **a defect is a
+near miss**. A nav link in a *different* colour from its siblings is the active one; a nav
+link two shades off is a mistake. So a clearly different value is read as a decision and
+left alone — and, importantly, a legitimate variant does not consume the outlier budget, or
+one red danger button in a row of blue ones would suppress the real finding beside it.
+
 
 **Spacing and type are judged against the page's own system, not an external ideal.** The
 base unit is *inferred* from what was rendered: a page built on 5px units is judged on 5px
@@ -165,6 +183,7 @@ at a screenshot.
 | **Squint test** | Grayscale and heavily blurred. Strips the vision encoder of text it would otherwise read instead of looking, leaving Gestalt grouping and contrast islands. A model that is bad at judging a crisp screenshot is markedly better at judging this one. |
 | **Prominence** | Every element ranked by measured visual weight — type weight, area, contrast, saturation, surrounding whitespace, position and pixel saliency, each normalised across the page. This ranking is then compared against the hierarchy the markup claims. |
 | **Grid & Set-of-Mark** | A labelled measuring grid, and every element outlined and numbered against a JSON table of exact rectangles — so a model reads "#14 starts at x=122, #12 at x=120" instead of estimating. |
+| **Optical centring** | Centre of *painted mass* against geometric centre, read from the render. CSS centres bounding boxes; eyes centre mass, so a play triangle centred by arithmetic looks pushed left. Nothing in the DOM can reveal this. |
 
 > **A note on the saliency implementation.** The textbook formulation takes
 > `log(amplitude + 1e-9)`. UI screenshots have large flat regions, so many frequency bins
@@ -212,20 +231,43 @@ claude -p "Fix what $(pwd)/.uxlens/briefing.md reports. Re-run uxlens when done.
 
 ---
 
-## Focus visibility
+## Interaction states
 
-Whether a keyboard focus ring is actually *visible* cannot be answered from a stylesheet: a
-ring can be declared and then painted outside a clipping ancestor, or overridden three
-stylesheets later, or removed by a reset nobody noticed. So each control is focused for
-real and the pixels around it are compared before and after.
+Whether a focus ring or a hover style is actually *visible* cannot be answered from a
+stylesheet: either can be declared and then painted outside a clipping ancestor, overridden
+three stylesheets later, or removed by a reset nobody noticed. So each control is focused
+and hovered for real, and the pixels around it are compared before and after.
 
 ```bash
-java -jar target/uxlens-*.jar focus http://localhost:3000
+java -jar target/uxlens-*.jar states http://localhost:3000 --states focus,hover
 ```
 
 ```java
-List<Finding> findings = FocusAudit.run(probe, url, Viewport.DESKTOP);
+List<Finding> findings = StateAudit.run(probe, url, Viewport.DESKTOP);
 ```
+
+Hover is only demanded of a pointer viewport — a phone has no pointer, so it cannot have a
+hover affordance.
+
+---
+
+## Light against dark
+
+Dark mode is usually bolted onto a light design, and the defects it introduces — a border
+that vanishes into the surface, a muted grey that drops below contrast, a shadow that stops
+separating anything — are invisible to anyone reviewing the light version.
+
+```bash
+java -jar target/uxlens-*.jar audit http://localhost:3000 --scheme light,dark
+```
+
+```
+Colour scheme parity at desktop:
+   only in dark:  text-contrast
+```
+
+Each viewport is audited once per scheme, and the report says which rules fired in one and
+not the other. That difference is the bolted-on part.
 
 ---
 
@@ -239,6 +281,65 @@ java -jar target/uxlens-*.jar diff http://localhost:3000 https://production.exam
 Reports a pixel-change ratio with a perceptual tolerance, an SSIM score, and a
 *layout similarity* — SSIM after a heavy blur, which drops only when blocks actually move.
 That separates "the copy changed" from "the layout broke".
+
+---
+
+## Proving a rule discriminates
+
+Every rule carries a **contract**: a pair of minimal pages, one it must fire on and one it
+must stay silent on. `RuleContractTest` runs all 42 pairs, so a rule that quietly stops
+working fails the build — and so does a rule added without a pair.
+
+```java
+RuleContracts.forRule("edge-alignment");   // the two pages, in RuleContracts
+```
+
+This is the gate that makes it safe to mine rules from outside sources. A principle lifted
+from a style guide or a textbook always sounds checkable in prose; **writing the conforming
+page is what reveals whether it is.** If no page can conform, the rule is unfalsifiable. If
+none can violate, it is unreachable. Neither gets added.
+
+Writing the 42 contracts immediately caught five problems — four fixtures that did not
+demonstrate what they claimed, and one real bug (see the note on animation freezing below).
+
+---
+
+## Calibrating against real pages
+
+Every threshold in `Config` starts life as somebody's taste. The only way to find out
+whether a rule earns its place is to run it over pages nobody wrote for it and have a human
+say, finding by finding, whether it was right.
+
+```bash
+uxlens corpus capture --dir corpus     # pin the measurements (not the URLs)
+uxlens corpus run     --dir corpus     # list findings with stable keys
+uxlens corpus score   --dir corpus --min-precision 0.8
+```
+
+```
+rule                            fired  right  wrong  unsure  precision
+touch-target                       33     19      0      14       100%
+leading                            24      0      0       0          -
+text-contrast                       8      8      0       0       100%
+competing-focal-points              1      1      0       0       100%
+```
+
+A live site rewrites the answer every deploy, so the corpus stores the **snapshot**, not
+the URL — small, diffable JSON, enough for every rule that works from geometry and computed
+style. Screenshots are optional (`--with-images`) because they are large.
+
+Verdicts live in `labels.json`, keyed by capture + rule + selector so that rewording a
+finding does not throw away the judgement somebody spent time forming. `UNSURE` is a
+first-class verdict rather than being quietly rounded either way, and an unjudged rule never
+fails the floor — nothing judged means nothing proven, which is not the same as something
+failing.
+
+`--min-precision` makes a precision regression fail a build the way a broken test does. This
+matters more as the rule count grows: **the marginal rule has negative value if it fires
+wrongly**, because it buries the findings that mattered and teaches the team to skim.
+
+The seeded corpus is one site, which is a weak measurement — the mechanism and the ratchet
+are the point. Add your own in `corpus/sites.json`.
 
 ---
 
@@ -257,7 +358,8 @@ config.disable("all-caps-run", "palette-sprawl");
 auditor.config(config);
 ```
 
-From the CLI: `--aaa`, `--only id,id`, `--skip id,id`, `--fail-on`, `--grid N`.
+From the CLI: `--aaa`, `--only id,id`, `--skip id,id`, `--fail-on`, `--grid N`,
+`--scheme light,dark`.
 
 To ratchet an existing codebase instead of fixing it all at once:
 
@@ -308,6 +410,18 @@ inflates `scrollWidth` while being clipped and costing the reader nothing. The r
 the widest element that actually lives in the document, and the probe separately measures
 how far the viewport really moves by trying to scroll it.
 
+**Luma is not relative luminance.** `Gray.luminanceOf` applies the Rec.709 weights to sRGB
+values *as stored*; `Rgba.relativeLuminance()` linearises them per WCAG. A mid blue is 0.29
+as luma and 0.10 as relative luminance. Mixing the two made an entire button surface
+register as ink and silently defeated the optical-centring measurement. Pixels are measured
+in luma, so declared colours are compared with `Rgba.luma()`.
+
+**Freezing animations must not erase what the page declared.** The probe pauses animations
+before measuring, and the obvious `transition: none !important` resets
+`transition-duration` to `0s` — so the page's declared timing, which is part of its design
+system, became unmeasurable. `transition-property: none` stops transitions just as dead and
+leaves the timing readable.
+
 **A caveat on full-page screenshots.** Chromium paints a fixed element once, at its
 scroll-0 position, so in a full-page capture a pinned footer appears partway down the image
 rather than at the bottom of every screen. The `fold.png` capture is the accurate one for
@@ -321,7 +435,7 @@ flag.
 31 of the 32 rules are covered by it (the 32nd is covered by direct unit tests).
 
 ```bash
-PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers mvn test     # 140 tests
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers mvn test
 ```
 
 ---
@@ -334,9 +448,10 @@ com.calpano.uxlens
 ├── browser/              Playwright, viewports, and probe.js
 ├── model/                Rect, Rgba, Elem, PageSnapshot, Finding, Report
 ├── perception/           Gray, Fft, Saliency, SquintTest, Overlays, VisualDiff
-├── analysis/             Prominence, SpacingSystem, TypeSystem, VisualGroups, Config
-├── rules/                the 32 checks, by family
-├── interactive/          FocusAudit — drives the page rather than reading it
+├── analysis/             Prominence, Consistency, SpacingSystem, TypeSystem, VisualGroups, Config
+├── rules/                the 42 checks, by family, plus their contracts
+├── corpus/               pinned captures, human labels, precision scoring
+├── interactive/          StateAudit — drives the page rather than reading it
 ├── report/               JSON, HTML, AgentBriefing
 ├── junit/                SharedProbe, UxAssert
 └── cli/                  Main

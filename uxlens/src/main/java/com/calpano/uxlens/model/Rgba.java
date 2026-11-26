@@ -71,6 +71,15 @@ public record Rgba(double r, double g, double b, double a) {
     /** Perceived lightness, 0-1 (luminance, gamma-corrected for display). */
     public double lightness() { return Math.pow(relativeLuminance(), 1 / 2.2); }
 
+    /**
+     * Gamma-encoded luma: the Rec.709 weights on the sRGB values as stored.
+     *
+     * <p>The scale {@link com.calpano.uxlens.perception.Gray#luminanceOf} works in, and the
+     * one to use when comparing a declared colour against measured pixels. Not
+     * interchangeable with {@link #relativeLuminance()}, which is linearised.
+     */
+    public double luma() { return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0; }
+
     /** Euclidean distance in RGB, a cheap "is this the same color" test. */
     public double distanceTo(Rgba o) { return Math.sqrt(sq(r - o.r) + sq(g - o.g) + sq(b - o.b)); }
 

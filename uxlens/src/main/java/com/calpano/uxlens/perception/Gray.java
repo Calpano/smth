@@ -20,7 +20,17 @@ public final class Gray {
         this.v = new double[height][width];
     }
 
-    /** Relative luminance of each pixel, matching the WCAG weights. */
+    /**
+     * Gamma-encoded luma of each pixel: the Rec.709 weights applied to the sRGB values as
+     * stored, <em>without</em> linearising them.
+     *
+     * <p>This is deliberately not WCAG relative luminance. Luma tracks perceived brightness,
+     * which is what the saliency and squint passes want; relative luminance is a physical
+     * quantity and is what contrast ratios need. The two differ by a lot -- a mid blue is
+     * 0.29 as luma and 0.10 as relative luminance -- so never compare a value from here
+     * against {@link com.calpano.uxlens.model.Rgba#relativeLuminance()}. Use
+     * {@link com.calpano.uxlens.model.Rgba#luma()} to get a comparable reference.
+     */
     public static Gray luminanceOf(BufferedImage img) {
         Gray g = new Gray(img.getWidth(), img.getHeight());
         for (int y = 0; y < g.height; y++) {

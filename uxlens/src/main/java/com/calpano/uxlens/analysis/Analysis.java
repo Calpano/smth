@@ -32,6 +32,7 @@ public final class Analysis {
     private final List<VisualGroups.Group> groups;
     private final SpacingSystem spacing;
     private final TypeSystem type;
+    private List<Consistency.Outlier> consistencyOutliers;
 
     private Analysis(PageSnapshot snapshot, Viewport viewport, Config config,
                      BufferedImage fullPage, BufferedImage fold,
@@ -63,6 +64,21 @@ public final class Analysis {
                 VisualGroups.groups(capture.snapshot()),
                 SpacingSystem.infer(capture.snapshot()),
                 TypeSystem.infer(capture.snapshot()));
+    }
+
+    /**
+     * Rebuilds an analysis from a capture stored on disk: a pinned snapshot plus the
+     * screenshots it was taken with. Used by the calibration corpus, where the whole point
+     * is that the page does not move between runs.
+     */
+    public static Analysis ofStoredCapture(PageSnapshot snapshot, Viewport viewport, Config config,
+                                           BufferedImage fullPage, BufferedImage fold) {
+        Saliency pageSal = fullPage == null ? null : Saliency.of(fullPage);
+        Saliency foldSal = fold == null ? null : Saliency.of(fold);
+        double scale = viewport.deviceScaleFactor();
+        return new Analysis(snapshot, viewport, config, fullPage, fold, foldSal, pageSal,
+                Prominence.of(snapshot, pageSal, scale), VisualGroups.groups(snapshot),
+                SpacingSystem.infer(snapshot), TypeSystem.infer(snapshot));
     }
 
     /**
@@ -108,6 +124,15 @@ public final class Analysis {
     }
 
     public SpacingSystem spacing() { return spacing; }
+
+    /**
+     * Near-miss inconsistencies against the page's own vocabulary, mined once and shared
+     * by every consistency rule.
+     */
+    public List<Consistency.Outlier> consistencyOutliers() {
+        if (consistencyOutliers == null) consistencyOutliers = Consistency.outliers(snapshot);
+        return consistencyOutliers;
+    }
 
     public TypeSystem type() { return type; }
 

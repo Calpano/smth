@@ -4,12 +4,12 @@ import java.net.URL;
 import java.nio.file.Path;
 
 /** Locates the fixture pages on the test classpath. */
-final class Fixtures {
+public final class Fixtures {
 
     private Fixtures() { }
 
     /** A {@code file://} URL for a page under {@code src/test/resources/pages}. */
-    static String url(String name) {
+    public static String url(String name) {
         URL res = Fixtures.class.getResource("/pages/" + name);
         if (res == null) throw new IllegalStateException("Fixture not on the classpath: " + name);
         try {
@@ -19,7 +19,7 @@ final class Fixtures {
         }
     }
 
-    static String clean() { return url("clean.html"); }
+    public static String clean() { return url("clean.html"); }
 
-    static String broken() { return url("broken.html"); }
+    public static String broken() { return url("broken.html"); }
 }

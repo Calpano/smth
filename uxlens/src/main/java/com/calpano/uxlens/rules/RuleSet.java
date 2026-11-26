@@ -26,6 +26,9 @@ public final class RuleSet {
         rules.addAll(HierarchyRules.all());
         rules.addAll(ProximityRules.all());
         rules.addAll(ImageRules.all());
+        rules.addAll(ConsistencyRules.all());
+        rules.addAll(AffordanceRules.all());
+        rules.addAll(OpticalRules.all());
         return new RuleSet(rules);
     }
 

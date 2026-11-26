@@ -4,7 +4,10 @@ import com.calpano.uxlens.Auditor;
 import com.calpano.uxlens.analysis.Config;
 import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
-import com.calpano.uxlens.interactive.FocusAudit;
+import com.calpano.uxlens.corpus.Calibration;
+import com.calpano.uxlens.corpus.CorpusStore;
+import com.calpano.uxlens.corpus.Labels;
+import com.calpano.uxlens.interactive.StateAudit;
 import com.calpano.uxlens.model.Finding;
 import com.calpano.uxlens.model.Report;
 import com.calpano.uxlens.model.Severity;
@@ -59,8 +62,9 @@ public final class Main {
         List<String> rest = List.of(args).subList(1, args.length);
         return switch (command) {
             case "audit" -> audit(rest);
-            case "focus" -> focus(rest);
+            case "states", "focus" -> states(rest);
             case "diff" -> diff(rest);
+            case "corpus" -> corpus(rest);
             case "rules" -> rules();
             default -> throw new IllegalArgumentException("Unknown command '" + command
                     + "'. Try: audit, focus, diff, rules.");
@@ -81,7 +85,7 @@ public final class Main {
 
         Report report;
         try (Auditor auditor = Auditor.create()) {
-            auditor.config(config).viewports(a.viewports());
+            auditor.config(config).viewports(a.viewports()).colorSchemes(a.colorSchemes());
             if (out != null) auditor.artifactDir(out);
             auditor.gridStep(a.number("grid", 8));
             report = auditor.audit(url);
@@ -95,6 +99,7 @@ public final class Main {
             System.out.println("Wrote " + out.resolve("briefing.md").toAbsolutePath() + "  (for an LLM agent)");
         }
         if (!quiet) printFindings(report);
+        printSchemeParity(report);
 
         List<Finding> blocking = report.findings(failOn);
         System.out.printf(Locale.ROOT, "%n%s: %s%n", blocking.isEmpty() ? "PASS" : "FAIL",
@@ -102,20 +107,29 @@ public final class Main {
         return blocking.isEmpty() ? 0 : 1;
     }
 
-    private static int focus(List<String> args) {
+    private static int states(List<String> args) {
         Args a = Args.parse(args, 1);
         String url = a.positional.get(0);
         Viewport viewport = a.viewports().get(0);
+
+        java.util.Set<StateAudit.State> states = a.list("states").isEmpty()
+                ? java.util.EnumSet.allOf(StateAudit.State.class)
+                : a.list("states").stream()
+                        .map(s -> StateAudit.State.valueOf(s.trim().toUpperCase(Locale.ROOT)))
+                        .collect(java.util.stream.Collectors.toCollection(
+                                () -> java.util.EnumSet.noneOf(StateAudit.State.class)));
+
         List<Finding> findings;
         try (PageProbe probe = PageProbe.launch()) {
-            findings = FocusAudit.run(probe, url, viewport);
+            findings = StateAudit.run(probe, url, viewport, states);
         }
         if (findings.isEmpty()) {
-            System.out.println("PASS: every focusable control shows a visible focus indicator.");
+            System.out.println("PASS: every control reacts visibly when focused and hovered.");
             return 0;
         }
         findings.forEach(f -> System.out.println(format(f)));
-        System.out.printf("%nFAIL: %d control(s) without a usable focus indicator.%n", findings.size());
+        System.out.printf("%nFAIL: %d control(s) without a usable focus or hover state.%n",
+                findings.size());
         return 1;
     }
 
@@ -149,6 +163,83 @@ public final class Main {
         return result.looksIdentical() ? 0 : 1;
     }
 
+    /**
+     * The calibration corpus: capture, run, score.
+     *
+     * <p>Precision is the number that decides whether a rule earns its place, and it cannot
+     * be argued into existence -- somebody has to look at real findings on real pages and
+     * say which were right.
+     */
+    private static int corpus(List<String> args) throws Exception {
+        Args a = Args.parse(args, 1);
+        String action = a.positional.get(0);
+        Path dir = a.path("dir", Path.of("corpus"));
+
+        return switch (action) {
+            case "capture" -> {
+                boolean withImages = a.flag("with-images");
+                int written;
+                try (PageProbe probe = PageProbe.launch()) {
+                    written = CorpusStore.capture(probe, dir, withImages);
+                }
+                System.out.printf("Pinned %d capture(s) under %s%s.%n", written, dir.toAbsolutePath(),
+                        withImages ? " (with screenshots)" : " (measurements only)");
+                yield 0;
+            }
+            case "run" -> {
+                Calibration.Result result = runCorpus(dir, a);
+                System.out.printf("%d finding(s) over %d capture(s); %d labelled, %d not.%n%n",
+                        result.findings().size(), CorpusStore.load(dir).size(),
+                        result.labelled(), result.unlabelled());
+                for (Calibration.Scored s : result.findings()) {
+                    System.out.printf("%-14s %-7s %s%n     %s%n",
+                            s.verdict() == null ? "UNLABELLED" : s.verdict(),
+                            s.finding().severity, s.key(),
+                            s.finding().message.length() > 120
+                                    ? s.finding().message.substring(0, 120) + "..."
+                                    : s.finding().message);
+                }
+                System.out.println("\nLabel a finding by adding its key to "
+                        + dir.resolve("labels.json") + " with TRUE_POSITIVE or FALSE_POSITIVE.");
+                yield 0;
+            }
+            case "score" -> {
+                Calibration.Result result = runCorpus(dir, a);
+                double minimum = a.number("min-precision", 0);
+                System.out.printf("%-30s %6s %6s %6s %7s %10s%n",
+                        "rule", "fired", "right", "wrong", "unsure", "precision");
+                for (Calibration.RuleScore s : result.scores()) {
+                    System.out.printf("%-30s %6d %6d %6d %7d %10s%n", s.ruleId(), s.fired(),
+                            s.truePositives(), s.falsePositives(), s.unsure(),
+                            s.isJudged() ? String.format(Locale.ROOT, "%.0f%%", s.precision() * 100)
+                                    : "-");
+                }
+                System.out.printf("%n%d of %d findings judged.%n",
+                        result.labelled(), result.findings().size());
+
+                List<Calibration.RuleScore> failing = result.below(minimum);
+                if (failing.isEmpty()) yield 0;
+                System.out.printf("%nBelow the %.0f%% precision floor:%n", minimum * 100);
+                failing.forEach(s -> System.out.printf("   %-30s %.0f%%%n",
+                        s.ruleId(), s.precision() * 100));
+                yield 1;
+            }
+            default -> throw new IllegalArgumentException(
+                    "Unknown corpus action '" + action + "'. Try: capture, run, score.");
+        };
+    }
+
+    private static Calibration.Result runCorpus(Path dir, Args a) {
+        List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
+        if (corpus.isEmpty()) {
+            throw new IllegalArgumentException("No captures under " + dir.toAbsolutePath()
+                    + ". Run 'uxlens corpus capture' first.");
+        }
+        Config config = Config.defaults();
+        a.list("skip").forEach(config.disabledRules::add);
+        return Calibration.run(corpus, config, Labels.load(dir), a.severity("min-severity", Severity.INFO));
+    }
+
     private static int rules() {
         for (Rule rule : RuleSet.standard().rules()) {
             System.out.printf("%-28s %s%s%n", rule.id(), rule.title(),
@@ -156,6 +247,23 @@ public final class Main {
             System.out.printf("%-28s %s%n%n", "", wrap(rule.rationale(), 88, 29));
         }
         return 0;
+    }
+
+    /** Where dark mode and light mode disagree, which is where dark mode was bolted on. */
+    private static void printSchemeParity(Report report) {
+        for (Report.SchemeParity parity : report.schemeParity()) {
+            if (parity.isClean()) {
+                System.out.printf("%nColour schemes agree at %s.%n", parity.viewport);
+                continue;
+            }
+            System.out.printf("%nColour scheme parity at %s:%n", parity.viewport);
+            if (!parity.onlyInDark.isEmpty()) {
+                System.out.println("   only in dark:  " + String.join(", ", parity.onlyInDark));
+            }
+            if (!parity.onlyInLight.isEmpty()) {
+                System.out.println("   only in light: " + String.join(", ", parity.onlyInLight));
+            }
+        }
     }
 
     private static void printFindings(Report report) {
@@ -204,8 +312,9 @@ public final class Main {
                 uxlens -- automated visual and UX review of a rendered web page
 
                   uxlens audit URL [options]     measure, check and report
-                  uxlens focus URL [options]     check keyboard focus indicators (drives the page)
+                  uxlens states URL [options]    check focus and hover states (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
+                  uxlens corpus ACTION [options] capture / run / score the calibration corpus
                   uxlens rules                   list every check with its rationale
 
                 Options
@@ -215,8 +324,16 @@ public final class Main {
                   --aaa                      hold text to WCAG AAA instead of AA
                   --only id,id               run only these rules
                   --skip id,id               skip these rules
+                  --scheme light,dark        audit each viewport in these colour schemes
                   --grid N                   grid overlay spacing in px (default 8)
+                  --states focus,hover       which states to check (default both)
                   --quiet                    write artifacts without printing findings
+
+                Corpus options
+                  --dir DIR                  corpus directory (default ./corpus)
+                  --with-images              also pin screenshots, so pixel rules can be scored
+                  --min-precision 0.8        'score' exits 1 if a judged rule falls below this
+                  --min-severity low         ignore findings below this severity
 
                 Exit codes: 0 clean, 1 findings at or above --fail-on, 2 bad usage, 3 error.""");
     }
@@ -282,6 +399,17 @@ public final class Main {
                 throw new IllegalArgumentException("--" + key + " must be one of high, medium, low, "
                         + "info; got '" + v + "'.");
             }
+        }
+
+        java.util.List<com.microsoft.playwright.options.ColorScheme> colorSchemes() {
+            List<String> specs = list("scheme");
+            if (specs.isEmpty()) return List.of(com.microsoft.playwright.options.ColorScheme.LIGHT);
+            return specs.stream().map(s -> switch (s.trim().toLowerCase(Locale.ROOT)) {
+                case "light" -> com.microsoft.playwright.options.ColorScheme.LIGHT;
+                case "dark" -> com.microsoft.playwright.options.ColorScheme.DARK;
+                default -> throw new IllegalArgumentException(
+                        "--scheme must be light or dark; got '" + s + "'.");
+            }).toList();
         }
 
         List<Viewport> viewports() {

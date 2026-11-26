@@ -16,6 +16,10 @@ public class Report {
     /** One viewport's audit: what was measured, what was found, what was rendered. */
     public static class ViewportResult {
         public String viewportName;
+        /** The viewport alone, without the colour scheme suffix. */
+        public String viewportBase;
+        /** {@code light} or {@code dark}. */
+        public String colorScheme = "light";
         public int width, height;
         public int elementCount;
         public boolean truncated;
@@ -59,6 +63,51 @@ public class Report {
         public Integer elementId;
         public String selector;
         public String text;
+    }
+
+    /** Rules that fire in one colour scheme and not the other, at one viewport. */
+    public static class SchemeParity {
+        public String viewport;
+        public List<String> onlyInDark = new ArrayList<>();
+        public List<String> onlyInLight = new ArrayList<>();
+
+        public boolean isClean() { return onlyInDark.isEmpty() && onlyInLight.isEmpty(); }
+    }
+
+    /**
+     * Where the two colour schemes disagree.
+     *
+     * <p>Dark mode is usually an afterthought bolted onto a light design, and the defects it
+     * introduces -- a border that vanishes, text that drops below contrast, a shadow that
+     * stops separating anything -- are invisible to anyone reviewing the light version. The
+     * check is cheap: audit both and compare which rules fired.
+     */
+    public List<SchemeParity> schemeParity() {
+        Map<String, List<ViewportResult>> byViewport = new LinkedHashMap<>();
+        for (ViewportResult v : viewports) {
+            byViewport.computeIfAbsent(v.viewportBase == null ? v.viewportName : v.viewportBase,
+                    k -> new ArrayList<>()).add(v);
+        }
+        List<SchemeParity> out = new ArrayList<>();
+        for (Map.Entry<String, List<ViewportResult>> en : byViewport.entrySet()) {
+            ViewportResult light = en.getValue().stream()
+                    .filter(v -> "light".equals(v.colorScheme)).findFirst().orElse(null);
+            ViewportResult dark = en.getValue().stream()
+                    .filter(v -> "dark".equals(v.colorScheme)).findFirst().orElse(null);
+            if (light == null || dark == null) continue;
+
+            SchemeParity parity = new SchemeParity();
+            parity.viewport = en.getKey();
+            parity.onlyInDark = ruleIds(dark).stream().filter(r -> !ruleIds(light).contains(r)).toList();
+            parity.onlyInLight = ruleIds(light).stream().filter(r -> !ruleIds(dark).contains(r)).toList();
+            out.add(parity);
+        }
+        return out;
+    }
+
+    private static java.util.Set<String> ruleIds(ViewportResult v) {
+        return v.findings.stream().map(f -> f.ruleId)
+                .collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
     }
 
     public List<Finding> allFindings() {

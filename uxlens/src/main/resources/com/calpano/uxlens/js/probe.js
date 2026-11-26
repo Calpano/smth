@@ -200,9 +200,16 @@
 
     const text = ownText(el);
     const role = el.getAttribute('role');
-    const interactive = INTERACTIVE_TAGS.has(tag) || (role && INTERACTIVE_ROLES.has(role)) ||
-      el.hasAttribute('onclick') || st.cursor === 'pointer' ||
-      (el.tabIndex >= 0 && el.tabIndex !== undefined && el.hasAttribute('tabindex'));
+    /* Two different questions. `actionable` is whether the element really does something:
+       a link with an href, a form control, an explicit role. `interactive` adds the visual
+       hint of a pointer cursor. Comparing the two is how a mismatch between what a thing
+       looks like and what it does becomes measurable. */
+    const actionable = (tag === 'A' && el.hasAttribute('href'))
+      || (INTERACTIVE_TAGS.has(tag) && tag !== 'A')
+      || (role && INTERACTIVE_ROLES.has(role))
+      || el.hasAttribute('onclick')
+      || (el.hasAttribute('tabindex') && el.tabIndex >= 0);
+    const interactive = actionable || st.cursor === 'pointer';
 
     const fg = parseColor(st.color);
     const bgRes = effectiveBackground(el);
@@ -253,6 +260,8 @@
       opacity: +opacity.toFixed(3),
       overflowX: st.overflowX, overflowY: st.overflowY,
       textAlign: st.textAlign,
+      cursor: st.cursor,
+      transitionDuration: st.transitionDuration,
 
       // type
       fontFamily: (st.fontFamily || '').split(',')[0].replace(/["']/g, '').trim(),
@@ -262,6 +271,7 @@
       lineHeight: st.lineHeight === 'normal' ? -1 : +parseFloat(st.lineHeight).toFixed(2),
       letterSpacing: st.letterSpacing === 'normal' ? 0 : +parseFloat(st.letterSpacing).toFixed(2),
       textTransform: st.textTransform,
+      textDecorationLine: st.textDecorationLine,
 
       // color
       color: css(fg),
@@ -273,6 +283,7 @@
 
       // semantics / state
       interactive: !!interactive,
+      actionable: !!actionable,
       heading: HEADING_TAGS.has(tag) ? parseInt(tag.slice(1), 10) : 0,
       focusable: el.tabIndex >= 0,
       disabled: !!el.disabled,

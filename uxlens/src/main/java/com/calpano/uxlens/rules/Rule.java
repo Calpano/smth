@@ -28,6 +28,16 @@ public interface Rule {
 
     List<Finding> check(Analysis analysis);
 
+    /**
+     * A pair of pages proving this rule discriminates: one it must fire on, one it must
+     * stay silent on.
+     *
+     * <p>Enforced by {@code RuleContractTest}. A rule without one has to be listed there as
+     * an explicit exemption with a reason, so that adding a check nobody can falsify takes
+     * a deliberate act rather than an oversight.
+     */
+    default java.util.Optional<RuleContract> contract() { return RuleContracts.forRule(id()); }
+
     /** Convenience for building findings that carry this rule's id. */
     default Finding finding(com.calpano.uxlens.model.Severity severity, String message) {
         return new Finding(id(), severity, message);

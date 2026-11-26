@@ -54,6 +54,7 @@ public final class AgentBriefing {
             appendTokens(md, v);
         }
 
+        appendSchemeParity(md, report);
         appendChecklist(md);
         return md.toString();
     }
@@ -163,6 +164,29 @@ public final class AgentBriefing {
         }
         md.append("\nSpacing and type findings are measured against *this* inferred system, not "
                 + "an external ideal -- a page built on 5px units is judged on 5px units.\n\n");
+    }
+
+    private static void appendSchemeParity(StringBuilder md, Report report) {
+        List<Report.SchemeParity> parity = report.schemeParity();
+        if (parity.isEmpty()) return;
+        md.append("---\n\n## Light against dark\n\n");
+        md.append("A rule that fires in one scheme and not the other is a defect the other "
+                + "scheme's reviewer cannot see.\n\n");
+        for (Report.SchemeParity p : parity) {
+            md.append("- **").append(p.viewport).append("**: ");
+            if (p.isClean()) {
+                md.append("the same rules fire in both schemes.\n");
+            } else {
+                if (!p.onlyInDark.isEmpty()) {
+                    md.append("only in dark: `").append(String.join("`, `", p.onlyInDark)).append("`. ");
+                }
+                if (!p.onlyInLight.isEmpty()) {
+                    md.append("only in light: `").append(String.join("`, `", p.onlyInLight)).append("`.");
+                }
+                md.append('\n');
+            }
+        }
+        md.append('\n');
     }
 
     private static void appendChecklist(StringBuilder md) {

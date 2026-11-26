@@ -1,0 +1,8 @@
+[
+  {
+    "id": "xam-de",
+    "url": "https://xam.de",
+    "viewports": ["desktop", "mobile"],
+    "note": "A hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Good at catching rules that assume a component-framework page."
+  }
+]

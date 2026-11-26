@@ -44,6 +44,9 @@ public class Elem {
     public int zIndex;
     public double opacity = 1;
     public String overflowX, overflowY, textAlign;
+    /** The pointer shown over this element -- the strongest hint that it is clickable. */
+    public String cursor;
+    public String transitionDuration;
 
     public String fontFamily;
     public double fontSize;
@@ -53,6 +56,7 @@ public class Elem {
     public double lineHeight = -1;
     public double letterSpacing;
     public String textTransform;
+    public String textDecorationLine;
 
     public String color;
     public String backgroundColor;
@@ -63,7 +67,14 @@ public class Elem {
     public boolean hasBackgroundImage;
     public String boxShadow;
 
+    /** Looks clickable: actionable, or merely wearing a pointer cursor. */
     public boolean interactive;
+    /**
+     * Actually does something: a link with an href, a form control, an explicit ARIA role,
+     * an inline handler, or a focusable tabindex. A styled div is not actionable however
+     * much it looks like a button.
+     */
+    public boolean actionable;
     /** 1-6 for h1-h6, 0 otherwise. */
     public int heading;
     public boolean focusable;
@@ -122,6 +133,21 @@ public class Elem {
 
     /** True when {@link #rect()} is the union of several line boxes rather than a real shape. */
     public boolean rectIsUnionOfLineBoxes() { return clientRectCount > 1; }
+
+    /** True when the text is underlined -- on the web, the oldest signal that it is a link. */
+    public boolean isUnderlined() {
+        return textDecorationLine != null && textDecorationLine.contains("underline");
+    }
+
+    /** True when the pointer turns into a hand over this element. */
+    public boolean showsPointerCursor() { return "pointer".equals(cursor); }
+
+    /** True when the element paints a surface of its own -- a button-like shape. */
+    public boolean paintsSurface() {
+        Rgba bg = Rgba.parse(backgroundColor);
+        return (bg != null && bg.a() > 0.05) || hasVisibleBorder() || borderRadius > 2
+                || (boxShadow != null && !boxShadow.isBlank());
+    }
 
     /** True when the element paints a visible border on all sides. */
     public boolean hasVisibleBorder() {
