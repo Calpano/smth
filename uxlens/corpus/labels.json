@@ -1,190 +1,1102 @@
 {
   "xam-de|desktop|text-contrast|#footbar": {
     "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: the separator pipes between the footer links are #000 on a #000 bar, so they are simply invisible."
-  },
-  "xam-de|desktop|competing-focal-points|body > main > div:nth-of-type(1) > h2": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified: the section headings are styled identically to the page's own title, so nothing leads the first viewport."
+    "note": "Verified in the render: the separator pipes are #000 on a #000 bar, so they are simply invisible."
   },
   "xam-de|desktop|gap-consistency|body > main > div:nth-of-type(4)": {
     "verdict": "UNSURE",
-    "note": "Gaps run 20/20/20/100. The wide last gap separates the footer block and reads as deliberate, so flagging it is defensible but probably unwelcome."
-  },
-  "xam-de|desktop|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(1)": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
-  },
-  "xam-de|desktop|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(1) > em": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
-  },
-  "xam-de|desktop|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(2)": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
+    "note": "Gaps run 20/20/20/100. The wide last gap separates the footer and reads as deliberate."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(1) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(1) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(2) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(1) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(2) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(5) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(6) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(7) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(4) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(5) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(6) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|desktop|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(7) > a": {
     "verdict": "UNSURE",
-    "note": "22px against the 24px pointer floor. Technically short, but 2px under a soft threshold with a mouse is not something a team should be asked to fix."
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   },
   "xam-de|mobile|text-contrast|#footbar": {
     "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: the separator pipes between the footer links are #000 on a #000 bar, so they are simply invisible."
+    "note": "Verified in the render: the separator pipes are #000 on a #000 bar, so they are simply invisible."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(1) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(1) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
-  },
-  "xam-de|mobile|touch-target|div:nth-of-type(2) > div > dl > dd:nth-of-type(1) > a > mark": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(2) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(2) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(1) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(2) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(3) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dd:nth-of-type(4) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
-  },
-  "xam-de|mobile|touch-target|div:nth-of-type(3) > div > dl > dd:nth-of-type(4) > a > mark": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(5) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(6) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(3) > div > dl > dt:nth-of-type(7) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
-  },
-  "xam-de|mobile|touch-target|div:nth-of-type(3) > div > dl > dd:nth-of-type(7) > a > mark": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(4) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(5) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(6) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
-  },
-  "xam-de|mobile|touch-target|div:nth-of-type(4) > div > dl > dd:nth-of-type(6) > a > mark": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|touch-target|body > main > div:nth-of-type(4) > div > dl > dt:nth-of-type(7) > a": {
     "verdict": "TRUE_POSITIVE",
-    "note": "22px link in a touch viewport against a 44px floor; genuinely hard to hit."
+    "note": "Undersized target in a touch viewport against the 44px floor."
   },
   "xam-de|mobile|gap-consistency|body > main > div:nth-of-type(4)": {
     "verdict": "UNSURE",
-    "note": "Gaps run 20/20/20/100. The wide last gap separates the footer block and reads as deliberate, so flagging it is defensible but probably unwelcome."
-  },
-  "xam-de|mobile|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(1)": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
-  },
-  "xam-de|mobile|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(1) > em": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
-  },
-  "xam-de|mobile|text-contrast|body > main > div:nth-of-type(5) > p:nth-of-type(2)": {
-    "verdict": "TRUE_POSITIVE",
-    "note": "Verified in the render: #ccc on #f8f8f8 footer text, unreadable at 1.51:1."
+    "note": "Gaps run 20/20/20/100. The wide last gap separates the footer and reads as deliberate."
   },
   "xam-de|mobile|text-overlap|body > main > div:nth-of-type(2) > h2": {
     "verdict": "UNSURE",
-    "note": "A 30%-opacity emoji watermark behind a heading at mobile width. Reported at LOW as a watermark rather than a collision, which is the right register, but whether it needs fixing is a judgement call."
+    "note": "A low-opacity watermark behind a heading. Reported at LOW as a watermark rather than a collision, which is the right register; whether it needs fixing is a judgement."
   },
   "xam-de|mobile|text-overlap|body > main > div:nth-of-type(3) > h2": {
     "verdict": "UNSURE",
-    "note": "A 30%-opacity emoji watermark behind a heading at mobile width. Reported at LOW as a watermark rather than a collision, which is the right register, but whether it needs fixing is a judgement call."
+    "note": "A low-opacity watermark behind a heading. Reported at LOW as a watermark rather than a collision, which is the right register; whether it needs fixing is a judgement."
   },
   "xam-de|mobile|text-overlap|body > main > div:nth-of-type(4) > h2": {
     "verdict": "UNSURE",
-    "note": "A 30%-opacity emoji watermark behind a heading at mobile width. Reported at LOW as a watermark rather than a collision, which is the right register, but whether it needs fixing is a judgement call."
+    "note": "A low-opacity watermark behind a heading. Reported at LOW as a watermark rather than a collision, which is the right register; whether it needs fixing is a judgement."
+  },
+  "grafana-play|mobile|touch-target|#floating-boundary > header > div > div:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div > div:nth-of-type(1) > nav > ol > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div > div:nth-of-type(1) > nav > ol > li:nth-of-type(3) > span": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|#mega-menu-toggle": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|#floating-boundary > header > div > div:nth-of-type(2) > button:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|#floating-boundary > header > div > div:nth-of-type(2) > button:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|#floating-boundary > header > div > div:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div:nth-of-type(1) > div > div > div > div > button:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div:nth-of-type(1) > div > div > div > div > button:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div > div > div > div > div > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div > div > div > div > div > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "grafana-play|mobile|touch-target|div > div > div > div > div > a:nth-of-type(3)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|#radix-_R_3qinpfsnqbr6lb_-content-outline > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > thead > tr > th:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(2) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(3) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(4) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(5) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(6) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(7) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(8) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(9) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|touch-target|table > tbody > tr:nth-of-type(10) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|main > section > div > div > div > a:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|main > section > div > div > div > a:nth-of-type(1)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|#theme-selector": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(1) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(2) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(3) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(4) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(5) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(2)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop|spacing-scale|div > div > div > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|#radix-_R_3qinpfsnqbr6lb_-content-outline > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > thead > tr > th:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(1) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(2) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(3) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(4) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(5) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(6) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(7) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(8) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(9) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|touch-target|table > tbody > tr:nth-of-type(10) > td:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|main > section > div > div > div > a:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|main > section > div > div > div > a:nth-of-type(1)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|#theme-selector": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(1) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(2) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(3) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(4) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|consistency-typography|div:nth-of-type(2) > div:nth-of-type(1) > div > ul > li:nth-of-type(5) > button": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|desktop-dark|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop-dark|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(2)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop-dark|spacing-scale|div > div > div > div:nth-of-type(3) > div:nth-of-type(1) > div:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-dashboard|desktop-dark|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "shadcn-dashboard|mobile|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|body > div:nth-of-type(2) > header > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|body > div:nth-of-type(2) > header > div > div > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|body > div:nth-of-type(2) > header > div > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|header > div > div > div > div:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|main > section > div > div > div > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|touch-target|main > section > div > div > div > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|mobile|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|body > div:nth-of-type(2) > header > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|body > div:nth-of-type(2) > header > div > div > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|body > div:nth-of-type(2) > header > div > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|header > div > div > div > div:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|main > section > div > div > div > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|touch-target|main > section > div > div > div > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "shadcn-dashboard|mobile-dark|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-dashboard|mobile-dark|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "shadcn-tasks|desktop|consistency-typography|div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-tasks|desktop|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > thead > tr > th:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(1) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(2) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(3) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(4) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(5) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(6) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(7) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(8) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(9) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(10) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(11) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(12) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(13) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(14) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(15) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(16) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(17) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(18) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(19) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(20) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(21) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(22) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|touch-target|div > table > tbody > tr:nth-of-type(23) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-tasks|desktop|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(2)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(3)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "shadcn-tasks|desktop-dark|consistency-typography|div > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(3) > div:nth-of-type(2) > div:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > thead > tr > th:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(1) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(2) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(3) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(4) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(5) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(6) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(7) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(8) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(9) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(10) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(11) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(12) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(13) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(14) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(15) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(16) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(17) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(18) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(19) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(20) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(21) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(22) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|touch-target|div > table > tbody > tr:nth-of-type(23) > td:nth-of-type(1) > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "A 16px checkbox against the 24px WCAG 2.5.8 floor. Real, well known, and worth fixing even on an otherwise careful page."
+  },
+  "shadcn-tasks|desktop-dark|consistency-typography|body > div:nth-of-type(2) > main > section > div > div > a": {
+    "verdict": "UNSURE",
+    "note": "A 12px link among 14px peers in the same cohort. Could be a deliberate meta link or could be drift; the rule cannot tell, and neither can I without the design intent."
+  },
+  "shadcn-tasks|desktop-dark|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(1)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop-dark|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(2)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop-dark|spacing-scale|body > div:nth-of-type(2) > header > div > div > nav > a:nth-of-type(3)": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "Tailwind's scale includes half-steps (px-2.5 = 10px), so 10px is on this page's scale and the inference picked 4px because 4 explained enough of the values to stop looking. The page is consistent; the inferred unit is too coarse."
+  },
+  "shadcn-tasks|desktop-dark|near-duplicate-colors|page": {
+    "verdict": "FALSE_POSITIVE",
+    "note": "#ffffff and #fafafa are two deliberate tokens in this system (background and muted), not one colour typed twice. The rule cannot tell a fine neutral ramp from carelessness, and on a token-based system it is usually the former."
+  },
+  "mastodon-explore|desktop|touch-target|article:nth-of-type(1) > article > header > div > p:nth-of-type(1) > a:nth-of-type(1)": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "mastodon-explore|desktop|touch-target|article:nth-of-type(2) > article > header > div > p:nth-of-type(1) > a:nth-of-type(1)": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > header > div > p:nth-of-type(1) > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > header > div > p:nth-of-type(1) > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_6_": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div > div:nth-of-type(2) > div > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_5_ > div > div:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(2) > article > header > div > p:nth-of-type(1) > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(2) > article > header > div > p:nth-of-type(1) > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_k_": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_j_ > div:nth-of-type(1) > div:nth-of-type(1) > p:nth-of-type(3) > span > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div:nth-of-type(1) > div:nth-of-type(2) > div > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_j_ > div:nth-of-type(1) > div:nth-of-type(2) > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_p_-trigger": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|page": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|main > div > header > div > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div:nth-of-type(2) > main > div > div:nth-of-type(2) > form > input": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div:nth-of-type(4) > div > article:nth-of-type(1) > article > header > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > div > footer > div > button:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_b_-trigger": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > div > footer > div > button:nth-of-type(3)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > div > footer > div > button:nth-of-type(4)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|article:nth-of-type(1) > article > div > footer > div > button:nth-of-type(5)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#_r_h_-trigger": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div:nth-of-type(4) > div > article:nth-of-type(2) > article > header > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|#skip-link-target-nav": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div > div > div:nth-of-type(2) > nav > div > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mastodon-explore|mobile|touch-target|div > div > div:nth-of-type(2) > nav > div > button": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|body > header > h1 > button:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|body > header > h1 > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|body > header > h1 > button:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > a:nth-of-type(1)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > a:nth-of-type(2)": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(3) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(4) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(5) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "openstreetmap|mobile|touch-target|#map > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(7) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|body > header > div > ol > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|body > header > div > ol > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|body > header > div > ol > li:nth-of-type(3) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|body > header > div > ol > li:nth-of-type(4) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|div:nth-of-type(1) > details > div > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|div:nth-of-type(1) > details > div > ul > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#color_2 > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#currentcolor > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(4) > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|figure > table > tbody > tr:nth-of-type(1) > th > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|figure > table > tbody > tr:nth-of-type(3) > th > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(6) > pre > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(11) > ul > li:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(12) > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|page": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|body > header > nav > div:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(3) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(4) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(5) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(7) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(8) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#content > aside > nav > ul > li:nth-of-type(9) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile|touch-target|#try_it > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|body > header > div > ol > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|body > header > div > ol > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|body > header > div > ol > li:nth-of-type(3) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|body > header > div > ol > li:nth-of-type(4) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|div:nth-of-type(1) > details > div > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|div:nth-of-type(1) > details > div > ul > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#color_2 > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#currentcolor > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(4) > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|figure > table > tbody > tr:nth-of-type(1) > th > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|figure > table > tbody > tr:nth-of-type(3) > th > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(6) > pre > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(11) > ul > li:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > div:nth-of-type(2) > section:nth-of-type(12) > div > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|page": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|body > header > nav > div:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(1) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(2) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(3) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(4) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(5) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(6) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(7) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(8) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#content > aside > nav > ul > li:nth-of-type(9) > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "mdn-article|mobile-dark|touch-target|#try_it > a": {
+    "verdict": "TRUE_POSITIVE",
+    "note": "Undersized target in a touch viewport against the 44px floor."
+  },
+  "wikipedia-ja|desktop|touch-target|body > div:nth-of-type(1) > a:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "wikipedia-ja|desktop|touch-target|body > div:nth-of-type(2) > details > summary": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "wikipedia-ar|desktop|touch-target|body > div:nth-of-type(1) > a:nth-of-type(2)": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
+  },
+  "wikipedia-ar|desktop|touch-target|body > div:nth-of-type(2) > details > summary": {
+    "verdict": "UNSURE",
+    "note": "22px against the 24px pointer floor. Technically short, but two pixels under a soft threshold with a mouse is not something to ask a team to fix."
   }
 }

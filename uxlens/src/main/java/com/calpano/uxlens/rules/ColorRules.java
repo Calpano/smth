@@ -116,6 +116,14 @@ public final class ColorRules {
             for (Elem e : a.snapshot().elements) {
                 boolean control = "input".equals(e.tag) || "select".equals(e.tag) || "textarea".equals(e.tag);
                 if (!control || e.disabled) continue;
+                // A shadow can be the boundary. Tailwind's ring utilities draw it that way and
+                // so does every design system built on them; the border really is transparent
+                // and the control really is perfectly visible. The shadow's own contrast is not
+                // readable from the computed string, so this is a deliberate miss rather than a
+                // confident wrong answer.
+                if (e.boxShadow != null && !e.boxShadow.isBlank() && !"none".equals(e.boxShadow)) {
+                    continue;
+                }
 
                 Rgba bg = e.bg();
                 Rgba own = Rgba.parse(e.backgroundColor);

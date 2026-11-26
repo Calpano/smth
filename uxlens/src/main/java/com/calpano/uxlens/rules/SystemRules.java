@@ -41,6 +41,8 @@ public final class SystemRules {
         private static final double REQUIRED_RATIO = 1.5;
         /** Enough groups on both levels to be talking about a pattern rather than a pair. */
         private static final int MIN_GROUPS = 2;
+        /** Below this, the containers are flush on purpose and distance is not the device. */
+        private static final double MIN_MEANINGFUL_GAP_PX = 2;
 
         @Override public String id() { return "flat-grouping-hierarchy"; }
 
@@ -74,6 +76,10 @@ public final class SystemRules {
             double insideGroups = median(within);
             double betweenGroups = median(between);
             if (insideGroups <= 0) return List.of();
+            // Flush containers -- table rows, list items, the segments of a toolbar -- are a
+            // deliberate device. Grouping there is carried by rules and surfaces rather than by
+            // distance, so a distance ratio says nothing about it.
+            if (betweenGroups < MIN_MEANINGFUL_GAP_PX) return List.of();
             double ratio = betweenGroups / insideGroups;
             if (ratio >= REQUIRED_RATIO) return List.of();
 
