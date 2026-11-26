@@ -108,7 +108,7 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 
 ## What it measures
 
-50 rules across thirteen families, plus two interaction-state checks that drive the page.
+55 rules across fifteen families, plus two interaction-state checks that drive the page.
 `uxlens rules` prints each with its rationale and the body of knowledge it rests on.
 
 | Family | Rules |
@@ -126,6 +126,7 @@ Report report = auditor.viewports(Viewport.MOBILE).auditHtml("""
 | **Optical** | `optical-centering` |
 | **System** | `flat-grouping-hierarchy` `no-tonal-anchor` `centred-body-copy` `cramped-prose` |
 | **Body of knowledge** | `invisible-surface` `minimum-text-size` `mixed-label-placement` `leading-for-measure` |
+| **Named heuristics** | `unlabelled-icon-control` `label-in-name` `dialog-without-escape` `inconsistent-common-region` |
 
 Plus `focus-not-visible` and `hover-not-visible`, which drive the page rather than reading
 it — see below.
@@ -340,6 +341,56 @@ and a test fails if *no* rule admits to it, since that could not be true.
 WCAG is cited by exact criterion number, because those are stable and a test enforces it.
 ISO parts are cited by part and named principle rather than clause number: citing a clause
 approximately is worse than not citing one.
+
+### The named heuristics, item by item
+
+`uxlens standards` also walks Nielsen's ten, Shneiderman's eight and the Gestalt principles
+one at a time, marking each covered, partial, or out of reach — published in full rather
+than filtered to the flattering parts:
+
+```
+  Nielsen's usability heuristics
+   OUT_OF_REACH   Visibility of system status
+   COVERED        Consistency and standards                    8 rule(s)
+   PARTIAL        Recognition rather than recall               2 rule(s)
+   OUT_OF_REACH   Help users recognise and recover from errors
+  ...
+  Gestalt grouping principles
+   COVERED        Proximity / Similarity / Common region / Continuity
+   OUT_OF_REACH   Closure, Common fate
+
+   6 covered, 10 partial, 9 out of reach.
+```
+
+The pattern is the point. **Gestalt is nearly all covered; Nielsen is mostly out of reach.**
+The principles about *presentation* yield to measurement and the principles about
+*interaction over time* do not — which is exactly what measuring one rendered moment buys
+you. A test fails if the out-of-reach count ever drops suspiciously low, because that would
+mean something is overclaiming.
+
+---
+
+## What kind of page is this
+
+A separate output from the findings list, and a different question: not *what is wrong* but
+*what sort of page is this*. Six measures, four from the literature on interface aesthetics:
+
+```
+colourfulness=23.9  visualComplexity=0.14  inkCoverage=0.254  whitespace=0.746
+balance=0.878  alignmentPoints=18  gridTightness=0.471
+```
+
+Colourfulness over the opponent channels, visual complexity by quadtree decomposition, ink
+coverage, weight balance about the centre lines, and how many distinct edges content aligns
+to. On the fixtures: the tidy page measures 23.9 colourfulness and 0.88 balance; the
+deliberately broken one, 58.7 and 0.56.
+
+**Nothing here passes or fails.** The literature these come from reports that such measures
+correlate only *modestly* with judged quality. They earn their place comparing a page
+against its own siblings, its previous version, or a house norm — not as a score. Complexity
+also saturates: a wall-to-wall text page has detail at every scale, reaches the ceiling and
+reports `complexitySaturated`, after which it cannot rank anything higher. Said plainly
+rather than hidden behind a number that looks precise.
 
 ### What it does *not* check
 

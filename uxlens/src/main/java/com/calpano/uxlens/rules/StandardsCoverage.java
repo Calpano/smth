@@ -37,6 +37,127 @@ public final class StandardsCoverage {
      */
     public record OutOfScope(String area, Reference.Source source, String why, String insteadUse) { }
 
+    /** One named heuristic, and what this tool does about it. */
+    public record Heuristic(String set, String item, Status status, List<String> ruleIds,
+                            String note) { }
+
+    /** How far a named heuristic is addressed here. */
+    public enum Status {
+        /** Checked, by the rules named. */
+        COVERED,
+        /** Partly checked: one narrow, measurable corner of a broader principle. */
+        PARTIAL,
+        /** Not checked, because a rendered page cannot answer it. */
+        OUT_OF_REACH
+    }
+
+    /**
+     * The named heuristic sets, gone through item by item.
+     *
+     * <p>Published in full rather than filtered to the flattering parts. The pattern is
+     * consistent and worth seeing: the principles about <em>presentation</em> are largely
+     * covered, and the principles about <em>interaction over time</em> are largely out of
+     * reach. A tool that measures one rendered moment can say a great deal about what a page
+     * looks like and almost nothing about what using it is like.
+     */
+    public static List<Heuristic> heuristics() {
+        List<Heuristic> out = new ArrayList<>();
+        String n = "Nielsen's usability heuristics";
+
+        out.add(new Heuristic(n, "Visibility of system status", Status.OUT_OF_REACH, List.of(),
+                "A property of a sequence; one render is one frame of it, and the frame that "
+                        + "matters is during the wait."));
+        out.add(new Heuristic(n, "Match between system and the real world", Status.OUT_OF_REACH,
+                List.of(), "A question about the users' vocabulary. This tool has never met them."));
+        out.add(new Heuristic(n, "User control and freedom", Status.PARTIAL,
+                List.of("dialog-without-escape"),
+                "Only the visible emergency exit from a dialog. Undo and redo need the action "
+                        + "taken first."));
+        out.add(new Heuristic(n, "Consistency and standards", Status.COVERED,
+                List.of("consistency-shape", "consistency-typography", "consistency-color",
+                        "consistency-spacing", "consistency-size", "consistency-motion",
+                        "mixed-label-placement", "spacing-scale"),
+                "The strongest area, because consistency is a property of one render."));
+        out.add(new Heuristic(n, "Error prevention", Status.PARTIAL,
+                List.of("destructive-adjacency", "label-proximity", "control-border-contrast"),
+                "Geometric and perceptual precursors to error only. Whether an error can "
+                        + "happen at all is a question about the flow."));
+        out.add(new Heuristic(n, "Recognition rather than recall", Status.PARTIAL,
+                List.of("unlabelled-icon-control", "label-in-name"),
+                "Whether a control says what it is. Whether the user must remember something "
+                        + "between screens is out of reach."));
+        out.add(new Heuristic(n, "Flexibility and efficiency of use", Status.OUT_OF_REACH,
+                List.of(), "Accelerators and personalisation need a user with a history."));
+        out.add(new Heuristic(n, "Aesthetic and minimalist design", Status.PARTIAL,
+                List.of("competing-focal-points", "squint-cohesion", "palette-sprawl",
+                        "noisy-type-scale", "font-family-sprawl"),
+                "Measured as competition for attention and as sprawl in the vocabulary. "
+                        + "Whether the content is the right content is not measurable."));
+        out.add(new Heuristic(n, "Help users recognise and recover from errors",
+                Status.OUT_OF_REACH, List.of(),
+                "Needs the error state. A form in its resting state says nothing about how it "
+                        + "fails."));
+        out.add(new Heuristic(n, "Help and documentation", Status.OUT_OF_REACH, List.of(),
+                "Presence is checkable in principle; usefulness is not, and presence alone "
+                        + "would be a misleading thing to report."));
+
+        String s = "Shneiderman's golden rules";
+        out.add(new Heuristic(s, "Strive for consistency", Status.COVERED,
+                List.of("consistency-shape", "consistency-typography", "consistency-color"),
+                "Same ground as Nielsen's fourth."));
+        out.add(new Heuristic(s, "Cater to universal usability", Status.PARTIAL,
+                List.of("text-contrast", "touch-target", "minimum-text-size",
+                        "link-not-distinguishable", "focus-not-visible"),
+                "The accessibility floor is checkable. Shortcuts for experts are not."));
+        out.add(new Heuristic(s, "Offer informative feedback", Status.PARTIAL,
+                List.of("focus-not-visible", "hover-not-visible"),
+                "Only that a control reacts when reached for, which is checked by reaching "
+                        + "for it."));
+        out.add(new Heuristic(s, "Design dialogs to yield closure", Status.OUT_OF_REACH,
+                List.of(), "A property of a sequence with a beginning and an end."));
+        out.add(new Heuristic(s, "Prevent errors", Status.PARTIAL,
+                List.of("destructive-adjacency", "label-proximity"),
+                "The same narrow geometric precursors as Nielsen's fifth: what sits dangerously "
+                        + "close to what, and which label belongs to which field."));
+        out.add(new Heuristic(s, "Permit easy reversal of actions", Status.OUT_OF_REACH,
+                List.of(),
+                "Whether an action can be undone is only visible once it has been taken. The "
+                        + "resting page shows the button, never what happens after it."));
+        out.add(new Heuristic(s, "Keep users in control", Status.PARTIAL,
+                List.of("dialog-without-escape"),
+                "Only whether a dialog offers a visible way out. Pacing, interruption and "
+                        + "reversibility all need the interaction rather than the page."));
+        out.add(new Heuristic(s, "Reduce short-term memory load", Status.PARTIAL,
+                List.of("unlabelled-icon-control"),
+                "An unlabelled icon is a demand on memory. Most of this principle is about "
+                        + "what spans screens."));
+
+        String g = "Gestalt grouping principles";
+        out.add(new Heuristic(g, "Proximity", Status.COVERED,
+                List.of("label-proximity", "orphaned-heading", "gap-consistency",
+                        "flat-grouping-hierarchy"),
+                "Both within a group and between grouping levels."));
+        out.add(new Heuristic(g, "Similarity", Status.COVERED,
+                List.of("consistency-shape", "consistency-typography", "consistency-color",
+                        "consistency-size"),
+                "Things that belong together are checked for looking alike."));
+        out.add(new Heuristic(g, "Common region", Status.COVERED,
+                List.of("inconsistent-common-region", "invisible-surface"),
+                "Both an item outside the shared region and a region too faint to see."));
+        out.add(new Heuristic(g, "Continuity", Status.COVERED,
+                List.of("edge-alignment", "page-margin", "baseline-drift", "row-center-drift"),
+                "The lines formed by aligned edges and baselines."));
+        out.add(new Heuristic(g, "Figure and ground", Status.PARTIAL,
+                List.of("invisible-surface", "squint-cohesion", "no-tonal-anchor"),
+                "Separation of surfaces and the squint test. Ambiguous figure-ground is not "
+                        + "something a measurement decides."));
+        out.add(new Heuristic(g, "Closure", Status.OUT_OF_REACH, List.of(),
+                "Whether the eye completes an implied shape is not derivable from boxes."));
+        out.add(new Heuristic(g, "Common fate", Status.OUT_OF_REACH, List.of(),
+                "Grouping by shared motion. A still frame has no motion in it."));
+        return out;
+    }
+
     /** Coverage by source, most-covered first. */
     public static List<SourceCoverage> coverage() {
         List<SourceCoverage> out = new ArrayList<>();

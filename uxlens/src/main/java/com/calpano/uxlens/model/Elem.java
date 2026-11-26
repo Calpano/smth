@@ -21,6 +21,8 @@ public class Elem {
     /** What a screen reader would announce. Empty when the element has no name at all. */
     public String accessibleName;
     public boolean ariaHidden;
+    /** The {@code type} attribute, which is what separates a text field from a button. */
+    public String type;
     /** Visible text of this element and its descendants -- what a sighted user reads off it. */
     public String visibleText;
     /** The element's own text nodes only -- not its descendants'. */
@@ -159,11 +161,18 @@ public class Elem {
     /** True when the pointer turns into a hand over this element. */
     public boolean showsPointerCursor() { return "pointer".equals(cursor); }
 
-    /** True when the element paints a surface of its own -- a button-like shape. */
+    /**
+     * True when the element paints a surface of its own -- a fill, a border or a shadow.
+     *
+     * <p>A corner radius does not count. A radius with nothing to shape paints no pixels at
+     * all, and treating it as a surface made this method answer yes for elements that are
+     * visually not there.
+     */
     public boolean paintsSurface() {
         Rgba bg = Rgba.parse(backgroundColor);
-        return (bg != null && bg.a() > 0.05) || hasVisibleBorder() || borderRadius > 2
-                || (boxShadow != null && !boxShadow.isBlank());
+        if (bg != null && bg.a() > 0.05) return true;
+        if (hasVisibleBorder()) return true;
+        return boxShadow != null && !boxShadow.isBlank() && !"none".equals(boxShadow);
     }
 
     /** True when the element paints a visible border on all sides. */

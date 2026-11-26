@@ -293,6 +293,27 @@ public final class Main {
         System.out.printf("   %s%n%n", wrap(String.join(", ", house), 88, 3));
         System.out.println("   These are the thresholds to argue with first.\n");
 
+        System.out.println("THE NAMED HEURISTICS, ITEM BY ITEM\n");
+        String currentSet = "";
+        for (StandardsCoverage.Heuristic h : StandardsCoverage.heuristics()) {
+            if (!h.set().equals(currentSet)) {
+                currentSet = h.set();
+                System.out.printf("%n  %s%n", currentSet);
+            }
+            System.out.printf("   %-14s %-44s %s%n", h.status(), h.item(),
+                    h.ruleIds().isEmpty() ? "" : h.ruleIds().size() + " rule(s)");
+        }
+        java.util.Map<StandardsCoverage.Status, Long> tally = StandardsCoverage.heuristics().stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                        StandardsCoverage.Heuristic::status, java.util.stream.Collectors.counting()));
+        System.out.printf("%n   %d covered, %d partial, %d out of reach.%n",
+                tally.getOrDefault(StandardsCoverage.Status.COVERED, 0L),
+                tally.getOrDefault(StandardsCoverage.Status.PARTIAL, 0L),
+                tally.getOrDefault(StandardsCoverage.Status.OUT_OF_REACH, 0L));
+        System.out.println("   The presentation principles are largely covered and the "
+                + "interaction\n   principles largely are not, which is what measuring one "
+                + "rendered moment buys.\n");
+
         System.out.println("NOT CHECKED, DELIBERATELY\n");
         for (StandardsCoverage.OutOfScope o : StandardsCoverage.outOfScope()) {
             System.out.printf("%s  [%s]%n", o.area(), o.source().title());
@@ -323,6 +344,11 @@ public final class Main {
         for (Report.ViewportResult v : report.viewports) {
             System.out.printf("%n=== %s (%dx%d) -- %d elements, %d finding(s) ===%n",
                     v.viewportName, v.width, v.height, v.elementCount, v.findings.size());
+            if (!v.profile.isEmpty()) {
+                System.out.print("    ");
+                v.profile.forEach((k, value) -> System.out.printf("%s=%s  ", k, value));
+                System.out.println();
+            }
             v.findings.forEach(f -> System.out.println(format(f)));
         }
     }

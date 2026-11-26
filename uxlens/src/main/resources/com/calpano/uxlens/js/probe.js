@@ -210,6 +210,20 @@
       if (parts.length) return parts.join(' ');
     }
 
+    /* A form control takes its name from its label: an explicit <label for>, or one
+       wrapped around it. Leaving this out made every properly labelled text field look
+       nameless, which is the opposite of the truth. */
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) {
+      const labels = el.labels ? Array.from(el.labels) : [];
+      const fromLabels = labels
+          .map(n => n.textContent.replace(/\s+/g, ' ').trim())
+          .filter(Boolean)
+          .join(' ');
+      if (fromLabels) return fromLabels;
+      const placeholder = el.getAttribute('placeholder');
+      if (placeholder && placeholder.trim()) return placeholder.trim();
+    }
+
     const own = el.textContent.replace(/\s+/g, ' ').trim();
     if (own) return own;
 
@@ -375,6 +389,7 @@
          which for a control is the defect itself. */
       accessibleName: accessibleName(el),
       ariaHidden: el.getAttribute('aria-hidden') === 'true',
+      type: el.getAttribute('type'),
       /* Visible text of the element and everything inside it, which is what a sighted user
          reads off a control -- distinct from `text`, which is the element's own nodes. */
       visibleText: (function () {

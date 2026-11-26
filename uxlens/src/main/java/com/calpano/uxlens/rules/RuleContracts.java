@@ -229,6 +229,22 @@ public final class RuleContracts {
                 "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#000000;color:#767676\"><p style=\"color:#767676\">Light grey on black clears the ratio and not the eye.</p></body>",
                 "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#ffffff;color:#14161a\"><p style=\"color:#14161a\">Dark text on white, where the two models agree.</p></body>",
                 Viewport.DESKTOP);
+        put("unlabelled-icon-control",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:40px;height:40px;font-size:18px;border:1px solid #333;background:#eee\">&#10005;</button></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button style=\"width:40px;height:40px;font-size:18px;border:1px solid #333;background:#eee\" aria-label=\"Close dialog\">&#10005;</button></body>",
+                Viewport.DESKTOP);
+        put("label-in-name",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button aria-label=\"Submit the form\" style=\"padding:10px 16px\">Send</button></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><button aria-label=\"Send message\" style=\"padding:10px 16px\">Send</button></body>",
+                Viewport.DESKTOP);
+        put("dialog-without-escape",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div role=\"dialog\" aria-label=\"Confirm\" style=\"border:1px solid #333;padding:24px;width:420px\"><p>Are you sure?</p><button style=\"padding:10px 16px\">Delete everything</button></div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div role=\"dialog\" aria-label=\"Confirm\" style=\"border:1px solid #333;padding:24px;width:420px\"><p>Are you sure?</p><button style=\"padding:10px 16px\">Delete everything</button><button style=\"padding:10px 16px\">Cancel</button></div></body>",
+                Viewport.DESKTOP);
+        put("inconsistent-common-region",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 1</div><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 2</div><div style=\"border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 3</div><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 4</div></body>",
+                "<body style=\"margin:0;padding:32px;font:16px/1.6 system-ui;background:#fff;color:#14161a\"><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 1</div><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 2</div><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 3</div><div style=\"background:#f2f4f7;border:1px solid #d8dce3;border-radius:8px;padding:16px;margin:0 0 12px;width:400px\">Item 4</div></body>",
+                Viewport.DESKTOP);
     }
 
     private static void put(String ruleId, String violates, String conforms, Viewport viewport) {

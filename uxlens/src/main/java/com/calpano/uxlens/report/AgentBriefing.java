@@ -52,6 +52,7 @@ public final class AgentBriefing {
             appendProminence(md, v);
             appendScanpath(md, v);
             appendTokens(md, v);
+            appendProfile(md, v);
         }
 
         appendSchemeParity(md, report);
@@ -174,6 +175,20 @@ public final class AgentBriefing {
         }
         md.append("\nSpacing and type findings are measured against *this* inferred system, not "
                 + "an external ideal -- a page built on 5px units is judged on 5px units.\n\n");
+    }
+
+    private static void appendProfile(StringBuilder md, Report.ViewportResult v) {
+        if (v.profile.isEmpty()) return;
+        md.append("### What kind of page this is\n\n");
+        md.append("Measures, not faults. Nothing here passes or fails; the quantitative "
+                + "literature on interface aesthetics reports that figures of this kind "
+                + "correlate only modestly with judged quality. They are worth having for "
+                + "comparison -- against this page's siblings, its previous version, or a "
+                + "house norm -- and not worth treating as a score.\n\n");
+        for (Map.Entry<String, Object> e : v.profile.entrySet()) {
+            md.append("- **").append(e.getKey()).append("**: ").append(e.getValue()).append('\n');
+        }
+        md.append('\n');
     }
 
     private static void appendSchemeParity(StringBuilder md, Report report) {

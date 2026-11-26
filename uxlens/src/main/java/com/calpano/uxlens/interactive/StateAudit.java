@@ -43,6 +43,17 @@ public final class StateAudit {
     /** Pixel-change share below which the change is too subtle to notice. */
     private static final double FAINT = 0.012;
 
+    /** Rule id for a control that shows nothing when focused. */
+    public static final String FOCUS_RULE_ID = "focus-not-visible";
+    /** Rule id for a control that shows nothing when hovered. */
+    public static final String HOVER_RULE_ID = "hover-not-visible";
+
+    /** The ids this audit can report. These are not {@code Rule} instances: they need the
+     *  page driven, so they live outside {@code RuleSet} while still being rule ids. */
+    public static java.util.Set<String> ruleIds() {
+        return java.util.Set.of(FOCUS_RULE_ID, HOVER_RULE_ID);
+    }
+
     private StateAudit() { }
 
     /** The states a control can be reached in. */

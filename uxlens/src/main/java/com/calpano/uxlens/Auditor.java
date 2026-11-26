@@ -152,6 +152,7 @@ public class Auditor implements AutoCloseable {
             vr.focalPoints = focalPointsOf(analysis, fixations);
             vr.inferredTokens.put("spacing", analysis.spacing().asMap());
             vr.inferredTokens.put("type", analysis.type().asMap());
+            vr.profile.putAll(com.calpano.uxlens.analysis.PageProfile.of(analysis).asMap());
             if (report.url.equals("inline-html")) report.url = analysis.snapshot().url;
 
             if (artifactDir != null) {

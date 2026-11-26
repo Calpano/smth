@@ -176,6 +176,30 @@ public final class RuleReferences {
                         "The ratio of relative luminances that is the audited requirement."),
                 Reference.of(Reference.Source.HOUSE, null,
                         "Reporting the disagreement rather than either figure alone is ours.")));
+        BY_RULE.put("unlabelled-icon-control", List.of(
+                Reference.of(Reference.Source.CPUX_F, "recognition rather than recall",
+                        "An interface should show what can be done rather than require the user to remember it."),
+                Reference.of(Reference.Source.WCAG, "4.1.2 Name, Role, Value",
+                        "Every control exposes a name that assistive technology can announce."),
+                Reference.of(Reference.Source.ISO_9241_112, null,
+                        "Information the user needs in order to act must be present, not recalled.")));
+        BY_RULE.put("label-in-name", List.of(
+                Reference.of(Reference.Source.WCAG, "2.5.3 Label in Name",
+                        "The accessible name contains the text presented visually on the control."),
+                Reference.of(Reference.Source.ISO_9241_110, "conformity with user expectations",
+                        "What a control is called should match what it shows.")));
+        BY_RULE.put("dialog-without-escape", List.of(
+                Reference.of(Reference.Source.CPUX_F, "user control and freedom",
+                        "Users choose functions by mistake and need a clearly marked way out."),
+                Reference.of(Reference.Source.ISO_9241_110, "controllability",
+                        "The user should be able to start and control the direction and pace of the interaction.")));
+        BY_RULE.put("inconsistent-common-region", List.of(
+                Reference.of(Reference.Source.GESTALT, "common region",
+                        "Items enclosed in a shared boundary are grouped, more strongly than by proximity alone."),
+                Reference.of(Reference.Source.ISO_9241_125, null,
+                        "Grouping by a common region is a standard device for showing which items belong together."),
+                Reference.of(Reference.Source.HOUSE, null,
+                        "Reporting only a missing surface, never an extra one, is ours: an extra surface is usually a state.")));
     }
 
     /** What this rule is grounded in. Empty when the rule is not registered. */

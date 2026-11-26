@@ -30,6 +30,11 @@ public class Report {
         public List<FocalPoint> focalPoints = new ArrayList<>();
         /** The spacing / type / color values the page actually uses, with outlier counts. */
         public Map<String, Object> inferredTokens = new LinkedHashMap<>();
+        /**
+         * Measures of the page rather than faults in it: how dense, colourful, busy and
+         * evenly weighted. Useful for comparison, not as a score.
+         */
+        public Map<String, Object> profile = new LinkedHashMap<>();
         /** Written artifacts, by kind: screenshot, squint, saliency, grid, setOfMark, findings. */
         public Map<String, String> artifacts = new LinkedHashMap<>();
     }

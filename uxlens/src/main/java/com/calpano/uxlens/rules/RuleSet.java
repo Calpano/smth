@@ -31,6 +31,7 @@ public final class RuleSet {
         rules.addAll(OpticalRules.all());
         rules.addAll(SystemRules.all());
         rules.addAll(BokRules.all());
+        rules.addAll(HeuristicRules.all());
         return new RuleSet(rules);
     }
 
