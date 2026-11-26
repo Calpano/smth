@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Broken fixture</title>
+<style>
+  /* Deliberately defective. Every block names the rule it is here to trigger. */
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:#1a1a1a;
+       font:16px/1.6 system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 32px}
+
+  /* baseline-drift + row-center-drift: one row, mixed sizes, centred not baseline-aligned */
+  header{display:flex;align-items:center;gap:24px;padding:24px 0}
+  .brand{font-size:17px;font-weight:700;margin:0}
+  header nav{display:flex;align-items:center;gap:24px;margin-left:auto}
+  header nav a{color:#8d93a0;text-decoration:none}
+  header nav a:nth-of-type(1){font-size:13px}
+  header nav a:nth-of-type(2){font-size:16px}
+  header nav a:nth-of-type(3){font-size:13px}
+  header nav img{margin-top:2px}
+
+  /* flat-type-hierarchy: nothing on the page exceeds 1.2x the body size */
+  h1{font-size:19px;line-height:1.3;margin:40px 0 8px;max-width:40ch}
+
+  /* inverted-hierarchy: a promo louder than the page's own heading */
+  .promo{background:#ff6a00;color:#ffffff;font-size:18px;font-weight:700;
+         padding:24px 32px;margin:24px 0;letter-spacing:1px}
+
+  /* text-contrast */
+  .faint{color:#bbbbbb;margin:0 0 16px}
+  /* near-duplicate-colors: #1a1a1a body ink against #1b1b1b here */
+  .almost{color:#1b1b1b;margin:0 0 16px}
+  /* all-caps-run */
+  .shouty{text-transform:uppercase;margin:0 0 16px}
+
+  /* measure + leading */
+  .wall{max-width:none;line-height:1.1;margin:0 0 24px}
+
+  /* orphan-line: monospace at a fixed character width, so the wrap is deterministic */
+  .orphan{font-family:ui-monospace,monospace;font-size:18px;font-weight:700;
+          width:24ch;margin:24px 0;line-height:1.4}
+
+  /* font-family-sprawl: four families on one page */
+  .serif{font-family:Georgia,serif}
+  .fantasy{font-family:cursive}
+
+  /* touch-target */
+  .tiny{width:20px;height:20px;padding:0;border:1px solid #333;background:#eee;
+        font-size:11px;line-height:18px;cursor:pointer}
+
+  /* edge-alignment: one row of the stack pushed 3px right by a margin */
+  .stack{margin:40px 0}
+  .stack > div{padding:8px 0}
+  .stack > .nudged{margin-left:3px}
+
+  /* gap-consistency: 24, 24, then 17 */
+  .cards{display:flex;margin:32px 0}
+  .card{flex:1;border:1px solid #d8dce3;border-radius:8px;padding:15px;margin-right:24px}
+  .card:nth-child(3){margin-right:17px}
+  .card:last-child{margin-right:0}
+
+  /* clipped-text */
+  .clipped{height:34px;overflow:hidden;border:1px solid #d8dce3;width:300px;padding:4px}
+
+  /* label-proximity: labels are flat siblings of the fields, spaced the wrong way round */
+  form{max-width:360px;margin:40px 0 0}
+  form label{display:block;font-size:15px;margin:4px 0 16px}
+  /* control-border-contrast */
+  form input{display:block;width:100%;font-size:16px;padding:12px;
+             border:1px solid #f2f2f2;border-radius:6px;min-height:44px;margin:0 0 4px}
+
+  /* orphaned-heading: 8px above, 40px below, with no margin to collapse against */
+  .lonely{font-size:19px;font-weight:700;margin:8px 0 40px}
+
+  /* page-margin: a full-width block inset 5px differently from its siblings */
+  .offset-section{margin-left:5px;padding:16px 0;background:#f7f8fa}
+
+  /* horizontal-overflow + off-viewport */
+  .too-wide{width:1600px;height:40px;background:#eef2ff;margin:24px 0}
+
+  /* text-overlap */
+  .overlap-host{position:relative;height:60px;margin:24px 0}
+  .overlap-host .a{position:absolute;left:0;top:10px;font-size:18px}
+  .overlap-host .b{position:absolute;left:30px;top:16px;font-size:18px;color:#444}
+
+  /* palette-sprawl: a swatch strip of colours chosen one at a time */
+  .swatches{display:flex;margin:24px 0}
+  .swatches div{width:40px;height:40px;margin-right:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="brand">Southgale</p>
+    <nav>
+      <a href="#a">Product</a>
+      <a href="#b">Pricing</a>
+      <a href="#c">Docs</a>
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mM4EWVDFcQwatCoQaMGjRo0atCoQQNvEACZ0BOuxc7NtQAAAABJRU5ErkJggg==" width="24" height="24" alt="Account">
+    </nav>
+  </header>
+
+  <div class="promo">Half price this week only</div>
+
+  <h1>A heading that is barely louder than the paragraph beneath it</h1>
+  <p class="faint">This sentence is set in a grey that nobody can read against white.</p>
+  <p class="almost">This sentence uses an ink one unit away from the body ink.</p>
+  <p class="shouty">Everything in this sentence is set in capital letters for emphasis.</p>
+
+  <p class="wall">This paragraph runs the entire width of the page with no constraint on its
+    measure at all, which means the line length is far past the point where a reader can
+    reliably find the start of the next line, and the leading has been tightened at the same
+    time so the lines crowd each other and the eye slips between them while reading, which is
+    exactly the combination that makes long-form text on the web unpleasant to read even
+    though every individual declaration in the stylesheet looks harmless on its own.</p>
+
+  <h3 class="orphan">Reporting and analytics now</h3>
+
+  <p class="serif">A paragraph set in a serif face that appears nowhere else.</p>
+  <p class="fantasy">And another in a third face, for one line only.</p>
+
+  <button class="tiny">OK</button>
+
+  <div class="stack">
+    <div>First row of a stack</div>
+    <div class="nudged">Second row, three pixels off</div>
+    <div>Third row of a stack</div>
+    <div>Fourth row of a stack</div>
+  </div>
+
+  <div class="cards">
+    <div class="card"><p>Card one</p></div>
+    <div class="card"><p>Card two</p></div>
+    <div class="card"><p>Card three</p></div>
+    <div class="card"><p>Card four</p></div>
+  </div>
+
+  <div class="clipped">This box has a fixed height of thirty-four pixels and rather more text
+    inside it than that, so the remainder is simply painted outside and hidden.</div>
+
+  <form>
+    <label for="n">Your name</label>
+    <input id="n" type="text">
+    <label for="e">Email address</label>
+    <input id="e" type="email">
+  </form>
+
+  <h2 class="lonely">A heading that groups with what came before it</h2>
+  <p>Body copy that the heading above is supposed to introduce.</p>
+
+  <div class="offset-section"><p>A section inset five pixels differently from its siblings.</p></div>
+
+  <div class="too-wide"></div>
+
+  <div class="overlap-host">
+    <span class="a">Overlapping text one</span>
+    <span class="b">Overlapping text two</span>
+  </div>
+
+  <div class="swatches">
+    <div style="background:#ff0000"></div><div style="background:#ee1100"></div>
+    <div style="background:#00ff00"></div><div style="background:#11ee00"></div>
+    <div style="background:#0000ff"></div><div style="background:#0011ee"></div>
+    <div style="background:#ffff00"></div><div style="background:#eeee11"></div>
+    <div style="background:#ff00ff"></div><div style="background:#ee11ee"></div>
+    <div style="background:#00ffff"></div><div style="background:#11eeee"></div>
+    <div style="background:#884422"></div><div style="background:#228844"></div>
+    <div style="background:#442288"></div><div style="background:#888844"></div>
+    <div style="background:#448888"></div><div style="background:#884488"></div>
+  </div>
+
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAH0lEQVR42mM4EWVDFcQwatCoQaMGjRo0atCoQQNvEACZ0BOuxc7NtQAAAABJRU5ErkJggg==" width="160" height="160">
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAAAoCAIAAADmAupWAAAARElEQVR42u3PQQ0AAAgEoMtpEjOZ0hZ+ZKMAqelXIiwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsLCwsfGsBv/yPDzz79qQAAAAASUVORK5CYII=" width="100" height="100" alt="Stretched out of shape">
+  <img src="does-not-exist.png" width="80" height="60" alt="Missing file">
+</div>
+</body>
+</html>

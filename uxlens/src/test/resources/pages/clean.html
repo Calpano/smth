@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Clean fixture</title>
+<style>
+  /* An 8px spacing scale and a 1.4x type scale, held to throughout. */
+  :root{
+    --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:64px;
+    --t-body:16px; --t-lead:20px; --t-h2:28px; --t-h1:40px;
+    --ink:#14161a; --ink-dim:#4a5160; --line:#d8dce3; --bg:#ffffff;
+    --accent:#0b4fd4; --accent-ink:#ffffff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:var(--t-body)/1.6 system-ui,-apple-system,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 var(--s4)}
+  header{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s3);padding:var(--s3) 0}
+  header .brand{font-size:var(--t-lead);font-weight:700;margin:0}
+  header nav{display:flex;flex-wrap:wrap;gap:var(--s3);margin-left:auto}
+  header nav a{font-size:var(--t-body);color:var(--ink-dim);text-decoration:none;
+               padding:var(--s2);display:inline-block;min-height:48px;min-width:72px;
+               text-align:center;line-height:16px}
+  h1{font-size:var(--t-h1);line-height:1.15;margin:var(--s6) 0 var(--s3);max-width:20ch}
+  h2{font-size:var(--t-h2);line-height:1.25;margin:var(--s6) 0 var(--s2)}
+  p{margin:0 0 var(--s3);max-width:62ch}
+  .lead{font-size:var(--t-lead);color:var(--ink-dim)}
+  .cta{display:inline-block;background:var(--accent);color:var(--accent-ink);
+       font-size:var(--t-h2);font-weight:700;text-decoration:none;
+       padding:var(--s3) var(--s5);border-radius:8px;min-height:72px;line-height:24px;
+       margin:var(--s2) 0 var(--s3)}
+  .cards{display:flex;flex-wrap:wrap;gap:var(--s3);margin:var(--s4) 0 var(--s6)}
+  .card{flex:1 1 240px;border:1px solid var(--line);border-radius:8px;padding:var(--s3)}
+  .card h3{font-size:var(--t-body);margin:0 0 var(--s1);text-transform:none}
+  .card p{font-size:var(--t-body);color:var(--ink-dim);margin:0}
+  form{display:flex;flex-direction:column;gap:var(--s3);max-width:360px;margin-bottom:var(--s6)}
+  .field{display:flex;flex-direction:column}
+  .field label{font-size:var(--t-body);font-weight:600;margin:0 0 var(--s1)}
+  .field input{font-size:var(--t-body);padding:var(--s2);border:1px solid #6b7280;
+               border-radius:6px;min-height:48px}
+  footer{border-top:1px solid var(--line);padding:var(--s4) 0;color:var(--ink-dim)}
+  img{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="brand">Northwind</p>
+    <nav><a href="#a">Product</a><a href="#b">Pricing</a><a href="#c">Docs</a></nav>
+  </header>
+
+  <h1>Ship your interface with the polish it deserves</h1>
+  <p class="lead">Measure what the browser actually painted, then fix what the measurements
+     show. No guesswork, no screenshots mailed around for opinions.</p>
+  <a class="cta" href="#start">Start a free audit</a>
+
+  <h2 id="a">What it measures</h2>
+  <div class="cards">
+    <div class="card"><h3>Geometry</h3><p>Edges, baselines and gaps, measured to the pixel.</p></div>
+    <div class="card"><h3>Perception</h3><p>Saliency, prominence and a squint test of the render.</p></div>
+    <div class="card"><h3>Systems</h3><p>The spacing and type scale your page really uses.</p></div>
+  </div>
+
+  <h2 id="b">Stay in touch</h2>
+  <form>
+    <div class="field"><label for="n">Your name</label><input id="n" type="text"></div>
+    <div class="field"><label for="e">Email address</label><input id="e" type="email"></div>
+  </form>
+
+  <h2 id="c">Documentation</h2>
+  <p>Every check states the measurement that triggered it, names the element it concerns,
+     and proposes a change. A threshold you disagree with is a threshold you configure.</p>
+  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAABQCAIAAABd+SbeAAAAg0lEQVR42u3QQQ0AAAgEoEtnHCOazRbOBxsJSPVwIApEi0a0aNEWRItGtGjRFkSLRrRo0YgWjWjRohEtGtGiRSNaNKJFi0a0aESLFo1o0YgWLRrRohEtWjSiRSNatGhEi0a0aNGIFo1o0aIRLRrRokUjWjSiRYtGtGhEixaNaNGI/mMBv+I2K6G9GMIAAAAASUVORK5CYII=" width="120" height="80" alt="A blue placeholder panel">
+
+  <footer><p>Northwind, 2026</p></footer>
+</div>
+</body>
+</html>
