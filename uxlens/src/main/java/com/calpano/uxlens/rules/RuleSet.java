@@ -72,7 +72,9 @@ public final class RuleSet {
      */
     public List<Finding> run(Analysis analysis) {
         List<Finding> out = new ArrayList<>();
-        boolean havePixels = analysis.fullPageImage().isPresent();
+        // The fold, not the whole-page render: that is what every pixel-reading rule reads,
+        // and gating on the larger image switched them all off wherever only the fold was kept.
+        boolean havePixels = analysis.foldImage().isPresent();
         boolean redacted = analysis.snapshot().redacted;
         for (Rule rule : rules) {
             if (!analysis.config().runs(rule.id())) continue;

@@ -64,11 +64,18 @@ public final class GestaltRules {
             double scale = a.scale();
             Rect viewport = a.snapshot().viewportRect();
 
+            List<Elem> images = a.snapshot().elements.stream()
+                    .filter(e -> e.img != null && e.img.loaded && e.area() > 2000)
+                    .toList();
+
             List<Finding> out = new ArrayList<>();
             for (Elem e : a.snapshot().textElements()) {
                 if (e.textLength < MIN_CHARS) continue;
-                // Only where the colour layer is known to be an incomplete answer.
-                if (!e.backgroundUncertain) continue;
+                // Two ways to end up printed on a picture: a CSS background behind an
+                // ancestor, or text positioned over an <img>. The second is the commoner hero
+                // pattern and sets no background flag at all, so it has to be found
+                // geometrically.
+                if (!e.backgroundUncertain && !sitsOverAnImage(e, images)) continue;
                 if (!viewport.contains(e.rect())) continue;
 
                 double spread = groundSpread(luminance, e, scale);
@@ -86,6 +93,14 @@ public final class GestaltRules {
                                 + "where the ground is lightest, which is where the trouble is."));
             }
             return out;
+        }
+
+        /** True when most of the text's box falls within a loaded image's box. */
+        private static boolean sitsOverAnImage(Elem text, List<Elem> images) {
+            double area = text.area();
+            if (area <= 0) return false;
+            return images.stream().anyMatch(img ->
+                    img.id != text.id && img.rect().intersectionArea(text.rect()) > area * 0.6);
         }
 
         /**

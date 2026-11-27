@@ -62,8 +62,9 @@
       "desktop",
       "mobile"
     ],
-    "note": "APP. A social timeline on a different stack: columns, cards, avatars, inline media. Real content of varying length rather than lorem ipsum.",
-    "redact": true
+    "note": "APP. A social timeline on a different stack: columns, cards, avatars, inline media. Real content of varying length rather than lorem ipsum. Pixels kept, so the rules that read the render have evidence here.",
+    "redact": true,
+    "images": true
   },
   {
     "id": "openstreetmap",
@@ -82,8 +83,9 @@
       "desktop",
       "mobile"
     ],
-    "note": "APP, deliberately tiny. The canonical small application: one form, one list, filter states. A page this small should produce almost nothing, so anything it does produce is worth reading.",
-    "redact": true
+    "note": "APP, deliberately tiny. The canonical small application: one form, one list, filter states. A page this small should produce almost nothing, so anything it does produce is worth reading. Pixels kept, so the rules that read the render have evidence here.",
+    "redact": true,
+    "images": true
   },
   {
     "id": "mdn-article",

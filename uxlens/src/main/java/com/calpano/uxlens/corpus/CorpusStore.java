@@ -40,7 +40,7 @@ public final class CorpusStore {
 
     /** One page to capture, at one or more viewports and colour schemes. */
     public record Site(String id, String url, List<String> viewports, List<String> schemes,
-                       Boolean redact, String note) {
+                       Boolean redact, Boolean images, String note) {
 
         /**
          * Whether to strip the words from this site's captures. A site may override the
@@ -49,6 +49,16 @@ public final class CorpusStore {
          */
         public boolean redactWith(boolean runDefault) {
             return redact == null ? runDefault : redact;
+        }
+
+        /**
+         * Whether to keep this site's pixels. Rules that read the render are skipped on a
+         * capture without them, so without this the whole pixel-reading half of the tool has
+         * no evidence in the corpus at all. Only the first viewport is kept, which is what
+         * those rules look at, and only for the sites worth spending the space on.
+         */
+        public boolean keepsImages(boolean runDefault) {
+            return images == null ? runDefault : images;
         }
 
         public List<Viewport> resolvedViewports() {
@@ -80,7 +90,15 @@ public final class CorpusStore {
         /** Stable identifier for this capture, used in labels. */
         public String key() { return siteId + "|" + captureName(viewport, scheme); }
 
-        public boolean hasPixels() { return fullPage != null && fold != null; }
+        /**
+         * Whether this capture carries pixels at all.
+         *
+         * <p>The first viewport is what every pixel-reading rule looks at; the whole-page
+         * render is needed only for per-element saliency and is optional. Demanding both
+         * meant a capture that kept its fold was treated as having no pixels, and the entire
+         * pixel half of the tool stayed switched off.
+         */
+        public boolean hasPixels() { return fold != null; }
 
         public boolean isDark() { return scheme == ColorScheme.DARK; }
     }
@@ -159,9 +177,14 @@ public final class CorpusStore {
                                 : capture.snapshot();
                         Files.createDirectories(target);
                         writeSnapshot(target, snapshot);
-                        if (withImages) {
+                        if (site.keepsImages(withImages)) {
                             Files.write(target.resolve("fold.png"), capture.foldPng());
-                            Files.write(target.resolve("full.png"), capture.fullPagePng());
+                            // The whole-page render is only needed for per-element saliency and
+                            // is several times the size, so it is kept only when asked for
+                            // across the whole run.
+                            if (withImages) {
+                                Files.write(target.resolve("full.png"), capture.fullPagePng());
+                            }
                         }
                         written++;
                     } catch (IOException e) {
