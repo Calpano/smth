@@ -6,8 +6,10 @@
       "desktop",
       "mobile"
     ],
-    "note": "Hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Catches rules that assume a component-framework page. Owned by this project's author, so not redacted.",
-    "redact": false
+    "note": "Hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Catches rules that assume a component-framework page. Owned by this project's author, so not redacted. Carries both renders. It is the one page here we own, so its pixels can be stored unredacted, and it is the only one that scrolls well past the fold -- which is the only way the whole-page saliency path gets tested on an actual scroll rather than on a page that happens to end at the fold. Photographs make the PNGs large; that is the price of the evidence.",
+    "redact": false,
+    "images": true,
+    "fullImage": true
   },
   {
     "id": "grafana-play",
@@ -64,7 +66,8 @@
     ],
     "note": "APP. A social timeline on a different stack: columns, cards, avatars, inline media. Real content of varying length rather than lorem ipsum. Pixels kept, so the rules that read the render have evidence here.",
     "redact": true,
-    "images": true
+    "images": true,
+    "fullImage": false
   },
   {
     "id": "openstreetmap",
@@ -83,9 +86,11 @@
       "desktop",
       "mobile"
     ],
-    "note": "APP, deliberately tiny. The canonical small application: one form, one list, filter states. A page this small should produce almost nothing, so anything it does produce is worth reading. Pixels kept, so the rules that read the render have evidence here.",
+    "note": "APP, deliberately tiny. The canonical small application: one form, one list, filter states. A page this small should produce almost nothing, so anything it does produce is worth reading. Pixels kept, so the rules that read the render have evidence here. Carries the whole-page render for the corpus: small enough to be nearly free, and without one somewhere the per-element saliency weighting, the findings overlay and the artifact writer have no evidence at all.",
     "redact": true,
-    "images": true
+    "images": true,
+    "sparse": true,
+    "fullImage": true
   },
   {
     "id": "mdn-article",
@@ -102,15 +107,6 @@
     "redact": true
   },
   {
-    "id": "wikipedia-ja",
-    "url": "https://ja.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E8%AA%9E",
-    "viewports": [
-      "desktop"
-    ],
-    "note": "CJK script. The measure rule counts characters per line, an assumption that does not survive contact with Japanese: the comfortable measure is roughly half the Latin figure.",
-    "redact": true
-  },
-  {
     "id": "wikipedia-ar",
     "url": "https://ar.wikipedia.org/wiki/%D9%84%D8%BA%D8%A9_%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
     "viewports": [
@@ -118,5 +114,18 @@
     ],
     "note": "Right-to-left. Every rule that says 'left edge' means 'start edge', and this is the only page in the corpus that can tell the difference.",
     "redact": true
+  },
+  {
+    "id": "mdn-ja",
+    "url": "https://developer.mozilla.org/ja/docs/Web/CSS/color",
+    "viewports": [
+      "desktop"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "CJK text: no word spaces, so line breaking, measure and leading behave quite differently from Latin. Stands in for the Japanese Wikipedia, which this container is rate-limited out of."
   }
 ]

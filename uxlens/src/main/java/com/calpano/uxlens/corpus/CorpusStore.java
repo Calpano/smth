@@ -40,7 +40,8 @@ public final class CorpusStore {
 
     /** One page to capture, at one or more viewports and colour schemes. */
     public record Site(String id, String url, List<String> viewports, List<String> schemes,
-                       Boolean redact, Boolean images, String note) {
+                       Boolean redact, Boolean images, Boolean fullImage, Boolean sparse,
+                       String note) {
 
         /**
          * Whether to strip the words from this site's captures. A site may override the
@@ -60,6 +61,28 @@ public final class CorpusStore {
         public boolean keepsImages(boolean runDefault) {
             return images == null ? runDefault : images;
         }
+
+        /**
+         * Whether to keep the whole-page render as well as the first viewport.
+         *
+         * <p>Several times the size, and needed by one thing only: per-element saliency,
+         * which weighs each element by how much the eye is drawn to it and therefore needs
+         * the pixels of the whole scroll, not just the top. Without it anywhere in the
+         * corpus that weighting, the findings overlay and the artifact writer have no
+         * evidence at all -- which is exactly where they were.
+         */
+        public boolean keepsFullImage(boolean runDefault) {
+            return fullImage == null ? runDefault : fullImage;
+        }
+
+        /**
+         * True when this page really is as sparse as it looks, so the capture check should
+         * not reject it.
+         *
+         * <p>An empty to-do app is ten elements and does not scroll, which is the same shape
+         * as a rate-limit error page. Only the person adding the site knows which it is.
+         */
+        public boolean isSparse() { return sparse != null && sparse; }
 
         public List<Viewport> resolvedViewports() {
             if (viewports == null || viewports.isEmpty()) {
@@ -175,14 +198,25 @@ public final class CorpusStore {
                         PageSnapshot snapshot = site.redactWith(redact)
                                 ? Redaction.redact(capture.snapshot())
                                 : capture.snapshot();
+                        // Check before pinning. Two captures in this corpus were rate-limit
+                        // error pages pinned under the names of real pages and counted as
+                        // coverage for months; a snapshot of an error page is a perfectly
+                        // valid snapshot, so nothing downstream could ever have noticed.
+                        Census.CaptureRow health = Census.inspect(
+                                site.id() + "|" + name, site.url(), snapshot, false, false);
+                        if (health.isSuspect() && !site.isSparse()) {
+                            failures.add(new Failure(site.id(), name,
+                                    "does not look like a page (" + String.join(", ",
+                                            health.flags()) + "); not pinned. Add "
+                                            + "\"sparse\": true to the site if it really is "
+                                            + "this small."));
+                            continue;
+                        }
                         Files.createDirectories(target);
                         writeSnapshot(target, snapshot);
                         if (site.keepsImages(withImages)) {
                             Files.write(target.resolve("fold.png"), capture.foldPng());
-                            // The whole-page render is only needed for per-element saliency and
-                            // is several times the size, so it is kept only when asked for
-                            // across the whole run.
-                            if (withImages) {
+                            if (site.keepsFullImage(withImages)) {
                                 Files.write(target.resolve("full.png"), capture.fullPagePng());
                             }
                         }

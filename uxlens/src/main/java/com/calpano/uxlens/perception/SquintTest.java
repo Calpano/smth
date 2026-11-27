@@ -63,6 +63,21 @@ public final class SquintTest {
      *
      * @param threshold luminance distance from the page's own surface that counts as a blob
      */
+    /**
+     * Luminance distance from the page's own surface that counts as visual weight.
+     *
+     * <p>Lives here rather than at the call site so that everything asking "how many masses
+     * does this page have" asks the same question. Measuring it at one threshold and
+     * checking it at another is how a measurement comes to look dead when it is only being
+     * asked something absurd -- half the luminance range admits near-black alone.
+     */
+    public static final double BLOB_THRESHOLD = 0.06;
+
+    /** Counts blobs at {@link #BLOB_THRESHOLD}. */
+    public static int countWeightBlobs(BufferedImage squinted) {
+        return countWeightBlobs(squinted, BLOB_THRESHOLD);
+    }
+
     public static int countWeightBlobs(BufferedImage squinted, double threshold) {
         Gray g = Gray.luminanceOf(squinted);
         // The baseline is the page's surface, which is the median rather than the mean: on a

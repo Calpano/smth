@@ -45,8 +45,17 @@ public final class Calibration {
         public boolean isJudged() { return truePositives + falsePositives > 0; }
     }
 
-    /** Everything a corpus run produced. */
-    public record Result(List<Scored> findings, List<RuleScore> scores) {
+    /**
+     * Everything a corpus run produced.
+     *
+     * @param orphanLabels judgements whose finding no longer exists -- the page changed, the
+     *                     capture was replaced, the rule was retuned. An orphan is
+     *                     indistinguishable from a label nobody has written yet, so it
+     *                     quietly inflates how much of the corpus looks unjudged while the
+     *                     work it represents has already been done and lost.
+     */
+    public record Result(List<Scored> findings, List<RuleScore> scores,
+                         List<String> orphanLabels) {
 
         public int labelled() { return (int) findings.stream().filter(Scored::isLabelled).count(); }
 
@@ -101,12 +110,19 @@ public final class Calibration {
             }
         }
 
+        java.util.Set<String> live = all.stream().map(Scored::key)
+                .collect(java.util.stream.Collectors.toSet());
+        List<String> orphans = labels.all().keySet().stream()
+                .filter(key -> !live.contains(key))
+                .sorted()
+                .toList();
+
         List<RuleScore> scores = tally.entrySet().stream()
                 .map(en -> new RuleScore(en.getKey(), en.getValue()[0], en.getValue()[1],
                         en.getValue()[2], en.getValue()[3], en.getValue()[4]))
                 .sorted(Comparator.comparingInt(RuleScore::fired).reversed())
                 .toList();
 
-        return new Result(List.copyOf(all), scores);
+        return new Result(List.copyOf(all), scores, orphans);
     }
 }

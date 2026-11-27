@@ -3,23 +3,15 @@ package com.calpano.uxlens;
 import com.calpano.uxlens.analysis.Analysis;
 import com.calpano.uxlens.analysis.Config;
 import com.calpano.uxlens.analysis.Prominence;
-import com.calpano.uxlens.analysis.VisualGroups;
 import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
-import com.calpano.uxlens.model.Elem;
 import com.calpano.uxlens.model.Finding;
 import com.calpano.uxlens.model.Report;
-import com.calpano.uxlens.perception.Overlays;
 import com.calpano.uxlens.perception.Saliency;
-import com.calpano.uxlens.perception.SquintTest;
+import com.calpano.uxlens.report.Artifacts;
 import com.calpano.uxlens.rules.RuleSet;
 import com.microsoft.playwright.options.ColorScheme;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -45,8 +37,6 @@ public class Auditor implements AutoCloseable {
     private static final int PROMINENCE_DEPTH = 15;
     /** How many fixations to predict. */
     private static final int FIXATIONS = 6;
-    /** Elements to label in the Set-of-Mark overlay. More than this is unreadable. */
-    private static final int MARKS = 60;
 
     private final PageProbe probe;
     private final boolean ownsProbe;
@@ -129,41 +119,63 @@ public class Auditor implements AutoCloseable {
     }
 
     private void runOne(Report report, Capturer capturer, Viewport viewport, ColorScheme scheme) {
-        {
-            PageProbe.Capture capture = capturer.capture(viewport, scheme);
-            Analysis analysis = Analysis.of(capture, config);
-            List<Finding> findings = ruleSet.run(analysis);
+        PageProbe.Capture capture = capturer.capture(viewport, scheme);
+        Analysis analysis = Analysis.of(capture, config);
+        boolean dark = scheme == ColorScheme.DARK;
+        String name = dark ? viewport.name() + "-dark" : viewport.name();
 
-            // One gaze path, used by both the report and the overlay: an artifact that
-            // disagrees with the table it illustrates is worse than no artifact.
-            List<Saliency.Fixation> fixations = analysis.fixations(FIXATIONS);
+        Report.ViewportResult vr = describe(analysis, ruleSet, viewport.name(), name,
+                dark ? "dark" : "light");
+        if (report.url.equals("inline-html")) report.url = analysis.snapshot().url;
 
-            boolean dark = scheme == ColorScheme.DARK;
-            Report.ViewportResult vr = new Report.ViewportResult();
-            vr.viewportBase = viewport.name();
-            vr.colorScheme = dark ? "dark" : "light";
-            vr.viewportName = dark ? viewport.name() + "-dark" : viewport.name();
-            vr.width = viewport.width();
-            vr.height = viewport.height();
-            vr.elementCount = analysis.snapshot().elements.size();
-            vr.truncated = analysis.snapshot().truncated;
-            vr.findings = findings;
-            vr.prominence = prominenceOf(analysis);
-            vr.focalPoints = focalPointsOf(analysis, fixations);
-            vr.inferredTokens.put("spacing", analysis.spacing().asMap());
-            vr.inferredTokens.put("type", analysis.type().asMap());
-            vr.profile.putAll(com.calpano.uxlens.analysis.PageProfile.of(analysis).asMap());
-            if (report.url.equals("inline-html")) report.url = analysis.snapshot().url;
-
-            if (artifactDir != null) {
-                vr.artifacts.putAll(writeArtifacts(analysis, findings, fixations,
-                        viewport, vr.viewportName));
-            }
-            report.viewports.add(vr);
+        if (artifactDir != null) {
+            vr.artifacts.putAll(Artifacts.write(analysis, vr.findings,
+                    analysis.fixations(FIXATIONS), artifactDir.resolve(name), artifactDir,
+                    gridStep));
         }
+        report.viewports.add(vr);
     }
 
-    private List<Report.Prominence> prominenceOf(Analysis analysis) {
+    /**
+     * Everything one capture has to say, as a report section: the findings, the prominence
+     * ranking, the predicted gaze path, the inferred tokens and the page profile.
+     *
+     * <p>Static and browser-free on purpose. A stored capture can be put through exactly
+     * the code an audit runs, which is what lets the census check that these measurements
+     * really produce values rather than quietly returning zero.
+     */
+    public static Report.ViewportResult describe(Analysis analysis, RuleSet ruleSet,
+                                                 String viewportBase, String viewportName,
+                                                 String colorScheme) {
+        return describe(analysis, ruleSet.run(analysis), viewportBase, viewportName, colorScheme);
+    }
+
+    /** As above, for a caller that has already run the rules and does not want them run twice. */
+    public static Report.ViewportResult describe(Analysis analysis, List<Finding> findings,
+                                                 String viewportBase, String viewportName,
+                                                 String colorScheme) {
+        // One gaze path, used by both the report and the overlay: an artifact that
+        // disagrees with the table it illustrates is worse than no artifact.
+        List<Saliency.Fixation> fixations = analysis.fixations(FIXATIONS);
+
+        Report.ViewportResult vr = new Report.ViewportResult();
+        vr.viewportBase = viewportBase;
+        vr.colorScheme = colorScheme;
+        vr.viewportName = viewportName;
+        vr.width = analysis.snapshot().viewportWidth();
+        vr.height = analysis.snapshot().viewportHeight();
+        vr.elementCount = analysis.snapshot().elements.size();
+        vr.truncated = analysis.snapshot().truncated;
+        vr.findings = findings;
+        vr.prominence = prominenceOf(analysis);
+        vr.focalPoints = focalPointsOf(analysis, fixations);
+        vr.inferredTokens.put("spacing", analysis.spacing().asMap());
+        vr.inferredTokens.put("type", analysis.type().asMap());
+        vr.profile.putAll(com.calpano.uxlens.analysis.PageProfile.of(analysis).asMap());
+        return vr;
+    }
+
+    private static List<Report.Prominence> prominenceOf(Analysis analysis) {
         List<Report.Prominence> out = new ArrayList<>();
         for (Prominence.Scored s : analysis.prominence().top(PROMINENCE_DEPTH)) {
             Report.Prominence p = new Report.Prominence();
@@ -187,7 +199,8 @@ public class Auditor implements AutoCloseable {
         return out;
     }
 
-    private List<Report.FocalPoint> focalPointsOf(Analysis analysis, List<Saliency.Fixation> fixations) {
+    private static List<Report.FocalPoint> focalPointsOf(Analysis analysis,
+                                                        List<Saliency.Fixation> fixations) {
         double scale = analysis.scale();
         List<Report.FocalPoint> out = new ArrayList<>();
         for (Saliency.Fixation f : fixations) {
@@ -205,50 +218,6 @@ public class Auditor implements AutoCloseable {
             out.add(fp);
         }
         return out;
-    }
-
-    /** Writes the screenshot and every overlay for one viewport; returns kind -> relative path. */
-    private java.util.Map<String, String> writeArtifacts(Analysis analysis, List<Finding> findings,
-                                                         List<Saliency.Fixation> fixations,
-                                                         Viewport viewport, String label) {
-        java.util.Map<String, String> paths = new java.util.LinkedHashMap<>();
-        try {
-            Path dir = artifactDir.resolve(label);
-            Files.createDirectories(dir);
-            double scale = analysis.scale();
-            BufferedImage full = analysis.fullPageImage().orElseThrow();
-            BufferedImage fold = analysis.foldImage().orElseThrow();
-
-            put(paths, dir, "screenshot", full);
-            put(paths, dir, "fold", fold);
-            put(paths, dir, "squint", SquintTest.squint(fold));
-            analysis.foldSaliency().ifPresent(sal ->
-                    put(paths, dir, "saliency", Overlays.saliencyOver(fold, sal, 0.55f)));
-            if (!fixations.isEmpty()) put(paths, dir, "scanpath", Overlays.scanpath(fold, fixations, scale));
-            put(paths, dir, "grid", Overlays.grid(fold, gridStep, scale));
-
-            List<Elem> marks = VisualGroups.content(analysis.snapshot()).stream()
-                    .filter(e -> e.rect().intersects(analysis.snapshot().viewportRect()))
-                    .limit(MARKS).toList();
-            put(paths, dir, "set-of-mark", Overlays.setOfMark(fold, marks, scale));
-
-            if (!findings.isEmpty()) {
-                put(paths, dir, "findings", Overlays.findings(full, findings, scale));
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException("Could not write artifacts to " + artifactDir, e);
-        }
-        return paths;
-    }
-
-    private void put(java.util.Map<String, String> paths, Path dir, String kind, BufferedImage img) {
-        Path file = dir.resolve(kind + ".png");
-        try {
-            ImageIO.write(img, "png", file.toFile());
-        } catch (IOException e) {
-            throw new UncheckedIOException("Could not write " + file, e);
-        }
-        paths.put(kind, artifactDir.relativize(file).toString());
     }
 
     @Override public void close() {

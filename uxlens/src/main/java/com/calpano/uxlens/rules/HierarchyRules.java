@@ -182,7 +182,6 @@ public final class HierarchyRules {
     /** What is left after you squint: one blob, or forty. */
     public static final class SquintCohesion implements Rule {
         /** Luminance distance from the page mean that counts as a blob of visual weight. */
-        private static final double BLOB_THRESHOLD = 0.06;
         /** Above this many distinct blobs, the layout groups nothing. */
         private static final int MAX_BLOBS = 40;
 
@@ -203,7 +202,7 @@ public final class HierarchyRules {
             Optional<java.awt.image.BufferedImage> fold = a.foldImage();
             if (fold.isEmpty()) return List.of();
             var squinted = SquintTest.squint(fold.get());
-            int blobs = SquintTest.countWeightBlobs(squinted, BLOB_THRESHOLD);
+            int blobs = SquintTest.countWeightBlobs(squinted);
 
             if (blobs <= 1) {
                 return List.of(finding(Severity.MEDIUM, String.format(

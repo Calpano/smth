@@ -5,6 +5,7 @@ import com.calpano.uxlens.analysis.Config;
 import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
 import com.calpano.uxlens.corpus.Calibration;
+import com.calpano.uxlens.corpus.Census;
 import com.calpano.uxlens.corpus.CorpusStore;
 import com.calpano.uxlens.corpus.Labels;
 import com.calpano.uxlens.interactive.StateAudit;
@@ -241,6 +242,12 @@ public final class Main {
                 }
                 System.out.printf("%n%d of %d findings judged.%n",
                         result.labelled(), result.findings().size());
+                if (!result.orphanLabels().isEmpty()) {
+                    System.out.printf("%n%d label(s) point at findings that no longer exist. "
+                            + "Somebody judged these and the judgement has been lost:%n",
+                            result.orphanLabels().size());
+                    result.orphanLabels().forEach(key -> System.out.printf("   %s%n", key));
+                }
 
                 List<Calibration.RuleScore> failing = result.below(minimum);
                 if (failing.isEmpty()) yield 0;
@@ -249,9 +256,106 @@ public final class Main {
                         s.ruleId(), s.precision() * 100));
                 yield 1;
             }
+            case "census" -> census(dir, a);
             default -> throw new IllegalArgumentException(
-                    "Unknown corpus action '" + action + "'. Try: capture, run, score.");
+                    "Unknown corpus action '" + action
+                            + "'. Try: capture, run, score, census.");
         };
+    }
+
+    /**
+     * Whether every rule and every measurement actually works -- which precision cannot
+     * answer, because a rule that never ran and a rule with nothing to report are the same
+     * silence from outside.
+     */
+    private static int census(Path dir, Args a) {
+        List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
+        if (corpus.isEmpty()) {
+            throw new IllegalArgumentException("No captures under " + dir.toAbsolutePath()
+                    + ". Run 'uxlens corpus capture' first.");
+        }
+        Config config = Config.defaults();
+        a.list("skip").forEach(config.disabledRules::add);
+        Path scratch = a.path("out", Path.of("target", "census"));
+        java.util.Set<String> sparse = CorpusStore.sites(dir).stream()
+                .filter(CorpusStore.Site::isSparse).map(CorpusStore.Site::id)
+                .collect(java.util.stream.Collectors.toSet());
+        Census.Result result = Census.run(corpus, config, scratch, sparse);
+
+        System.out.printf("%d capture(s): %d with pixels, %d redacted.%n%n", result.captures(),
+                result.capturesWithPixels(), result.capturesRedacted());
+
+        boolean verbose = a.flag("verbose");
+        System.out.println("CAPTURES  (is each pinned page the page it claims to be?)\n");
+        System.out.printf("%-28s %6s %6s %6s %6s %-7s %s%n", "capture", "elems", "links",
+                "h1-h6", "inter", "pixels", "looks like");
+        for (Census.CaptureRow c : result.captureRows()) {
+            if (!verbose && !c.isSuspect()) continue;
+            System.out.printf("%-28s %6d %6d %6d %6d %-7s %s%n", c.key(), c.elements(), c.links(),
+                    c.headings(), c.interactive(), c.hasPixels() ? "yes" : "-",
+                    c.flags().isEmpty() ? "a page" : String.join(", ", c.flags()));
+            if (c.isSuspect()) System.out.printf("%-28s   %s%n", "", c.url());
+        }
+        if (!verbose) {
+            System.out.printf("%n   (%d plausible capture(s) not listed; --verbose shows all)%n",
+                    result.captures() - result.suspectCaptures().size());
+        }
+        System.out.printf("   %d suspect of %d.%n", result.suspectCaptures().size(),
+                result.captures());
+
+        System.out.println("\nRULES  (ran = got its turn; silent = ran and found nothing)\n");
+        System.out.printf("%-30s %-18s %5s %6s %6s %9s %7s%n", "rule", "verdict", "ran",
+                "fired", "silent", "skipped", "found");
+        for (Census.RuleRow r : result.rules()) {
+            if (!verbose && r.verdict() == Census.Verdict.EXERCISED) continue;
+            System.out.printf("%-30s %-18s %5d %6d %6d %9d %7d%n", r.ruleId(), r.verdict(),
+                    r.ran(), r.firedOn(), r.silentOn(), r.skipped(), r.findings());
+            if (r.error() != null) System.out.printf("%-30s   threw: %s%n", "", r.error());
+        }
+        if (!verbose) {
+            System.out.printf("%n   (%d exercised rule(s) not listed; --verbose shows all)%n",
+                    result.rulesWith(Census.Verdict.EXERCISED).size());
+        }
+        for (Census.Verdict v : Census.Verdict.values()) {
+            System.out.printf("   %-18s %d%n", v, result.rulesWith(v).size());
+        }
+
+        System.out.println("\nMEASUREMENTS  (one reading per capture)\n");
+        System.out.printf("%-12s %-28s %-7s %5s %5s %5s %12s %12s%n", "group", "measure",
+                "health", "read", "n/a", "void", "min", "max");
+        String group = "";
+        for (Census.MeasureRow m : result.measures()) {
+            if (!verbose && m.health() == Census.Health.OK) continue;
+            System.out.printf("%-12s %-28s %-7s %5d %5d %5d %12s %12s%n",
+                    m.measure().group().equals(group) ? "" : (group = m.measure().group()),
+                    m.measure().name(), m.health(), m.read(), m.notApplicable(), m.noValue(),
+                    number(m.min()), number(m.max()));
+            if (m.error() != null) System.out.printf("%-12s   threw: %s%n", "", m.error());
+            if (!m.offenders().isEmpty()) {
+                System.out.printf("%-12s   on: %s%n", "", String.join(", ", m.offenders()));
+            }
+        }
+        if (!verbose) {
+            System.out.printf("%n   (%d healthy measurement(s) not listed; --verbose shows all)%n",
+                    result.measuresWith(Census.Health.OK).size());
+        }
+        for (Census.Health h : Census.Health.values()) {
+            System.out.printf("   %-8s %d%n", h, result.measuresWith(h).size());
+        }
+
+        System.out.println("\nWHAT A PINNED CAPTURE CANNOT EXERCISE\n");
+        result.notReachable().forEach(line -> System.out.printf("   - %s%n", wrap(line, 86, 5)));
+
+        System.out.printf("%n%s%n", result.isHealthy()
+                ? "Every rule ran and every measurement produced live values."
+                : "Something is not working; the rows above say which.");
+        return result.isHealthy() ? 0 : 1;
+    }
+
+    private static String number(double v) {
+        if (Double.isNaN(v)) return "-";
+        if (v == Math.rint(v) && Math.abs(v) < 1e9) return String.valueOf((long) v);
+        return String.format(Locale.ROOT, "%.4f", v);
     }
 
     private static Calibration.Result runCorpus(Path dir, Args a) {
@@ -393,7 +497,7 @@ public final class Main {
                   uxlens audit URL [options]     measure, check and report
                   uxlens states URL [options]    check focus and hover states (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
-                  uxlens corpus ACTION [options] capture / run / score the calibration corpus
+                  uxlens corpus ACTION [options] capture / run / score / census the corpus
                   uxlens rules                   list every check with its rationale and sources
                   uxlens standards               what of the UX body of knowledge is and is not covered
 
