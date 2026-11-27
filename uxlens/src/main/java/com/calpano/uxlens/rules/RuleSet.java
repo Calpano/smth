@@ -32,6 +32,8 @@ public final class RuleSet {
         rules.addAll(SystemRules.all());
         rules.addAll(BokRules.all());
         rules.addAll(HeuristicRules.all());
+        rules.addAll(GestaltRules.all());
+        rules.addAll(NielsenRules.all());
         return new RuleSet(rules);
     }
 

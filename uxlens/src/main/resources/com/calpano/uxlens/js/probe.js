@@ -197,8 +197,15 @@
      then alt, then title. Not the full HTML-AAM algorithm, which needs the whole tree --
      this covers the cases the rules below actually ask about. */
   function accessibleName(el) {
+    return nameWithSource(el).name;
+  }
+
+  /* The name and where it came from. A name is not just present or absent: one taken from a
+     placeholder disappears as soon as the field is typed into, which is a different defect
+     from having no name at all. */
+  function nameWithSource(el) {
     const label = el.getAttribute('aria-label');
-    if (label && label.trim()) return label.trim();
+    if (label && label.trim()) return { name: label.trim(), source: 'aria-label' };
 
     const labelledBy = el.getAttribute('aria-labelledby');
     if (labelledBy) {
@@ -207,7 +214,7 @@
           .filter(Boolean)
           .map(n => n.textContent.replace(/\s+/g, ' ').trim())
           .filter(Boolean);
-      if (parts.length) return parts.join(' ');
+      if (parts.length) return { name: parts.join(' '), source: 'aria-labelledby' };
     }
 
     /* A form control takes its name from its label: an explicit <label for>, or one
@@ -219,22 +226,25 @@
           .map(n => n.textContent.replace(/\s+/g, ' ').trim())
           .filter(Boolean)
           .join(' ');
-      if (fromLabels) return fromLabels;
+      if (fromLabels) return { name: fromLabels, source: 'label' };
       const placeholder = el.getAttribute('placeholder');
-      if (placeholder && placeholder.trim()) return placeholder.trim();
+      if (placeholder && placeholder.trim()) {
+        return { name: placeholder.trim(), source: 'placeholder' };
+      }
     }
 
     const own = el.textContent.replace(/\s+/g, ' ').trim();
-    if (own) return own;
+    if (own) return { name: own, source: 'text' };
 
     const img = el.tagName === 'IMG' ? el : el.querySelector('img[alt]');
     if (img) {
       const alt = img.getAttribute('alt');
-      if (alt && alt.trim()) return alt.trim();
+      if (alt && alt.trim()) return { name: alt.trim(), source: 'alt' };
     }
 
     const title = el.getAttribute('title');
-    return title && title.trim() ? title.trim() : '';
+    if (title && title.trim()) return { name: title.trim(), source: 'title' };
+    return { name: '', source: 'none' };
   }
 
   /* ---------- text ---------- */
@@ -390,6 +400,26 @@
       accessibleName: accessibleName(el),
       ariaHidden: el.getAttribute('aria-hidden') === 'true',
       type: el.getAttribute('type'),
+      /* Where the accessible name came from, which separates a real label from a
+         placeholder standing in for one. */
+      nameSource: nameWithSource(el).source,
+      placeholder: el.getAttribute('placeholder') || null,
+      required: el.required === true || el.hasAttribute('required')
+          || el.getAttribute('aria-required') === 'true',
+      ariaInvalid: el.getAttribute('aria-invalid') === 'true',
+      /* Whether anything describes this control beyond naming it -- an error message, a
+         hint. Resolved here because it needs the whole document. */
+      describedBy: (function () {
+        const ids = el.getAttribute('aria-describedby');
+        if (!ids) return null;
+        const text = ids.split(/\s+/)
+            .map(id => document.getElementById(id))
+            .filter(Boolean)
+            .map(n => n.textContent.replace(/\s+/g, ' ').trim())
+            .filter(Boolean)
+            .join(' ');
+        return text || null;
+      })(),
       /* Visible text of the element and everything inside it, which is what a sighted user
          reads off a control -- distinct from `text`, which is the element's own nodes. */
       visibleText: (function () {

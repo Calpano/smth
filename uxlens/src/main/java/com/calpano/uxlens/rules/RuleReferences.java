@@ -200,6 +200,39 @@ public final class RuleReferences {
                         "Grouping by a common region is a standard device for showing which items belong together."),
                 Reference.of(Reference.Source.HOUSE, null,
                         "Reporting only a missing surface, never an extra one, is ours: an extra surface is usually a state.")));
+        BY_RULE.put("text-over-texture", List.of(
+                Reference.of(Reference.Source.GESTALT, "figure/ground",
+                        "A figure can only be seen against a ground it separates from."),
+                Reference.of(Reference.Source.ISO_9241_125, null,
+                        "Legibility requires adequate contrast against whatever is actually behind the characters."),
+                Reference.of(Reference.Source.HOUSE, null,
+                        "Measuring the ground beside the glyphs, and the spread thresholds, are ours.")));
+        BY_RULE.put("content-escapes-container", List.of(
+                Reference.of(Reference.Source.GESTALT, "closure",
+                        "A drawn boundary is read as enclosing what is inside it; anything crossing it leaves the group."),
+                Reference.of(Reference.Source.GESTALT, "common region",
+                        "Grouping by a shared region only holds while the region contains the group.")));
+        BY_RULE.put("placeholder-as-label", List.of(
+                Reference.of(Reference.Source.CPUX_F, "recognition rather than recall",
+                        "The user should not have to remember information from one moment to the next."),
+                Reference.of(Reference.Source.ISO_9241_143, null,
+                        "A field needs a label that remains visible while the field is being filled in."),
+                Reference.of(Reference.Source.WCAG, "3.3.2 Labels or Instructions",
+                        "Labels or instructions are provided where input is required.")));
+        BY_RULE.put("invalid-field-without-message", List.of(
+                Reference.of(Reference.Source.CPUX_F, "help users recognise and recover from errors",
+                        "Error messages should say what is wrong, in plain language."),
+                Reference.of(Reference.Source.WCAG, "3.3.1 Error Identification",
+                        "An input error is identified and described to the user in text."),
+                Reference.of(Reference.Source.ISO_9241_110, "use error robustness",
+                        "The system should help the user correct errors.")));
+        BY_RULE.put("required-field-unmarked", List.of(
+                Reference.of(Reference.Source.CPUX_F, "error prevention",
+                        "Preventing a problem is better than reporting it after the fact."),
+                Reference.of(Reference.Source.ISO_9241_143, null,
+                        "Mandatory fields should be identifiable before the form is submitted."),
+                Reference.of(Reference.Source.WCAG, "3.3.2 Labels or Instructions",
+                        "Labels or instructions are provided where input is required.")));
     }
 
     /** What this rule is grounded in. Empty when the rule is not registered. */

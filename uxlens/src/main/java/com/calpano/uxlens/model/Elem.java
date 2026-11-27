@@ -23,6 +23,18 @@ public class Elem {
     public boolean ariaHidden;
     /** The {@code type} attribute, which is what separates a text field from a button. */
     public String type;
+    /**
+     * Where {@link #accessibleName} came from: {@code aria-label}, {@code aria-labelledby},
+     * {@code label}, {@code placeholder}, {@code text}, {@code alt}, {@code title} or
+     * {@code none}. A name is not simply present or absent -- one taken from a placeholder
+     * disappears the moment the field is typed into.
+     */
+    public String nameSource;
+    public String placeholder;
+    public boolean required;
+    public boolean ariaInvalid;
+    /** Text of anything describing this control beyond naming it: a hint, an error message. */
+    public String describedBy;
     /** Visible text of this element and its descendants -- what a sighted user reads off it. */
     public String visibleText;
     /** The element's own text nodes only -- not its descendants'. */
@@ -143,6 +155,12 @@ public class Elem {
     public boolean hasNoAccessibleName() {
         return accessibleName == null || accessibleName.isBlank();
     }
+
+    /** True when the only thing naming this control is its placeholder. */
+    public boolean isNamedOnlyByPlaceholder() { return "placeholder".equals(nameSource); }
+
+    /** True when something describes this control beyond naming it. */
+    public boolean hasDescription() { return describedBy != null && !describedBy.isBlank(); }
 
     /** True when the control shows no words at all -- an icon, a glyph, or nothing. */
     public boolean isIconOnly() {

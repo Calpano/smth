@@ -79,11 +79,12 @@ public final class StandardsCoverage {
                         "mixed-label-placement", "spacing-scale"),
                 "The strongest area, because consistency is a property of one render."));
         out.add(new Heuristic(n, "Error prevention", Status.PARTIAL,
-                List.of("destructive-adjacency", "label-proximity", "control-border-contrast"),
+                List.of("destructive-adjacency", "label-proximity", "control-border-contrast",
+                        "required-field-unmarked"),
                 "Geometric and perceptual precursors to error only. Whether an error can "
                         + "happen at all is a question about the flow."));
         out.add(new Heuristic(n, "Recognition rather than recall", Status.PARTIAL,
-                List.of("unlabelled-icon-control", "label-in-name"),
+                List.of("unlabelled-icon-control", "label-in-name", "placeholder-as-label"),
                 "Whether a control says what it is. Whether the user must remember something "
                         + "between screens is out of reach."));
         out.add(new Heuristic(n, "Flexibility and efficiency of use", Status.OUT_OF_REACH,
@@ -93,10 +94,11 @@ public final class StandardsCoverage {
                         "noisy-type-scale", "font-family-sprawl"),
                 "Measured as competition for attention and as sprawl in the vocabulary. "
                         + "Whether the content is the right content is not measurable."));
-        out.add(new Heuristic(n, "Help users recognise and recover from errors",
-                Status.OUT_OF_REACH, List.of(),
-                "Needs the error state. A form in its resting state says nothing about how it "
-                        + "fails."));
+        out.add(new Heuristic(n, "Help users recognise and recover from errors", Status.PARTIAL,
+                List.of("invalid-field-without-message"),
+                "Only where the page has rendered an error state already: a field marked "
+                        + "invalid that says nothing about why. Whether the wording helps, and "
+                        + "whether errors can be reached at all, still need the form submitted."));
         out.add(new Heuristic(n, "Help and documentation", Status.OUT_OF_REACH, List.of(),
                 "Presence is checkable in principle; usefulness is not, and presence alone "
                         + "would be a misleading thing to report."));
@@ -116,7 +118,7 @@ public final class StandardsCoverage {
         out.add(new Heuristic(s, "Design dialogs to yield closure", Status.OUT_OF_REACH,
                 List.of(), "A property of a sequence with a beginning and an end."));
         out.add(new Heuristic(s, "Prevent errors", Status.PARTIAL,
-                List.of("destructive-adjacency", "label-proximity"),
+                List.of("destructive-adjacency", "label-proximity", "required-field-unmarked"),
                 "The same narrow geometric precursors as Nielsen's fifth: what sits dangerously "
                         + "close to what, and which label belongs to which field."));
         out.add(new Heuristic(s, "Permit easy reversal of actions", Status.OUT_OF_REACH,
@@ -128,7 +130,7 @@ public final class StandardsCoverage {
                 "Only whether a dialog offers a visible way out. Pacing, interruption and "
                         + "reversibility all need the interaction rather than the page."));
         out.add(new Heuristic(s, "Reduce short-term memory load", Status.PARTIAL,
-                List.of("unlabelled-icon-control"),
+                List.of("unlabelled-icon-control", "placeholder-as-label"),
                 "An unlabelled icon is a demand on memory. Most of this principle is about "
                         + "what spans screens."));
 
@@ -147,12 +149,17 @@ public final class StandardsCoverage {
         out.add(new Heuristic(g, "Continuity", Status.COVERED,
                 List.of("edge-alignment", "page-margin", "baseline-drift", "row-center-drift"),
                 "The lines formed by aligned edges and baselines."));
-        out.add(new Heuristic(g, "Figure and ground", Status.PARTIAL,
-                List.of("invisible-surface", "squint-cohesion", "no-tonal-anchor"),
-                "Separation of surfaces and the squint test. Ambiguous figure-ground is not "
-                        + "something a measurement decides."));
-        out.add(new Heuristic(g, "Closure", Status.OUT_OF_REACH, List.of(),
-                "Whether the eye completes an implied shape is not derivable from boxes."));
+        out.add(new Heuristic(g, "Figure and ground", Status.COVERED,
+                List.of("invisible-surface", "squint-cohesion", "no-tonal-anchor",
+                        "text-over-texture"),
+                "Surfaces that will not separate, pages with no tonal anchor, and text printed "
+                        + "on a ground too busy to contrast against -- which needs the pixels, "
+                        + "since a colour layer says nothing about what a photograph is doing."));
+        out.add(new Heuristic(g, "Closure", Status.PARTIAL,
+                List.of("content-escapes-container"),
+                "A drawn boundary that fails to contain its contents is checkable. Whether the "
+                        + "eye completes a shape that was never drawn is not derivable from "
+                        + "boxes, and is left alone."));
         out.add(new Heuristic(g, "Common fate", Status.OUT_OF_REACH, List.of(),
                 "Grouping by shared motion. A still frame has no motion in it."));
         return out;
