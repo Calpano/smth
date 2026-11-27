@@ -28,6 +28,26 @@ public final class HierarchyRules {
                 new PrimaryActionNotFound(), new SquintCohesion());
     }
 
+    /**
+     * Content above the fold that a hierarchy could be made out of.
+     *
+     * <p>Every rule in this file is a claim about a hierarchy, and a page with almost
+     * nothing on it has none to get wrong. Two paragraphs on white really are equally
+     * prominent and really do blur into one shape; saying so is true and useless, and it
+     * was invisible until the synthetic corpus asked these rules about sixty minimal pages
+     * and squint-cohesion answered on fifty-eight of them. Six is a heading, some body copy
+     * and a control or two -- below that there is nothing to rank.
+     */
+    private static final int ENOUGH_TO_RANK = 6;
+
+    private static boolean hasEnoughToRank(Analysis a) {
+        var viewport = a.snapshot().viewportRect();
+        return com.calpano.uxlens.analysis.VisualGroups.content(a.snapshot()).stream()
+                .filter(e -> e.rect().intersects(viewport))
+                .filter(e -> a.snapshot().effectiveOpacity(e) > 0.1)
+                .count() >= ENOUGH_TO_RANK;
+    }
+
     /** Two elements fighting for rank one. */
     public static final class CompetingFocalPoints implements Rule {
         @Override public String id() { return "competing-focal-points"; }
@@ -41,6 +61,7 @@ public final class HierarchyRules {
         }
 
         @Override public List<Finding> check(Analysis a) {
+            if (!hasEnoughToRank(a)) return List.of();
             List<Prominence.Scored> top = a.prominence().topAboveFold(2);
             if (top.size() < 2 || top.get(0).score <= 0) return List.of();
 
@@ -193,7 +214,11 @@ public final class HierarchyRules {
             return "Designers squint at a layout to strip away the text and see the blocks. A "
                     + "page that blurs into one undifferentiated mass has no hierarchy; one that "
                     + "blurs into dozens of separate blobs has no grouping. Either way the reader "
-                    + "gets no map of the page before reading it.";
+                    + "gets no map of the page before reading it. Read it as a measure of tonal "
+                    + "structure and not of typographic hierarchy: blurring text washes it "
+                    + "towards the page colour, so a page made only of body copy on white "
+                    + "registers as having no focal point however well its headings are set. It "
+                    + "stays silent on a page with too little on it to rank at all.";
         }
 
         @Override public boolean needsPixels() { return true; }
@@ -204,7 +229,9 @@ public final class HierarchyRules {
             var squinted = SquintTest.squint(fold.get());
             int blobs = SquintTest.countWeightBlobs(squinted);
 
-            if (blobs <= 1) {
+            // Only the "nothing stands out" half needs the floor. A page that breaks into
+            // forty regions has plenty of content by construction.
+            if (blobs <= 1 && hasEnoughToRank(a)) {
                 return List.of(finding(Severity.MEDIUM, String.format(
                         "Blurred, the first viewport resolves into %d region%s of visual weight: "
                                 + "nothing stands out as a focal point.", blobs, blobs == 1 ? "" : "s"))

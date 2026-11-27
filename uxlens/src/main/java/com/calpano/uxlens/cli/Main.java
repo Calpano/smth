@@ -9,6 +9,7 @@ import com.calpano.uxlens.corpus.Census;
 import com.calpano.uxlens.corpus.Fuzz;
 import com.calpano.uxlens.corpus.CorpusStore;
 import com.calpano.uxlens.corpus.Labels;
+import com.calpano.uxlens.corpus.Synthetic;
 import com.calpano.uxlens.interactive.StateAudit;
 import com.calpano.uxlens.model.Finding;
 import com.calpano.uxlens.model.Report;
@@ -259,9 +260,10 @@ public final class Main {
             }
             case "census" -> census(dir, a);
             case "fuzz" -> fuzz(dir, a);
+            case "synth" -> synth(a);
             default -> throw new IllegalArgumentException(
                     "Unknown corpus action '" + action
-                            + "'. Try: capture, run, score, census, fuzz.");
+                            + "'. Try: capture, run, score, census, fuzz, synth.");
         };
     }
 
@@ -444,6 +446,104 @@ public final class Main {
         return brokenMutations == 0 ? 0 : 1;
     }
 
+    /**
+     * Two pages per rule, generated from its discrimination contract: one it must fire on,
+     * one it must stay silent on. Then: did each rule do its job, and what else did it trip?
+     */
+    private static int synth(Args a) throws Exception {
+        Path dir = a.path("dir", Path.of("target", "synth"));
+        boolean verbose = a.flag("verbose");
+
+        if (!a.flag("reuse")) {
+            int written = Synthetic.write(dir);
+            try (PageProbe probe = PageProbe.launch()) {
+                CorpusStore.CaptureReport report = CorpusStore.capture(probe, dir, true, false,
+                        false);
+                System.out.printf("Generated %d page(s) and captured %d under %s.%n", written,
+                        report.written(), dir.toAbsolutePath());
+                for (CorpusStore.Failure failure : report.failures()) {
+                    System.out.printf("FAILED %s/%s: %s%n", failure.siteId(),
+                            failure.captureName(), failure.reason());
+                }
+            }
+        }
+
+        Config config = Config.defaults();
+        a.list("skip").forEach(config.disabledRules::add);
+        List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
+        Synthetic.Isolation isolation = Synthetic.isolation(corpus, config);
+
+        List<String> noContract = Synthetic.withoutContract();
+        if (!noContract.isEmpty()) {
+            System.out.printf("%n%d rule(s) have no contract and so no fixture: %s%n",
+                    noContract.size(), String.join(", ", noContract));
+        }
+        if (!isolation.rulesWithoutFixture().isEmpty()) {
+            System.out.printf("%n%d rule(s) have a contract but no capture: %s%n",
+                    isolation.rulesWithoutFixture().size(),
+                    String.join(", ", isolation.rulesWithoutFixture()));
+        }
+
+        System.out.println("\nDID EACH FIXTURE DO ITS JOB?\n");
+        List<Synthetic.CrossTalk> broken = isolation.broken();
+        if (broken.isEmpty()) {
+            System.out.printf("   Yes. All %d violating page(s) tripped their rule and all %d "
+                            + "conforming page(s) did not.%n", isolation.violating().size(),
+                    isolation.conforming().size());
+        } else {
+            for (Synthetic.CrossTalk f : broken) {
+                System.out.printf("   %-30s %s%n", f.ruleId(), f.conformingPage()
+                        ? "fired " + f.ownFindings() + "x on the page it must stay silent on"
+                        : "did not fire on the page written to make it fire");
+            }
+        }
+
+        System.out.println("\nCROSS-TALK  (what else each fixture tripped)\n");
+        System.out.printf("   %-30s %5s %6s %7s  %s%n", "fixture", "own", "others",
+                "finds", "rules");
+        for (Synthetic.CrossTalk f : isolation.violating()) {
+            if (!verbose && f.others().isEmpty()) continue;
+            System.out.printf("   %-30s %5d %6d %7d  %s%n", f.ruleId(), f.ownFindings(),
+                    f.otherRuleCount(), f.otherFindingCount(),
+                    wrap(String.join(", ", f.others().keySet()), 78, 56));
+        }
+        long cleanFixtures = isolation.violating().stream()
+                .filter(Synthetic.CrossTalk::isClean).count();
+        System.out.printf("%n   %d of %d violating fixture(s) trip nothing but their own rule.%n",
+                cleanFixtures, isolation.violating().size());
+
+        System.out.println("\nWHICH RULES FIRE ON OTHER PEOPLE'S FIXTURES\n");
+        for (Map.Entry<String, Integer> e : isolation.noisiest()) {
+            System.out.printf("   %-30s %d finding(s)%n", e.getKey(), e.getValue());
+        }
+
+        List<Synthetic.CrossTalk> dirty = isolation.dirtyConformingPages();
+        System.out.println("\nCONFORMING PAGES THAT TRIPPED SOMETHING\n");
+        System.out.println("   These are the cleanest pages this project has: a minimal page "
+                + "with\n   its one deliberate defect removed. Anything firing here is a "
+                + "false positive\n   candidate.\n");
+        if (dirty.isEmpty()) {
+            System.out.printf("   None. All %d are silent.%n", isolation.conforming().size());
+        } else {
+            for (Synthetic.CrossTalk f : dirty) {
+                System.out.printf("   %-30s %s%n", f.ruleId() + Synthetic.CONFORMS_SUFFIX,
+                        f.others().entrySet().stream()
+                                .map(e -> e.getKey() + " x" + e.getValue()).toList());
+            }
+            System.out.printf("%n   %d of %d conforming page(s) are not clean.%n", dirty.size(),
+                    isolation.conforming().size());
+        }
+
+        if (a.flag("label")) {
+            Labels labels = Synthetic.labels(corpus, config);
+            labels.save(dir);
+            System.out.printf("%nLabelled %d finding(s) as true positives by construction in "
+                    + "%s.%n", labels.size(), dir.resolve("labels.json"));
+        }
+
+        return broken.isEmpty() && dirty.isEmpty() ? 0 : 1;
+    }
+
     private static String number(double v) {
         if (Double.isNaN(v)) return "-";
         if (v == Math.rint(v) && Math.abs(v) < 1e9) return String.valueOf((long) v);
@@ -590,6 +690,7 @@ public final class Main {
                   uxlens states URL [options]    check focus and hover states (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
                   uxlens corpus ACTION [options] capture / run / score / census / fuzz the corpus
+                  uxlens corpus synth [options]  two pages per rule, from its contract
                   uxlens rules                   list every check with its rationale and sources
                   uxlens standards               what of the UX body of knowledge is and is not covered
 
