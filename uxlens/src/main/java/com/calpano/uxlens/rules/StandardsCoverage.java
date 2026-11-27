@@ -195,11 +195,16 @@ public final class StandardsCoverage {
                 "Visual load is measured -- complexity, colourfulness, how many type steps "
                         + "and families a page spends. It is a proxy for mental effort, not a "
                         + "measure of it, and should be read as one."));
-        out.add(new Heuristic(u, "Doherty Threshold", Status.OUT_OF_REACH, List.of(),
-                "The clearest candidate for expansion in this whole table. 400ms is a "
-                        + "stopwatch question, and this tool already drives a browser for the "
-                        + "focus and hover audit, so the apparatus exists. It measures one "
-                        + "still frame today and that is the only reason this is out."));
+        out.add(new Heuristic(u, "Doherty Threshold", Status.COVERED,
+                List.of("slow-state-feedback", "response-not-immediate", "click-does-nothing"),
+                "Built, in both halves. The stylesheet half needs no stopwatch: a control "
+                        + "declaring a 900ms transition on its own hover state takes 900ms to "
+                        + "look touched, and that is readable from one still frame. The other "
+                        + "half drives the page -- click, then time either the first change in "
+                        + "the document or, for a link, the next page's first contentful paint. "
+                        + "It refuses to answer rather than guess where it cannot measure: a "
+                        + "page that mutates by itself is called unmeasurable, and nothing with "
+                        + "destructive wording or a form submit behind it is ever clicked."));
         out.add(new Heuristic(u, "Fitts's Law", Status.PARTIAL,
                 List.of("touch-target", "destructive-adjacency"),
                 "Target size is measured exactly, and that is the half that matters most. "

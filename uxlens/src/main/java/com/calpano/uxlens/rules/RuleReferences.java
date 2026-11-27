@@ -126,6 +126,10 @@ public final class RuleReferences {
                 Reference.of(Reference.Source.ISO_9241_112, "consistency", "Like information is presented in a like way, throughout."),
                 Reference.of(Reference.Source.GESTALT, "similarity", "Things that look alike are read as belonging together, so things that belong together must look alike."),
                 Reference.of(Reference.Source.HOUSE, null, "Transition timing drift is judged against the page’s own majority, and only near misses are reported. Both choices are ours.")));
+        BY_RULE.put("slow-state-feedback", List.of(
+                Reference.of(Reference.Source.DOHERTY, "400ms", "Productivity rose sharply once the system answered inside roughly 400ms, measured over real work rather than asserted; past it the person is waiting on the machine."),
+                Reference.of(Reference.Source.PLATFORM, "Material motion durations", "Small UI state changes are specified in the 70 to 300ms range, which is where a transition reads as immediate while still being visible."),
+                Reference.of(Reference.Source.HOUSE, null, "Scoping this to a control's own state transition, rather than to any long transition, is our judgement: a panel easing in is a decision about feel, while a slow hover colour is latency nobody asked for.")));
         BY_RULE.put("link-not-distinguishable", List.of(
                 Reference.of(Reference.Source.WCAG, "1.4.1 Use of Color", "Colour must not be the only visual means of conveying information."),
                 Reference.of(Reference.Source.WCAG, "F73", "Named failure: links in text distinguishable by colour alone need 3:1 against that text.")));

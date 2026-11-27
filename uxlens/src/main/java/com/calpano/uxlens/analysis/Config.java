@@ -84,6 +84,26 @@ public final class Config {
     public double overlapTolerance = 0.08;
 
     /**
+     * The Doherty threshold, in milliseconds.
+     *
+     * <p>Walter Doherty and Arvind Thadani measured, at IBM in 1982, that productivity rose
+     * sharply once the machine answered inside about 400ms -- fast enough that neither the
+     * person nor the computer is waiting on the other. It is the one figure in this file
+     * that comes from a controlled study of people doing real work rather than from a
+     * style guide.
+     */
+    public double dohertyThresholdMs = 400;
+
+    /**
+     * Where a delay stops being a delay and becomes an interruption, in milliseconds.
+     *
+     * <p>About a second is the limit for keeping an uninterrupted train of thought: past it
+     * the person's attention leaves the task, and whatever they were holding in their head
+     * has to be rebuilt when the answer arrives.
+     */
+    public double flowBreakMs = 1000;
+
+    /**
      * Most findings any single rule may report, per viewport.
      *
      * <p>Volume is a correctness property of its own. A dense application page can produce

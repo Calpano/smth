@@ -34,6 +34,7 @@ public final class RuleSet {
         rules.addAll(HeuristicRules.all());
         rules.addAll(GestaltRules.all());
         rules.addAll(NielsenRules.all());
+        rules.addAll(TimingRules.all());
         return new RuleSet(rules);
     }
 

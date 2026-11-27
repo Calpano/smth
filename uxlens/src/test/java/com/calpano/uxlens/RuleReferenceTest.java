@@ -104,6 +104,7 @@ class RuleReferenceTest {
         // The interaction-state checks are rule ids too; they simply need the page driven,
         // so they live outside RuleSet.
         live.addAll(com.calpano.uxlens.interactive.StateAudit.ruleIds());
+        live.addAll(com.calpano.uxlens.interactive.LatencyAudit.ruleIds());
         for (StandardsCoverage.Heuristic h : StandardsCoverage.heuristics()) {
             for (String id : h.ruleIds()) {
                 assertTrue(live.contains(id),

@@ -68,6 +68,17 @@ public class Elem {
     public String cursor;
     public String transitionDuration;
 
+    /**
+     * Where this link goes, as a class rather than an address: {@code in-page}, {@code root},
+     * {@code same-site}, {@code external}, {@code download}, {@code scheme} or {@code none}.
+     * Null on anything that is not a link.
+     *
+     * <p>A class rather than the href because the two things that ask -- is it safe to click
+     * this, and does the logo point at the front page -- need only the class, and a redacted
+     * capture then carries no URLs out of somebody else's site.
+     */
+    public String linkTarget;
+
     public String fontFamily;
     public double fontSize;
     public int fontWeight = 400;
@@ -219,6 +230,38 @@ public class Elem {
 
     /** Type weight as a designer reads it: size scaled by boldness. */
     public double typographicWeight() { return fontSize * (fontWeight / 400.0); }
+
+    /**
+     * The longest of this element's declared transition durations, in milliseconds.
+     *
+     * <p>{@code transition-duration} is a comma-separated list, one entry per transitioned
+     * property, and what a person waits for is the slowest of them. Zero when nothing is
+     * declared.
+     */
+    /** True when clicking this would leave the page it is on. */
+    public boolean navigatesAway() {
+        return linkTarget != null && !linkTarget.equals("in-page") && !linkTarget.equals("none");
+    }
+
+    public double longestTransitionMs() {
+        if (transitionDuration == null || transitionDuration.isBlank()) return 0;
+        double longest = 0;
+        for (String part : transitionDuration.split(",")) {
+            String value = part.trim();
+            try {
+                if (value.endsWith("ms")) {
+                    longest = Math.max(longest,
+                            Double.parseDouble(value.substring(0, value.length() - 2).trim()));
+                } else if (value.endsWith("s")) {
+                    longest = Math.max(longest,
+                            Double.parseDouble(value.substring(0, value.length() - 1).trim()) * 1000);
+                }
+            } catch (NumberFormatException ignored) {
+                // A duration we cannot read is not a finding.
+            }
+        }
+        return longest;
+    }
 
     /** True for a container whose job is layout, not content. */
     public boolean isLayoutBox() { return !hasOwnText() && childCount > 0 && img == null; }

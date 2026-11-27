@@ -115,7 +115,8 @@ class RuleContractTest {
             Map.entry("unlabelled-icon-control", Set.of("spacing-scale")),
             Map.entry("optical-centering", Set.of("unlabelled-icon-control")),
             Map.entry("font-family-sprawl", Set.of("consistency-typography")),
-            Map.entry("touch-target", Set.of("horizontal-overflow")));
+            Map.entry("touch-target", Set.of("horizontal-overflow")),
+            Map.entry("slow-state-feedback", Set.of("spacing-scale")));
 
     @TestFactory
     @DisplayName("contract")

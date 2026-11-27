@@ -10,6 +10,7 @@ import com.calpano.uxlens.corpus.Fuzz;
 import com.calpano.uxlens.corpus.CorpusStore;
 import com.calpano.uxlens.corpus.Labels;
 import com.calpano.uxlens.corpus.Synthetic;
+import com.calpano.uxlens.interactive.LatencyAudit;
 import com.calpano.uxlens.interactive.StateAudit;
 import com.calpano.uxlens.model.Finding;
 import com.calpano.uxlens.model.Report;
@@ -68,6 +69,7 @@ public final class Main {
         return switch (command) {
             case "audit" -> audit(rest);
             case "states", "focus" -> states(rest);
+            case "latency" -> latency(rest);
             case "diff" -> diff(rest);
             case "corpus" -> corpus(rest);
             case "rules" -> rules();
@@ -137,6 +139,59 @@ public final class Main {
         System.out.printf("%nFAIL: %d control(s) without a usable focus or hover state.%n",
                 findings.size());
         return 1;
+    }
+
+    /**
+     * How long the page takes to answer a click: the one measurement here that needs a
+     * stopwatch rather than a screenshot.
+     */
+    private static int latency(List<String> args) {
+        Args a = Args.parse(args, 1);
+        String url = a.positional.get(0);
+        Viewport viewport = a.viewports().get(0);
+        Config config = Config.defaults();
+        if (a.number("doherty", 0) > 0) config.dohertyThresholdMs = a.number("doherty", 400);
+
+        LatencyAudit.Result result;
+        try (PageProbe probe = PageProbe.launch()) {
+            result = LatencyAudit.audit(probe, url, viewport, config);
+        }
+        result.findings().forEach(f -> System.out.println(format(f)));
+
+        // Always, before the verdict. A pass with nothing behind it reads exactly like a
+        // pass with evidence, and this project has been bitten by that difference all week.
+        LatencyAudit.Summary s = result.summary();
+        System.out.printf("%nWHAT WAS MEASURED%n");
+        System.out.printf("   %d actionable control(s) on the page, %d safe to click%n",
+                s.actionableOnPage(), s.safeToClick());
+        System.out.printf("   %d clicked, %d timed, %d changed nothing, %d navigated away, "
+                + "%d unreachable%n", s.clicked(), s.measured(), s.silent(), s.navigated(),
+                s.unreachable());
+        System.out.printf("   the untouched page mutated %.1f time(s) a second%n",
+                s.mutationsPerSecond());
+        if (s.isConclusive()) {
+            System.out.printf("   response: median %.0fms, slowest %.0fms, against a %.0fms "
+                            + "threshold%n", s.median(), s.slowest(), config.dohertyThresholdMs);
+        }
+        System.out.println("   Controls with destructive wording, a form submit or a link that "
+                + "leaves\n   the page are never clicked, so this covers less of the page "
+                + "than it could.");
+
+        if (!s.isConclusive()) {
+            System.out.printf("%nINCONCLUSIVE: nothing could be timed -- %s.%n",
+                    s.whyInconclusive().orElse("no reason recorded"));
+            return 0;
+        }
+        long slow = result.findings().stream()
+                .filter(f -> f.ruleId.equals(LatencyAudit.SLOW_RULE_ID)).count();
+        long dead = result.findings().stream()
+                .filter(f -> f.ruleId.equals(LatencyAudit.SILENT_RULE_ID)).count();
+        System.out.printf("%n%s: %d of %d timed response(s) slower than %.0fms",
+                slow == 0 && dead == 0 ? "PASS" : "FAIL", slow, s.measured(),
+                config.dohertyThresholdMs);
+        System.out.println(dead == 0 ? "." : String.format(
+                ", and %d control(s) that changed nothing at all.", dead));
+        return slow == 0 && dead == 0 ? 0 : 1;
     }
 
     private static int diff(List<String> args) throws Exception {
@@ -688,6 +743,7 @@ public final class Main {
 
                   uxlens audit URL [options]     measure, check and report
                   uxlens states URL [options]    check focus and hover states (drives the page)
+                  uxlens latency URL [options]   time the page's answer to a click (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
                   uxlens corpus ACTION [options] capture / run / score / census / fuzz the corpus
                   uxlens corpus synth [options]  two pages per rule, from its contract

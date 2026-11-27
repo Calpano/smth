@@ -203,7 +203,38 @@
   /* The name and where it came from. A name is not just present or absent: one taken from a
      placeholder disappears as soon as the field is typed into, which is a different defect
      from having no name at all. */
-  function nameWithSource(el) {
+  /**
+ * Where a link goes, as a class rather than a URL.
+ *
+ * Two callers need this and neither needs the address. The latency audit needs to know
+ * whether clicking will navigate away, and the convention miner needs to know whether the
+ * thing in the top left corner points at the site's own root. Storing the class instead of
+ * the href also means a redacted capture carries no URLs out of somebody else's site.
+ *
+ * 'in-page' is a fragment or a bare '#', which opens menus and tabs without leaving.
+ * 'root' is the site's own front page, which is where a logo should point.
+ * 'same-site', 'external', 'download', 'scheme' (mailto:, tel:) and 'none' are the rest.
+ */
+function linkTargetOf(el) {
+  if (el.tagName !== 'A' && el.tagName !== 'AREA') return null;
+  const raw = el.getAttribute('href');
+  if (raw === null || raw.trim() === '') return 'none';
+  if (el.hasAttribute('download')) return 'download';
+  const href = raw.trim();
+  if (href.startsWith('#')) return 'in-page';
+  let url;
+  try {
+    url = new URL(href, location.href);
+  } catch (e) {
+    return 'none';
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return 'scheme';
+  if (url.origin !== location.origin) return 'external';
+  if (url.pathname === '/' || url.pathname === '') return 'root';
+  return 'same-site';
+}
+
+function nameWithSource(el) {
     const label = el.getAttribute('aria-label');
     if (label && label.trim()) return { name: label.trim(), source: 'aria-label' };
 
@@ -459,6 +490,7 @@
       textAlign: st.textAlign,
       cursor: st.cursor,
       transitionDuration: st.transitionDuration,
+      linkTarget: linkTargetOf(el),
 
       // type
       fontFamily: (st.fontFamily || '').split(',')[0].replace(/["']/g, '').trim(),

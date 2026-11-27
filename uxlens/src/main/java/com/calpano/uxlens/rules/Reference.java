@@ -62,6 +62,17 @@ public record Reference(Source source, String clause, String says) {
         CPUX_F("UXQB CPUX-F", "https://uxqb.org/en/documents/"),
 
         /**
+         * Doherty and Thadani, "The Economic Value of Rapid Response Time", IBM, 1982.
+         *
+         * <p>Worth its own source rather than being folded into the platform guidelines.
+         * It is one of the few numbers in this project that came out of measuring people
+         * doing real work: productivity rose sharply once the machine answered inside about
+         * 400ms, fast enough that neither party waits on the other.
+         */
+        DOHERTY("Doherty and Thadani 1982 (rapid response time)",
+                "https://jlelliotton.blogspot.com/p/the-economic-value-of-rapid-response.html"),
+
+        /**
          * No external authority: a judgement this project makes.
          *
          * <p>Used deliberately rather than avoided. A rule resting on nothing but our own
