@@ -41,7 +41,7 @@ public final class CorpusStore {
     /** One page to capture, at one or more viewports and colour schemes. */
     public record Site(String id, String url, List<String> viewports, List<String> schemes,
                        Boolean redact, Boolean images, Boolean fullImage, Boolean sparse,
-                       String note) {
+                       String kind, String note) {
 
         /**
          * Whether to strip the words from this site's captures. A site may override the
@@ -83,6 +83,21 @@ public final class CorpusStore {
          * as a rate-limit error page. Only the person adding the site knows which it is.
          */
         public boolean isSparse() { return sparse != null && sparse; }
+
+        /**
+         * What population this site belongs to: {@code content} or {@code app}.
+         *
+         * <p>Only the convention mining uses it, and it needs it badly. Jakob's law says
+         * people expect a site to work like the others they know -- but which others? A
+         * dashboard's user has other dashboards in mind, not Wikipedia. Pooling the two
+         * populations hid every convention in the corpus: a link into the site's own pages
+         * from the top-left corner is on every content site here and on almost no
+         * application, so together they vote fourteen to eight and agree on nothing.
+         *
+         * <p>Assigning this is editorial, which is why it sits in the committed sites.json
+         * where it can be argued with rather than in a heuristic that guesses.
+         */
+        public String population() { return kind == null ? "content" : kind; }
 
         public List<Viewport> resolvedViewports() {
             if (viewports == null || viewports.isEmpty()) {

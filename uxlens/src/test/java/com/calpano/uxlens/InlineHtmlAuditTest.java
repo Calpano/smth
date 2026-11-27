@@ -25,11 +25,22 @@ class InlineHtmlAuditTest {
 
     @Test
     void a_flat_page_is_reported_as_having_no_hierarchy(Auditor auditor) {
-        // Uniform grey, no contrast anywhere: blurred, nothing stands out at all.
+        // Uniform grey, no contrast anywhere: blurred, nothing stands out at all. Enough
+        // on the page for the question to apply -- the hierarchy rules stay silent below six
+        // content elements, because two paragraphs on a blank page have no hierarchy to get
+        // wrong and saying so is true and useless.
         Report report = auditor.viewports(Viewport.DESKTOP).auditHtml("""
-                <body style="margin:0;background:#9a9a9a;height:1200px">
-                  <p style="color:#9d9d9d;font:16px system-ui;padding:40px">
-                    Text that barely differs from the surface it sits on.</p>
+                <body style="margin:0;background:#9a9a9a;color:#9d9d9d;height:1200px;
+                             font:16px/1.6 system-ui;padding:40px">
+                  <h2 style="font-size:34px;margin:0 0 20px">A heading in the same grey</h2>
+                  <p style="margin:0 0 16px">Body copy one, barely differing from the surface.</p>
+                  <p style="margin:0 0 16px">Body copy two, barely differing from the surface.</p>
+                  <ul style="margin:0 0 16px;padding-left:24px">
+                    <li>The first item, in the same grey</li>
+                    <li>The second item, in the same grey</li>
+                    <li>The third item, in the same grey</li>
+                  </ul>
+                  <p style="margin:0">A closing line, also in the same grey.</p>
                 </body>""");
         UxAssert.that(report).flags("squint-cohesion");
         Finding f = report.allFindings().stream()

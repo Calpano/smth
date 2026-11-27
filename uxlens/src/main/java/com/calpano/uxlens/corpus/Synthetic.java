@@ -93,7 +93,7 @@ public final class Synthetic {
                 + "<title>" + siteId + "</title></head>" + body + "</html>",
                 StandardCharsets.UTF_8);
         return new CorpusStore.Site(siteId, file.toUri().toString(), List.of(viewport), null,
-                false, true, true, true, note);
+                false, true, true, true, "content", note);
     }
 
     /** The rule a synthetic capture was built for, or empty when it is not one of ours. */

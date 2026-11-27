@@ -222,16 +222,27 @@ function linkTargetOf(el) {
   if (el.hasAttribute('download')) return 'download';
   const href = raw.trim();
   if (href.startsWith('#')) return 'in-page';
-  let url;
-  try {
-    url = new URL(href, location.href);
-  } catch (e) {
-    return 'none';
+
+  // Classify by the href's own shape rather than by resolving it. Resolution needs the
+  // page to have a real origin, and a page under test often has none: setContent leaves
+  // the document at about:blank and a fixture opened from disk reports an origin of
+  // "null", so every link on every synthetic page came back as unclassifiable. A relative
+  // or root-relative href is same-site by construction and needs no resolving at all.
+  if (/^(mailto|tel|sms|javascript|data|blob|ftp):/i.test(href)) return 'scheme';
+
+  const absolute = /^https?:\/\//i.test(href) || href.startsWith('//');
+  if (absolute) {
+    let url;
+    try {
+      url = new URL(href, location.href);
+    } catch (e) {
+      return 'none';
+    }
+    if (url.origin !== location.origin) return 'external';
+    return (url.pathname === '/' || url.pathname === '') ? 'root' : 'same-site';
   }
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') return 'scheme';
-  if (url.origin !== location.origin) return 'external';
-  if (url.pathname === '/' || url.pathname === '') return 'root';
-  return 'same-site';
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return 'scheme';
+  return (href === '/' || href === './' || href === '.') ? 'root' : 'same-site';
 }
 
 function nameWithSource(el) {

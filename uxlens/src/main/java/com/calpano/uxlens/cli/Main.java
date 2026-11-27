@@ -5,6 +5,7 @@ import com.calpano.uxlens.analysis.Config;
 import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
 import com.calpano.uxlens.corpus.Calibration;
+import com.calpano.uxlens.corpus.Conventions;
 import com.calpano.uxlens.corpus.Census;
 import com.calpano.uxlens.corpus.Fuzz;
 import com.calpano.uxlens.corpus.CorpusStore;
@@ -316,9 +317,11 @@ public final class Main {
             case "census" -> census(dir, a);
             case "fuzz" -> fuzz(dir, a);
             case "synth" -> synth(a);
+            case "conventions" -> conventions(dir, a);
             default -> throw new IllegalArgumentException(
                     "Unknown corpus action '" + action
-                            + "'. Try: capture, run, score, census, fuzz, synth.");
+                            + "'. Try: capture, run, score, census, fuzz, synth, "
+                            + "conventions.");
         };
     }
 
@@ -599,6 +602,82 @@ public final class Main {
         return broken.isEmpty() && dirty.isEmpty() ? 0 : 1;
     }
 
+    /**
+     * Jakob's law: what the other sites do, and which pages depart from it.
+     *
+     * <p>The one report here that judges a page against other pages rather than against a
+     * principle, because an expectation is a fact about a population of sites.
+     */
+    private static int conventions(Path dir, Args a) {
+        List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
+        if (corpus.isEmpty()) {
+            throw new IllegalArgumentException("No captures under " + dir.toAbsolutePath()
+                    + ". Run 'uxlens corpus capture' first.");
+        }
+        Config config = Config.defaults();
+        java.util.Map<String, String> populations = Conventions.populations(dir);
+        List<Conventions.Consensus> consensus = Conventions.mine(corpus, config, populations);
+        long sites = corpus.stream().map(CorpusStore.Entry::siteId).distinct().count();
+
+        System.out.printf("Mined from %d capture(s) of %d site(s). Each site votes once per "
+                + "population and%nviewport, by the majority of its own captures; a site "
+                + "whose captures disagree abstains.%n%n", corpus.size(), sites);
+        populations.values().stream().distinct().sorted().forEach(p -> System.out.printf(
+                "   %-8s %d site(s)%n", p,
+                populations.values().stream().filter(p::equals).count()));
+        System.out.println();
+
+        System.out.println("WHAT THE SITES AGREE ON  (per viewport: a convention on a phone "
+                + "is a different convention)\n");
+        System.out.printf("%-9s %-9s %-24s %-14s %6s  %s%n", "sites", "viewport", "question",
+                "answer", "agree", "the vote");
+        for (Conventions.Consensus c : consensus) {
+            if (!c.isConvention()) continue;
+            System.out.printf("%-9s %-9s %-24s %-14s %2d/%-3d  %s%n", c.population(),
+                    c.viewport(), c.featureId(), c.answer(), c.sitesAgreeing(),
+                    c.sitesAnswering(), c.allAnswers());
+        }
+
+        System.out.println("\nWHAT THEY DO NOT AGREE ON\n");
+        for (Conventions.Consensus c : consensus) {
+            if (c.isConvention()) continue;
+            System.out.printf("%-9s %-9s %-24s %-14s %2d/%-3d  %s%n", c.population(),
+                    c.viewport(), c.featureId(),
+                    c.sitesAnswering() < Conventions.MIN_SITES ? "too few" : "no majority",
+                    c.sitesAgreeing(), c.sitesAnswering(), c.allAnswers());
+        }
+        System.out.printf("%n   A convention needs %d site(s) to answer and %.0f%% of them to "
+                + "agree.%n", Conventions.MIN_SITES, Conventions.CONSENSUS_SHARE * 100);
+
+        System.out.println("\nWHERE EACH PAGE DEPARTS\n");
+        List<Conventions.Departure> departures = Conventions.departures(corpus, consensus,
+                config, populations);
+        String current = "";
+        for (Conventions.Departure d : departures) {
+            if (!d.key().equals(current)) {
+                current = d.key();
+                System.out.printf("%n%s%n", current);
+            }
+            System.out.printf("   %-24s %s, where %d of %d site(s) say %s%n", d.featureId(),
+                    d.answer(), d.consensus().sitesAgreeing(), d.consensus().sitesAnswering(),
+                    d.consensus().answer());
+        }
+        System.out.printf("%n%d departure(s) over %d capture(s).%n", departures.size(),
+                corpus.size());
+
+        System.out.println("\n   " + wrap("Eleven sites is not the web. A consensus mined here "
+                + "is a claim about the pages somebody chose, and it is enough to catch a logo "
+                + "in the bottom right or body text at 11px -- not enough to settle a contested "
+                + "question. The vote is printed so it can be discounted.", 84, 3));
+
+        Path out = a.path("write", null);
+        if (out != null) {
+            Conventions.write(out, consensus);
+            System.out.printf("%nWrote %s%n", out.toAbsolutePath());
+        }
+        return 0;
+    }
+
     private static String number(double v) {
         if (Double.isNaN(v)) return "-";
         if (v == Math.rint(v) && Math.abs(v) < 1e9) return String.valueOf((long) v);
@@ -747,6 +826,7 @@ public final class Main {
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
                   uxlens corpus ACTION [options] capture / run / score / census / fuzz the corpus
                   uxlens corpus synth [options]  two pages per rule, from its contract
+                  uxlens corpus conventions      what the other sites do (Jakob's law)
                   uxlens rules                   list every check with its rationale and sources
                   uxlens standards               what of the UX body of knowledge is and is not covered
 

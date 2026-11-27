@@ -166,6 +166,21 @@ public final class Census {
     /** Elements below which a page of content is not plausibly a page of content. */
     private static final int THIN_PAGE = 30;
 
+    /**
+     * Elements below which nothing else needs to agree.
+     *
+     * <p>The Wikimedia rate-limit page got in a third time. At desktop width it is thin and
+     * does not scroll, which is two signals and enough; at phone width the same page
+     * reflows to 2121px tall, so "does not scroll" no longer applied and one signal was not
+     * enough to reject it. It sat in the corpus as the English Wikipedia until a measurement
+     * reported zero peer groups on it.
+     *
+     * <p>Twenty-two elements is not a web page. A page that really is that small says so
+     * with {@code "sparse": true}, which is a decision somebody writes down, and that is the
+     * right place for the judgement rather than in a conjunction of weak signals.
+     */
+    private static final int BARELY_A_PAGE = 25;
+
     /** Links below which a page is not part of a site. */
     private static final int FEW_LINKS = 3;
 
@@ -189,6 +204,7 @@ public final class Census {
         boolean scrolls = snapshot.scrollHeight > snapshot.viewportHeight() + 1;
         List<String> flags = new ArrayList<>();
         if (snapshot.elements.size() < THIN_PAGE) flags.add("thin");
+        if (snapshot.elements.size() < BARELY_A_PAGE) flags.add("barely a page");
         if (links < FEW_LINKS) flags.add("few links");
         if (headings == 0) flags.add("no headings");
         if (!scrolls) flags.add("does not scroll");

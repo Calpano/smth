@@ -9,7 +9,8 @@
     "note": "Hand-built personal index page. Dense link lists, a fixed footer bar, decorative watermarks behind headings, no design system. Catches rules that assume a component-framework page. Owned by this project's author, so not redacted. Carries both renders. It is the one page here we own, so its pixels can be stored unredacted, and it is the only one that scrolls well past the fold -- which is the only way the whole-page saliency path gets tested on an actual scroll rather than on a page that happens to end at the fold. Photographs make the PNGs large; that is the price of the evidence.",
     "redact": false,
     "images": true,
-    "fullImage": true
+    "fullImage": true,
+    "kind": "content"
   },
   {
     "id": "grafana-play",
@@ -19,7 +20,8 @@
       "mobile"
     ],
     "note": "APP. A real product dashboard, open without login: ~880 visible elements, ~180 controls, ~80 icon-sized targets. The densest application chrome in the corpus.",
-    "redact": true
+    "redact": true,
+    "kind": "app"
   },
   {
     "id": "diagrams-net",
@@ -28,7 +30,8 @@
       "desktop"
     ],
     "note": "APP. A drawing tool: ~90 icon-sized controls in toolbars and palettes, plus 19 form controls. The best evidence in the corpus for optical centring, icon-size consistency and small touch targets.",
-    "redact": true
+    "redact": true,
+    "kind": "app"
   },
   {
     "id": "shadcn-dashboard",
@@ -42,7 +45,8 @@
       "dark"
     ],
     "note": "APP, and the false-positive detector. Built on a deliberate design system by people who know what they are doing, so findings here are suspect by default. Declares dark styles, which most app candidates do not.",
-    "redact": true
+    "redact": true,
+    "kind": "app"
   },
   {
     "id": "shadcn-tasks",
@@ -55,7 +59,8 @@
       "dark"
     ],
     "note": "APP. A data-table screen on the same design system as shadcn-dashboard. Two pages sharing one system is the sharpest test of the consistency family: it should stay silent across both.",
-    "redact": true
+    "redact": true,
+    "kind": "app"
   },
   {
     "id": "mastodon-explore",
@@ -67,7 +72,8 @@
     "note": "APP. A social timeline on a different stack: columns, cards, avatars, inline media. Real content of varying length rather than lorem ipsum. Pixels kept, so the rules that read the render have evidence here.",
     "redact": true,
     "images": true,
-    "fullImage": false
+    "fullImage": false,
+    "kind": "app"
   },
   {
     "id": "openstreetmap",
@@ -77,7 +83,8 @@
       "mobile"
     ],
     "note": "APP. A map application with a search sidebar. The most form-dense page in the corpus at 25 controls, which is where label-proximity and control-border-contrast get their evidence.",
-    "redact": true
+    "redact": true,
+    "kind": "app"
   },
   {
     "id": "todomvc-react",
@@ -90,7 +97,8 @@
     "redact": true,
     "images": true,
     "sparse": true,
-    "fullImage": true
+    "fullImage": true,
+    "kind": "app"
   },
   {
     "id": "mdn-article",
@@ -104,16 +112,8 @@
       "dark"
     ],
     "note": "Long-form editorial with a sticky header and real dark styles. Carries most of the corpus's evidence for the typography rules, which app screens barely exercise.",
-    "redact": true
-  },
-  {
-    "id": "wikipedia-ar",
-    "url": "https://ar.wikipedia.org/wiki/%D9%84%D8%BA%D8%A9_%D8%B9%D8%B1%D8%A8%D9%8A%D8%A9",
-    "viewports": [
-      "desktop"
-    ],
-    "note": "Right-to-left. Every rule that says 'left edge' means 'start edge', and this is the only page in the corpus that can tell the difference.",
-    "redact": true
+    "redact": true,
+    "kind": "content"
   },
   {
     "id": "mdn-ja",
@@ -126,6 +126,202 @@
     "images": null,
     "fullImage": null,
     "sparse": null,
-    "note": "CJK text: no word spaces, so line breaking, measure and leading behave quite differently from Latin. Stands in for the Japanese Wikipedia, which this container is rate-limited out of."
+    "note": "CJK text: no word spaces, so line breaking, measure and leading behave quite differently from Latin. Stands in for the Japanese Wikipedia, which this container is rate-limited out of.",
+    "kind": "content"
+  },
+  {
+    "id": "gov-uk",
+    "url": "https://www.gov.uk/browse/benefits",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A government service index. GOV.UK's patterns are the most heavily user-tested in public, so it is close to a deliberate statement of convention.",
+    "kind": "content"
+  },
+  {
+    "id": "python-org",
+    "url": "https://www.python.org/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A project front page: logo, nav, hero, footer, in the arrangement most of the web settled on.",
+    "kind": "content"
+  },
+  {
+    "id": "nodejs-org",
+    "url": "https://nodejs.org/en",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "Another project front page, independently designed, for a second vote on the same arrangement.",
+    "kind": "content"
+  },
+  {
+    "id": "rust-lang",
+    "url": "https://www.rust-lang.org/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A third, with a deliberately distinct visual identity, to see which conventions survive a strong house style.",
+    "kind": "content"
+  },
+  {
+    "id": "hacker-news",
+    "url": "https://news.ycombinator.com/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A link aggregator that has not been redesigned since 2007. The best available test of whether a convention is a convention or just a fashion.",
+    "kind": "content"
+  },
+  {
+    "id": "django-docs",
+    "url": "https://docs.djangoproject.com/en/5.0/intro/tutorial01/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "Documentation with a sidebar: the other dominant reading layout.",
+    "kind": "content"
+  },
+  {
+    "id": "tailwind-docs",
+    "url": "https://tailwindcss.com/docs/installation",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "Documentation from the design system that half the corpus's apps are built with.",
+    "kind": "content"
+  },
+  {
+    "id": "w3-org",
+    "url": "https://www.w3.org/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "The organisation that writes the standards, which does not make its own site conventional.",
+    "kind": "content"
+  },
+  {
+    "id": "archlinux",
+    "url": "https://archlinux.org/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A volunteer-run site with no design team, which is what most of the web actually looks like.",
+    "kind": "content"
+  },
+  {
+    "id": "bootstrap",
+    "url": "https://getbootstrap.com/docs/5.3/getting-started/introduction/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "The framework whose defaults became conventions by sheer deployment.",
+    "kind": "content"
+  },
+  {
+    "id": "caniuse",
+    "url": "https://caniuse.com/",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "note": "A single-purpose tool page: search-first, table-heavy, no marketing.",
+    "kind": "content"
+  },
+  {
+    "id": "bbc-arabic",
+    "url": "https://www.bbc.com/arabic",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "kind": "content",
+    "note": "Right-to-left text in a news layout: mirrored columns, mirrored navigation, numerals left-to-right inside right-to-left prose. Stands in for the Arabic Wikipedia, which this container is rate-limited out of."
+  },
+  {
+    "id": "mdn-ar",
+    "url": "https://developer.mozilla.org/ar/docs/Web/CSS",
+    "viewports": [
+      "desktop",
+      "mobile"
+    ],
+    "schemes": null,
+    "redact": true,
+    "images": null,
+    "fullImage": null,
+    "sparse": null,
+    "kind": "content",
+    "note": "Right-to-left documentation, as a second RTL vote with a completely different layout."
   }
 ]

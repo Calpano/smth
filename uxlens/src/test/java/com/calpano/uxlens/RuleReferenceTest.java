@@ -121,11 +121,19 @@ class RuleReferenceTest {
         for (StandardsCoverage.Heuristic h : all) {
             assertTrue(h.note() != null && h.note().length() > 25,
                     h.item() + " needs a reason, not just a status");
-            if (h.status() == StandardsCoverage.Status.OUT_OF_REACH) {
-                assertTrue(h.ruleIds().isEmpty(),
+            switch (h.status()) {
+                case OUT_OF_REACH -> assertTrue(h.ruleIds().isEmpty(),
                         h.item() + " is out of reach yet names rules");
-            } else {
-                assertTrue(!h.ruleIds().isEmpty(),
+                // Measured and reported, with no rule to name: the note has to carry the
+                // whole explanation, so it is held to a higher bar than the others.
+                case MEASURED -> {
+                    assertTrue(h.ruleIds().isEmpty(),
+                            h.item() + " is only measured, yet names rules that fire on it");
+                    assertTrue(h.note().length() > 200, h.item()
+                            + " is measured but not checked, which needs saying at length: "
+                            + "what is measured, and why it is not yet a finding");
+                }
+                default -> assertTrue(!h.ruleIds().isEmpty(),
                         h.item() + " claims coverage but names no rule");
             }
         }

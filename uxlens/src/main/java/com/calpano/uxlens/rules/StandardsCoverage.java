@@ -47,6 +47,17 @@ public final class StandardsCoverage {
         COVERED,
         /** Partly checked: one narrow, measurable corner of a broader principle. */
         PARTIAL,
+        /**
+         * Measured and reported, but no rule fires on it.
+         *
+         * <p>Added for Jakob's law, and probably not the last of its kind. The measurement
+         * exists and prints a table; what it does not have is the evidence to turn a reading
+         * into a complaint about a page. Marking that PARTIAL would overstate it and
+         * OUT_OF_REACH would understate it, and the difference is worth keeping: a reader
+         * deciding whether to trust this tool should be able to see which of its answers
+         * are findings and which are only figures.
+         */
+        MEASURED,
         /** Not checked, because a rendered page cannot answer it. */
         OUT_OF_REACH
     }
@@ -220,12 +231,19 @@ public final class StandardsCoverage {
                 "The number of choices on screen is countable and the count is the part this "
                         + "could do properly. Decision time is not measurable without a "
                         + "person deciding."));
-        out.add(new Heuristic(u, "Jakob's Law", Status.OUT_OF_REACH, List.of(),
-                "Out of reach as built, and the most interesting thing in this table. Users "
-                        + "expect a site to work like the others they know, and this project "
-                        + "has a corpus of the others -- so the conventions could be mined "
-                        + "across it, the way consistency is mined within one page, and a "
-                        + "departure from the consensus reported. Nothing does that yet."));
+        out.add(new Heuristic(u, "Jakob's Law", Status.MEASURED, List.of(),
+                "Built as a measurement and deliberately not as a rule. Twelve questions a "
+                        + "rendered page can answer -- is the corner clickable and does it lead "
+                        + "home, is the navigation at the top, are prose links underlined -- "
+                        + "are put to every site in the corpus, which votes once per population "
+                        + "and viewport. Eleven answers reach consensus. The reason there is no "
+                        + "rule is that the conventions everyone would predict are not among "
+                        + "them: logo top-left lands at eleven content sites of fifteen and "
+                        + "navigation-at-top at ten, both just under the bar. Twenty-three "
+                        + "sites is not enough, and lowering the bar until the expected answers "
+                        + "appear would be fitting the measurement to the conclusion. Of the "
+                        + "eleven that do pass, most are conventions of absence -- no skip "
+                        + "link, no search in the header -- which are not things to enforce."));
         out.add(new Heuristic(u, "Law of Common Region", Status.COVERED,
                 List.of("inconsistent-common-region", "invisible-surface",
                         "content-escapes-container"),

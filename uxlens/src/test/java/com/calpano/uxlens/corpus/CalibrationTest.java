@@ -32,8 +32,8 @@ class CalibrationTest {
 
     private Path seedCorpus(PageProbe probe, Path dir, boolean withImages) {
         CorpusStore.writeSites(dir, List.of(
-                new CorpusStore.Site("clean", Fixtures.clean(), List.of("desktop"), null, null, null, null, null, "the quiet one"),
-                new CorpusStore.Site("broken", Fixtures.broken(), List.of("desktop"), null, null, null, null, null, "the loud one")));
+                new CorpusStore.Site("clean", Fixtures.clean(), List.of("desktop"), null, null, null, null, null, null, "the quiet one"),
+                new CorpusStore.Site("broken", Fixtures.broken(), List.of("desktop"), null, null, null, null, null, null, "the loud one")));
         CorpusStore.capture(probe, dir, withImages);
         return dir;
     }

@@ -1,0 +1,652 @@
+[
+  {
+    "featureId": "body-size",
+    "question": "What size is body text?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "14",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "14": 4,
+      "under-14": 2,
+      "15": 1
+    }
+  },
+  {
+    "featureId": "button-corners",
+    "question": "How round are button corners?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "rounded",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "rounded": 4,
+      "pill": 1
+    }
+  },
+  {
+    "featureId": "content-starts-left",
+    "question": "Does content begin within the first fifth of the viewport width?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 6,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "yes": 6,
+      "no": 1
+    }
+  },
+  {
+    "featureId": "footer-landmark",
+    "question": "Is there a footer landmark at all?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "yes": 4,
+      "no": 3
+    }
+  },
+  {
+    "featureId": "heading-scale",
+    "question": "How much larger is the biggest heading than body text?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "2-3",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "2-3": 3,
+      "over-3": 3,
+      "under-1.5": 1
+    }
+  },
+  {
+    "featureId": "identity-top-left",
+    "question": "Is there a link into the site\u0027s own pages in the top-left corner?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "no",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "no": 4,
+      "yes": 3
+    }
+  },
+  {
+    "featureId": "loudest-above-fold",
+    "question": "Is the loudest thing above the fold a heading, an image or a control?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "heading",
+    "sitesAgreeing": 5,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "heading": 5,
+      "other": 2
+    }
+  },
+  {
+    "featureId": "nav-position",
+    "question": "Where is the primary navigation?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "top",
+    "sitesAgreeing": 5,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "top": 5,
+      "none": 2
+    }
+  },
+  {
+    "featureId": "pointer-on-buttons",
+    "question": "Do buttons show a pointer cursor?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 2,
+    "sitesAnswering": 6,
+    "allAnswers": {
+      "yes": 2,
+      "mixed": 2,
+      "no": 2
+    }
+  },
+  {
+    "featureId": "prose-links-underlined",
+    "question": "Are links inside prose underlined?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 2,
+    "sitesAnswering": 4,
+    "allAnswers": {
+      "yes": 2,
+      "no": 2
+    }
+  },
+  {
+    "featureId": "search-in-header",
+    "question": "Is there a search field in the header band?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "no",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "no": 4,
+      "yes": 3
+    }
+  },
+  {
+    "featureId": "skip-link",
+    "question": "Is there a skip link as the first in-page link?",
+    "population": "app",
+    "viewport": "desktop",
+    "answer": "no",
+    "sitesAgreeing": 6,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "no": 6,
+      "yes": 1
+    }
+  },
+  {
+    "featureId": "body-size",
+    "question": "What size is body text?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "under-14",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "under-14": 3,
+      "14": 1,
+      "16": 1
+    }
+  },
+  {
+    "featureId": "button-corners",
+    "question": "How round are button corners?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "pill",
+    "sitesAgreeing": 2,
+    "sitesAnswering": 3,
+    "allAnswers": {
+      "pill": 2,
+      "rounded": 1
+    }
+  },
+  {
+    "featureId": "content-starts-left",
+    "question": "Does content begin within the first fifth of the viewport width?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 5,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "yes": 5
+    }
+  },
+  {
+    "featureId": "footer-landmark",
+    "question": "Is there a footer landmark at all?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "yes": 3,
+      "no": 2
+    }
+  },
+  {
+    "featureId": "heading-scale",
+    "question": "How much larger is the biggest heading than body text?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "1.5-2",
+    "sitesAgreeing": 2,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "1.5-2": 2,
+      "2-3": 1,
+      "under-1.5": 1,
+      "over-3": 1
+    }
+  },
+  {
+    "featureId": "identity-top-left",
+    "question": "Is there a link into the site\u0027s own pages in the top-left corner?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "no",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "no": 3,
+      "yes": 2
+    }
+  },
+  {
+    "featureId": "loudest-above-fold",
+    "question": "Is the loudest thing above the fold a heading, an image or a control?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "heading",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "heading": 3,
+      "other": 1,
+      "control": 1
+    }
+  },
+  {
+    "featureId": "nav-position",
+    "question": "Where is the primary navigation?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "none",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "none": 3,
+      "top": 1,
+      "elsewhere": 1
+    }
+  },
+  {
+    "featureId": "pointer-on-buttons",
+    "question": "Do buttons show a pointer cursor?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 3,
+    "allAnswers": {
+      "yes": 3
+    }
+  },
+  {
+    "featureId": "prose-links-underlined",
+    "question": "Are links inside prose underlined?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 1,
+    "sitesAnswering": 2,
+    "allAnswers": {
+      "yes": 1,
+      "no": 1
+    }
+  },
+  {
+    "featureId": "search-in-header",
+    "question": "Is there a search field in the header band?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "no",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "no": 4,
+      "yes": 1
+    }
+  },
+  {
+    "featureId": "skip-link",
+    "question": "Is there a skip link as the first in-page link?",
+    "population": "app",
+    "viewport": "mobile",
+    "answer": "no",
+    "sitesAgreeing": 4,
+    "sitesAnswering": 5,
+    "allAnswers": {
+      "no": 4,
+      "yes": 1
+    }
+  },
+  {
+    "featureId": "body-size",
+    "question": "What size is body text?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "16",
+    "sitesAgreeing": 7,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "16": 7,
+      "14": 4,
+      "17-18": 2,
+      "over-18": 1,
+      "15": 1,
+      "under-14": 1
+    }
+  },
+  {
+    "featureId": "button-corners",
+    "question": "How round are button corners?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "square",
+    "sitesAgreeing": 8,
+    "sitesAnswering": 14,
+    "allAnswers": {
+      "square": 8,
+      "rounded": 5,
+      "pill": 1
+    }
+  },
+  {
+    "featureId": "content-starts-left",
+    "question": "Does content begin within the first fifth of the viewport width?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 16,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "yes": 16
+    }
+  },
+  {
+    "featureId": "footer-landmark",
+    "question": "Is there a footer landmark at all?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 12,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "yes": 12,
+      "no": 4
+    }
+  },
+  {
+    "featureId": "heading-scale",
+    "question": "How much larger is the biggest heading than body text?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "2-3",
+    "sitesAgreeing": 8,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "2-3": 8,
+      "over-3": 4,
+      "1.5-2": 3,
+      "under-1.5": 1
+    }
+  },
+  {
+    "featureId": "identity-top-left",
+    "question": "Is there a link into the site\u0027s own pages in the top-left corner?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 11,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "yes": 11,
+      "no": 5
+    }
+  },
+  {
+    "featureId": "loudest-above-fold",
+    "question": "Is the loudest thing above the fold a heading, an image or a control?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "heading",
+    "sitesAgreeing": 11,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "heading": 11,
+      "control": 3,
+      "other": 2
+    }
+  },
+  {
+    "featureId": "nav-position",
+    "question": "Where is the primary navigation?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "top",
+    "sitesAgreeing": 12,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "top": 12,
+      "none": 3,
+      "elsewhere": 1
+    }
+  },
+  {
+    "featureId": "pointer-on-buttons",
+    "question": "Do buttons show a pointer cursor?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "yes",
+    "sitesAgreeing": 7,
+    "sitesAnswering": 11,
+    "allAnswers": {
+      "yes": 7,
+      "mixed": 2,
+      "no": 2
+    }
+  },
+  {
+    "featureId": "prose-links-underlined",
+    "question": "Are links inside prose underlined?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "mixed",
+    "sitesAgreeing": 6,
+    "sitesAnswering": 12,
+    "allAnswers": {
+      "mixed": 6,
+      "no": 4,
+      "yes": 2
+    }
+  },
+  {
+    "featureId": "search-in-header",
+    "question": "Is there a search field in the header band?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "no",
+    "sitesAgreeing": 12,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "no": 12,
+      "yes": 4
+    }
+  },
+  {
+    "featureId": "skip-link",
+    "question": "Is there a skip link as the first in-page link?",
+    "population": "content",
+    "viewport": "desktop",
+    "answer": "no",
+    "sitesAgreeing": 15,
+    "sitesAnswering": 16,
+    "allAnswers": {
+      "no": 15,
+      "yes": 1
+    }
+  },
+  {
+    "featureId": "body-size",
+    "question": "What size is body text?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "16",
+    "sitesAgreeing": 6,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "16": 6,
+      "14": 3,
+      "15": 3,
+      "17-18": 1,
+      "over-18": 1,
+      "under-14": 1
+    }
+  },
+  {
+    "featureId": "button-corners",
+    "question": "How round are button corners?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "square",
+    "sitesAgreeing": 7,
+    "sitesAnswering": 13,
+    "allAnswers": {
+      "square": 7,
+      "rounded": 5,
+      "pill": 1
+    }
+  },
+  {
+    "featureId": "content-starts-left",
+    "question": "Does content begin within the first fifth of the viewport width?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 15,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "yes": 15
+    }
+  },
+  {
+    "featureId": "footer-landmark",
+    "question": "Is there a footer landmark at all?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 11,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "yes": 11,
+      "no": 4
+    }
+  },
+  {
+    "featureId": "heading-scale",
+    "question": "How much larger is the biggest heading than body text?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "2-3",
+    "sitesAgreeing": 8,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "2-3": 8,
+      "1.5-2": 5,
+      "under-1.5": 2
+    }
+  },
+  {
+    "featureId": "identity-top-left",
+    "question": "Is there a link into the site\u0027s own pages in the top-left corner?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 8,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "yes": 8,
+      "no": 7
+    }
+  },
+  {
+    "featureId": "loudest-above-fold",
+    "question": "Is the loudest thing above the fold a heading, an image or a control?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "heading",
+    "sitesAgreeing": 10,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "heading": 10,
+      "control": 4,
+      "other": 1
+    }
+  },
+  {
+    "featureId": "nav-position",
+    "question": "Where is the primary navigation?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "top",
+    "sitesAgreeing": 8,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "top": 8,
+      "none": 4,
+      "left": 2,
+      "elsewhere": 1
+    }
+  },
+  {
+    "featureId": "pointer-on-buttons",
+    "question": "Do buttons show a pointer cursor?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "yes",
+    "sitesAgreeing": 3,
+    "sitesAnswering": 7,
+    "allAnswers": {
+      "yes": 3,
+      "mixed": 3,
+      "no": 1
+    }
+  },
+  {
+    "featureId": "prose-links-underlined",
+    "question": "Are links inside prose underlined?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "mixed",
+    "sitesAgreeing": 5,
+    "sitesAnswering": 11,
+    "allAnswers": {
+      "mixed": 5,
+      "no": 4,
+      "yes": 2
+    }
+  },
+  {
+    "featureId": "search-in-header",
+    "question": "Is there a search field in the header band?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "no",
+    "sitesAgreeing": 12,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "no": 12,
+      "yes": 3
+    }
+  },
+  {
+    "featureId": "skip-link",
+    "question": "Is there a skip link as the first in-page link?",
+    "population": "content",
+    "viewport": "mobile",
+    "answer": "no",
+    "sitesAgreeing": 14,
+    "sitesAnswering": 15,
+    "allAnswers": {
+      "no": 14,
+      "yes": 1
+    }
+  }
+]

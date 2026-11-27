@@ -38,9 +38,9 @@ class CensusTest {
     private Path seed(PageProbe probe, Path dir, boolean withImages) {
         CorpusStore.writeSites(dir, List.of(
                 new CorpusStore.Site("clean", Fixtures.clean(), List.of("desktop"), null, false,
-                        withImages, withImages, true, "the quiet one"),
+                        withImages, withImages, true, "content", "the quiet one"),
                 new CorpusStore.Site("broken", Fixtures.broken(), List.of("desktop"), null, false,
-                        withImages, withImages, true, "the loud one")));
+                        withImages, withImages, true, "content", "the loud one")));
         CorpusStore.capture(probe, dir, withImages);
         return dir;
     }
@@ -165,7 +165,7 @@ class CensusTest {
                         + "<h1>Error</h1><p>Our servers are under maintenance.</p>"
                         + "<code>Request from 0.0.0.0 via cache</code></body>");
         CorpusStore.writeSites(dir, List.of(new CorpusStore.Site("stub", page.toUri().toString(),
-                List.of("desktop"), null, false, false, false, null, "an error page")));
+                List.of("desktop"), null, false, false, false, null, "content", "an error page")));
 
         CorpusStore.CaptureReport report = CorpusStore.capture(probe, dir, false);
         assertEquals(0, report.written());
