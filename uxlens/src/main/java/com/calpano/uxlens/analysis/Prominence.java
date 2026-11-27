@@ -177,13 +177,7 @@ public final class Prominence {
     }
 
     private static boolean isRelated(Elem a, Elem b, PageSnapshot snapshot) {
-        for (Elem cur = a; cur != null && cur.parentId >= 0; cur = snapshot.byId(cur.parentId)) {
-            if (cur.parentId == b.id) return true;
-        }
-        for (Elem cur = b; cur != null && cur.parentId >= 0; cur = snapshot.byId(cur.parentId)) {
-            if (cur.parentId == a.id) return true;
-        }
-        return false;
+        return snapshot.areRelated(a, b);
     }
 
     private static double norm(double v, double max) { return max <= 0 ? 0 : Math.min(1, v / max); }

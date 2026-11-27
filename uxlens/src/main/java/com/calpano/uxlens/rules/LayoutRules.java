@@ -213,9 +213,7 @@ public final class LayoutRules {
         }
 
         private static boolean related(PageSnapshot s, Elem a, Elem b) {
-            for (Elem c = a; c != null && c.parentId >= 0; c = s.byId(c.parentId)) if (c.parentId == b.id) return true;
-            for (Elem c = b; c != null && c.parentId >= 0; c = s.byId(c.parentId)) if (c.parentId == a.id) return true;
-            return false;
+            return s.areRelated(a, b);
         }
     }
 
@@ -235,11 +233,7 @@ public final class LayoutRules {
             double min = a.viewport().mobile() ? a.config().minTouchTargetPx : a.config().minPointerTargetPx;
             List<Finding> out = new ArrayList<>();
             for (Elem e : a.snapshot().elements) {
-                // Actionable, not merely interactive: cursor:pointer inherits, so the <svg>
-                // and <path> drawn inside a button look interactive and are not targets.
-                if (!e.actionable || e.disabled || e.childCount > 2) continue;
-                if ("label".equals(e.tag)) continue;              // focuses its field; not a target itself
-                if (isInlineLink(a.snapshot(), e)) continue;      // WCAG exempts links inside prose
+                if (!isTarget(a.snapshot(), e)) continue;
                 double shortest = Math.min(e.w, e.h);
                 if (shortest >= min - 0.5) continue;
                 out.add(finding(shortest < min * 0.6 ? Severity.HIGH : Severity.MEDIUM, String.format(
@@ -251,6 +245,24 @@ public final class LayoutRules {
                                 + "both sides reach %.0fpx. Padding counts; margin does not.", min)));
             }
             return out;
+        }
+
+        /**
+         * Whether this element is a thing a finger has to hit.
+         *
+         * <p>Public and in one place so that nothing else has to guess. A fuzz mutation set
+         * out to make every target unhittable and shrank everything merely
+         * {@code interactive}; on the shadcn dashboard at mobile width that missed the
+         * elements this rule actually judges, the rule's count did not budge, and the run
+         * read as a rule that had stopped noticing. The mutation and the rule have to mean
+         * the same thing by "target".
+         */
+        public static boolean isTarget(PageSnapshot s, Elem e) {
+            // Actionable, not merely interactive: cursor:pointer inherits, so the <svg>
+            // and <path> drawn inside a button look interactive and are not targets.
+            if (!e.actionable || e.disabled || e.childCount > 2) return false;
+            if ("label".equals(e.tag)) return false;          // focuses its field; not a target itself
+            return !isInlineLink(s, e);                       // WCAG exempts links inside prose
         }
 
         private static boolean isInlineLink(PageSnapshot s, Elem e) {

@@ -198,6 +198,7 @@ public final class Analysis {
     /** Buttons and links only. A label focuses a field; it is not what the page is for. */
     private static boolean isActionable(Elem e) {
         if (!e.interactive || e.disabled) return false;
+        if (e.tag == null) return "button".equals(e.role) || "link".equals(e.role);
         return switch (e.tag) {
             case "button", "a", "summary" -> true;
             case "input" -> true;

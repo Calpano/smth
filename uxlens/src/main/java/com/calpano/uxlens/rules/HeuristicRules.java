@@ -83,6 +83,7 @@ public final class HeuristicRules {
          */
         private static boolean isPushable(Elem e) {
             if ("button".equals(e.role) || "link".equals(e.role)) return true;
+            if (e.tag == null) return false;    // a string switch on null throws
             return switch (e.tag) {
                 case "button", "a", "summary" -> true;
                 case "input" -> e.type != null

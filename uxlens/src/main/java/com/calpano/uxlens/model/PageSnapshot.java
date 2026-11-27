@@ -59,7 +59,14 @@ public class PageSnapshot {
     private transient Map<Integer, Elem> byId;
 
     public Elem byId(int id) {
-        if (byId == null) byId = elements.stream().collect(Collectors.toMap(e -> e.id, e -> e));
+        if (byId == null) {
+            // First wins on a duplicate rather than throwing. A snapshot is data: it can be
+            // hand-edited, written by an older probe or built by a caller, and two elements
+            // with the same id used to take the whole audit down with "Duplicate key 0".
+            byId = elements.stream()
+                    .collect(Collectors.toMap(e -> e.id, e -> e, (first, second) -> first,
+                            java.util.LinkedHashMap::new));
+        }
         return byId.get(id);
     }
 
@@ -119,11 +126,63 @@ public class PageSnapshot {
      * whether it collides with another, has to use this rather than the raw value.
      */
     public double effectiveOpacity(Elem e) {
-        double acc = 1;
-        for (Elem cur = e; cur != null; cur = cur.parentId < 0 ? null : byId(cur.parentId)) {
+        double acc = e.opacity;
+        for (Elem cur : ancestorsOf(e)) {
             acc *= cur.opacity;
             if (acc < 0.001) break;
         }
         return acc;
+    }
+
+    /**
+     * How many hops up the tree anything is willing to walk.
+     *
+     * <p>Not an opinion about how deep a document should be -- it is a loop guard. A
+     * snapshot is data, and data can say that an element is its own parent. Three separate
+     * walks in this project had no guard, and a single cycle in the parent ids put an
+     * O(n squared) isolation pass into an endless loop that consumed ten minutes of CPU
+     * without producing a line of output. Walking a few hundred ancestors and stopping is
+     * always better than not stopping.
+     */
+    private static final int MAX_ANCESTOR_HOPS = 256;
+
+    /**
+     * Every ancestor of {@code e}, nearest first, excluding {@code e} itself.
+     *
+     * <p>Stops at a repeat and at {@link #MAX_ANCESTOR_HOPS}, so a cyclic or
+     * self-referential parent chain yields a finite list rather than hanging the caller.
+     */
+    public List<Elem> ancestorsOf(Elem e) {
+        List<Elem> out = new ArrayList<>();
+        java.util.Set<Integer> seen = new java.util.HashSet<>();
+        seen.add(e.id);
+        Elem cur = e;
+        while (cur != null && cur.parentId >= 0 && out.size() < MAX_ANCESTOR_HOPS) {
+            Elem parent = byId(cur.parentId);
+            if (parent == null || !seen.add(parent.id)) break;
+            out.add(parent);
+            cur = parent;
+        }
+        return out;
+    }
+
+    /** True when {@code candidate} is somewhere above {@code e} in the tree. */
+    public boolean isAncestor(Elem candidate, Elem e) {
+        if (candidate.id == e.id) return false;
+        for (Elem cur : ancestorsOf(e)) {
+            if (cur.id == candidate.id) return true;
+        }
+        return false;
+    }
+
+    /**
+     * True when one of the two contains the other.
+     *
+     * <p>Asked by everything that compares two elements geometrically: a child overlapping
+     * its own parent, or sitting with no gap to it, is the normal state of a document and
+     * says nothing about the design.
+     */
+    public boolean areRelated(Elem a, Elem b) {
+        return isAncestor(a, b) || isAncestor(b, a);
     }
 }

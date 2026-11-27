@@ -162,6 +162,139 @@ public final class StandardsCoverage {
                         + "boxes, and is left alone."));
         out.add(new Heuristic(g, "Common fate", Status.OUT_OF_REACH, List.of(),
                 "Grouping by shared motion. A still frame has no motion in it."));
+
+        // ------------------------------------------------------------ Laws of UX
+        //
+        // The thirty entries at lawsofux.com, in the order that site lists them. A mixed
+        // catalogue by design: a few are Gestalt principles under other names and are
+        // already covered here, several are cognitive effects that a rendered page can be
+        // measured against, and the rest are findings about people over time that no
+        // screenshot contains. Going through all thirty is more useful than quoting the
+        // four that flatter this tool.
+        String u = "Laws of UX (lawsofux.com)";
+
+        out.add(new Heuristic(u, "Aesthetic-Usability Effect", Status.OUT_OF_REACH, List.of(),
+                "Not a property to check -- it is the claim that attractive design is "
+                        + "perceived as more usable, which is why this tool exists at all. "
+                        + "Every craft rule here is a bet on it. Nothing can verify the bet "
+                        + "without users."));
+        out.add(new Heuristic(u, "Choice Overload", Status.PARTIAL,
+                List.of("competing-focal-points"),
+                "Counting the choices offered at once is within reach and mostly not done "
+                        + "yet; only competing focal points approaches it. How many is too "
+                        + "many depends on the task."));
+        out.add(new Heuristic(u, "Chunking", Status.PARTIAL,
+                List.of("flat-grouping-hierarchy", "gap-consistency", "inconsistent-common-region"),
+                "Whether a long run of items is broken into groups is visible in the grouping "
+                        + "structure. Whether the chunks are meaningful is not."));
+        out.add(new Heuristic(u, "Cognitive Bias", Status.OUT_OF_REACH, List.of(),
+                "A category rather than a law. The specific biases are listed separately."));
+        out.add(new Heuristic(u, "Cognitive Load", Status.PARTIAL,
+                List.of("noisy-type-scale", "font-family-sprawl", "near-duplicate-colors",
+                        "squint-cohesion"),
+                "Visual load is measured -- complexity, colourfulness, how many type steps "
+                        + "and families a page spends. It is a proxy for mental effort, not a "
+                        + "measure of it, and should be read as one."));
+        out.add(new Heuristic(u, "Doherty Threshold", Status.OUT_OF_REACH, List.of(),
+                "The clearest candidate for expansion in this whole table. 400ms is a "
+                        + "stopwatch question, and this tool already drives a browser for the "
+                        + "focus and hover audit, so the apparatus exists. It measures one "
+                        + "still frame today and that is the only reason this is out."));
+        out.add(new Heuristic(u, "Fitts's Law", Status.PARTIAL,
+                List.of("touch-target", "destructive-adjacency"),
+                "Target size is measured exactly, and that is the half that matters most. "
+                        + "Distance needs a starting point for the hand or the pointer, and "
+                        + "one render does not say where it was."));
+        out.add(new Heuristic(u, "Flow", Status.OUT_OF_REACH, List.of(),
+                "A state a person is in over a session."));
+        out.add(new Heuristic(u, "Goal-Gradient Effect", Status.OUT_OF_REACH, List.of(),
+                "Needs a goal and a distance to it. A progress indicator can be found in the "
+                        + "DOM; whether it is honest about the remaining work cannot."));
+        out.add(new Heuristic(u, "Hick's Law", Status.PARTIAL,
+                List.of("competing-focal-points", "primary-action-not-salient"),
+                "The number of choices on screen is countable and the count is the part this "
+                        + "could do properly. Decision time is not measurable without a "
+                        + "person deciding."));
+        out.add(new Heuristic(u, "Jakob's Law", Status.OUT_OF_REACH, List.of(),
+                "Out of reach as built, and the most interesting thing in this table. Users "
+                        + "expect a site to work like the others they know, and this project "
+                        + "has a corpus of the others -- so the conventions could be mined "
+                        + "across it, the way consistency is mined within one page, and a "
+                        + "departure from the consensus reported. Nothing does that yet."));
+        out.add(new Heuristic(u, "Law of Common Region", Status.COVERED,
+                List.of("inconsistent-common-region", "invisible-surface",
+                        "content-escapes-container"),
+                "Gestalt common region, already covered above."));
+        out.add(new Heuristic(u, "Law of Proximity", Status.COVERED,
+                List.of("label-proximity", "orphaned-heading", "gap-consistency",
+                        "flat-grouping-hierarchy"),
+                "Gestalt proximity, already covered above."));
+        out.add(new Heuristic(u, "Law of Pragnanz", Status.PARTIAL,
+                List.of("squint-cohesion"),
+                "The squint test is this law made operational: blur the page and count the "
+                        + "masses left. A page that resolves into neither one shape nor a few "
+                        + "is reported. Whether the simplest reading is the intended one is "
+                        + "not asked."));
+        out.add(new Heuristic(u, "Law of Similarity", Status.COVERED,
+                List.of("consistency-shape", "consistency-typography", "consistency-color",
+                        "consistency-size", "consistency-spacing"),
+                "Gestalt similarity, already covered above, and the strongest area here."));
+        out.add(new Heuristic(u, "Law of Uniform Connectedness", Status.PARTIAL,
+                List.of("inconsistent-common-region", "invisible-surface"),
+                "Connection by a shared surface or border is checked. Connection by a drawn "
+                        + "line or arrow would need the pixels read as a graph, which nothing "
+                        + "here does."));
+        out.add(new Heuristic(u, "Mental Model", Status.OUT_OF_REACH, List.of(),
+                "What a person believes about how the system works."));
+        out.add(new Heuristic(u, "Miller's Law", Status.PARTIAL,
+                List.of("flat-grouping-hierarchy"),
+                "Group sizes are known, so a run of items with no sub-grouping is findable. "
+                        + "Worth saying that the seven-plus-or-minus-two figure is about "
+                        + "immediate recall of unrelated items and is routinely misapplied to "
+                        + "menu lengths; a threshold built on it would inherit that."));
+        out.add(new Heuristic(u, "Occam's Razor", Status.PARTIAL, List.of("invisible-surface"),
+                "Element counts and ink coverage hint at what could be removed. Which "
+                        + "elements are unnecessary is a judgement about purpose."));
+        out.add(new Heuristic(u, "Paradox of the Active User", Status.OUT_OF_REACH, List.of(),
+                "A finding about what people do, not about what a page is."));
+        out.add(new Heuristic(u, "Pareto Principle", Status.OUT_OF_REACH, List.of(),
+                "Needs usage data: which fifth of the interface carries four fifths of the "
+                        + "use. No render contains it."));
+        out.add(new Heuristic(u, "Parkinson's Law", Status.OUT_OF_REACH, List.of(),
+                "About how long a task takes to fill the time allowed."));
+        out.add(new Heuristic(u, "Peak-End Rule", Status.OUT_OF_REACH, List.of(),
+                "Needs a journey with a peak and an end in it."));
+        out.add(new Heuristic(u, "Postel's Law", Status.OUT_OF_REACH, List.of(),
+                "Be liberal in what you accept. Whether a field accepts a phone number typed "
+                        + "with spaces is testable by driving the page, but knowing what it "
+                        + "should accept means knowing what it is for."));
+        out.add(new Heuristic(u, "Selective Attention", Status.PARTIAL,
+                List.of("primary-action-not-salient", "competing-focal-points"),
+                "The saliency map and the predicted gaze path are a model of pre-attentive "
+                        + "attention, with the caveat recorded elsewhere here: saliency "
+                        + "models were fitted to photographs and transfer poorly to "
+                        + "interfaces."));
+        out.add(new Heuristic(u, "Serial Position Effect", Status.OUT_OF_REACH, List.of(),
+                "Reading order is derivable from geometry, so whether an important action "
+                        + "sits first, last or buried in the middle of a run could be "
+                        + "reported. Which action is important is the part that is missing."));
+        out.add(new Heuristic(u, "Tesler's Law", Status.OUT_OF_REACH, List.of(),
+                "Complexity that cannot be removed has to live somewhere, and whether it "
+                        + "belongs in the system or the user is a design decision, not a "
+                        + "measurement."));
+        out.add(new Heuristic(u, "Von Restorff Effect", Status.COVERED,
+                List.of("primary-action-not-salient", "competing-focal-points",
+                        "inverted-hierarchy", "consistency-shape"),
+                "The isolation effect, and well served from two directions: prominence says "
+                        + "whether one thing stands out, and consistency mining says whether "
+                        + "the things that stand out are the ones meant to."));
+        out.add(new Heuristic(u, "Working Memory", Status.PARTIAL,
+                List.of("flat-grouping-hierarchy"),
+                "As Miller's Law above: how much is held on screen at once is countable, how "
+                        + "much is held in a head is not."));
+        out.add(new Heuristic(u, "Zeigarnik Effect", Status.OUT_OF_REACH, List.of(),
+                "Interrupted tasks are remembered better. Needs a task and an interruption."));
+
         return out;
     }
 

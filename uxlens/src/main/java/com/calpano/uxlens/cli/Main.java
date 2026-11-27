@@ -6,6 +6,7 @@ import com.calpano.uxlens.browser.PageProbe;
 import com.calpano.uxlens.browser.Viewport;
 import com.calpano.uxlens.corpus.Calibration;
 import com.calpano.uxlens.corpus.Census;
+import com.calpano.uxlens.corpus.Fuzz;
 import com.calpano.uxlens.corpus.CorpusStore;
 import com.calpano.uxlens.corpus.Labels;
 import com.calpano.uxlens.interactive.StateAudit;
@@ -257,9 +258,10 @@ public final class Main {
                 yield 1;
             }
             case "census" -> census(dir, a);
+            case "fuzz" -> fuzz(dir, a);
             default -> throw new IllegalArgumentException(
                     "Unknown corpus action '" + action
-                            + "'. Try: capture, run, score, census.");
+                            + "'. Try: capture, run, score, census, fuzz.");
         };
     }
 
@@ -350,6 +352,96 @@ public final class Main {
                 ? "Every rule ran and every measurement produced live values."
                 : "Something is not working; the rows above say which.");
         return result.isHealthy() ? 0 : 1;
+    }
+
+    /**
+     * Deform the input on purpose and see whether the measurements respond as they must.
+     *
+     * <p>The census says a number is alive. This says it is a measurement of the page
+     * rather than a coincidence that happens to vary.
+     */
+    private static int fuzz(Path dir, Args a) {
+        List<CorpusStore.Entry> corpus = CorpusStore.load(dir);
+        if (corpus.isEmpty()) {
+            throw new IllegalArgumentException("No captures under " + dir.toAbsolutePath()
+                    + ". Run 'uxlens corpus capture' first.");
+        }
+        Config config = Config.defaults();
+        a.list("skip").forEach(config.disabledRules::add);
+        long seed = (long) a.number("seed", 20_251_127);
+        boolean verbose = a.flag("verbose");
+
+        List<String> only = a.list("only");
+        List<CorpusStore.Entry> subjects = only.isEmpty()
+                ? corpus
+                : corpus.stream().filter(e -> only.contains(e.siteId())).toList();
+        if (subjects.isEmpty()) {
+            throw new IllegalArgumentException("No capture matched --only=" + String.join(",", only));
+        }
+
+        int brokenMutations = 0;
+        int brokenClaims = 0;
+        int claims = 0;
+        int skippedClaims = 0;
+        // A claim nobody could ask is as untested as a rule that never ran.
+        java.util.Set<String> asked = new java.util.LinkedHashSet<>();
+        java.util.Set<String> stated = new java.util.LinkedHashSet<>();
+        for (Fuzz.Result result : Fuzz.runAll(subjects, config, seed)) {
+            List<Fuzz.MutationResult> broken = result.broken();
+            claims += result.claimCount();
+            skippedClaims += result.skippedClaims().size();
+            result.mutations().forEach(m -> m.claims().forEach(c -> {
+                String id = m.mutation().name() + "/" + c.claim().measure();
+                stated.add(id);
+                if (!c.skipped()) asked.add(id);
+            }));
+            brokenMutations += broken.size();
+            brokenClaims += result.brokenClaims().size();
+            if (broken.isEmpty() && !verbose) continue;
+
+            System.out.printf("%n%s%n", result.baseline());
+            for (Fuzz.MutationResult m : result.mutations()) {
+                if (!verbose && m.isClean()) continue;
+                System.out.printf("   %-26s %s%n", m.mutation().name(),
+                        m.isClean() ? "ok" : m.timedOut() ? "HUNG" : m.survived() ? "" : "THREW");
+                System.out.printf("   %-26s   %s%n", "", wrap(m.mutation().what(), 84, 31));
+                if (m.error() != null) {
+                    System.out.printf("   %-26s   threw: %s%n", "", m.error());
+                }
+                if (m.nonFiniteMeasures() > 0) {
+                    System.out.printf("   %-26s   not finite: %s%n", "",
+                            String.join(", ", m.nonFiniteNames()));
+                }
+                for (Fuzz.ClaimResult c : m.claims()) {
+                    if (!verbose && (c.held() || c.skipped())) continue;
+                    System.out.printf("   %-26s   %-6s %-10s %-22s %12s -> %s%n", "",
+                            c.skipped() ? "n/a" : c.held() ? "held" : "BROKEN",
+                            c.claim().relation(),
+                            c.claim().measure(), number(c.before()), number(c.after()));
+                    if (!c.held()) {
+                        System.out.printf("   %-26s     claim: %s%n", "",
+                                wrap(c.claim().why(), 80, 36));
+                    }
+                }
+            }
+        }
+
+        int neverAsked = (int) stated.stream().filter(id -> !asked.contains(id)).count();
+        System.out.printf("%n%d capture(s) x %d mutation(s); %d claim(s) stated, %d asked, "
+                        + "%d not applicable.%n", subjects.size(), Fuzz.mutations().size(),
+                claims, claims - skippedClaims, skippedClaims);
+        System.out.printf("%d mutation(s) not clean, %d claim(s) broken.%n",
+                brokenMutations, brokenClaims);
+        if (neverAsked > 0) {
+            System.out.printf("%d claim(s) were skipped on every capture, so nothing here "
+                    + "tests them.%n", neverAsked);
+        }
+        if (brokenMutations == 0) {
+            System.out.println("Nothing throws on input no browser would produce, no "
+                    + "measurement comes back as NaN, and every claim about what the "
+                    + "measurements mean held.");
+        }
+        return brokenMutations == 0 ? 0 : 1;
     }
 
     private static String number(double v) {
@@ -497,7 +589,7 @@ public final class Main {
                   uxlens audit URL [options]     measure, check and report
                   uxlens states URL [options]    check focus and hover states (drives the page)
                   uxlens diff URL_A URL_B [opts] compare two renders perceptually
-                  uxlens corpus ACTION [options] capture / run / score / census the corpus
+                  uxlens corpus ACTION [options] capture / run / score / census / fuzz the corpus
                   uxlens rules                   list every check with its rationale and sources
                   uxlens standards               what of the UX body of knowledge is and is not covered
 

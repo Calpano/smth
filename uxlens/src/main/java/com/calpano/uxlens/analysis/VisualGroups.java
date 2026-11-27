@@ -54,7 +54,7 @@ public final class VisualGroups {
      * detected axis.
      */
     public static List<Group> groups(PageSnapshot snapshot) {
-        Map<Integer, List<Elem>> byParent = new HashMap<>();
+        Map<Integer, List<Elem>> byParent = new java.util.LinkedHashMap<>();
         for (Elem e : snapshot.elements) {
             if (e.parentId < 0) continue;
             if (e.fixedLayer) continue;
@@ -66,8 +66,21 @@ public final class VisualGroups {
         for (Map.Entry<Integer, List<Elem>> en : byParent.entrySet()) {
             Elem parent = snapshot.byId(en.getKey());
             if (parent == null) continue;
-            List<Elem> kids = en.getValue();
+            List<Elem> kids = new ArrayList<>(en.getValue());
             if (kids.size() < 2) continue;
+
+            // Canonical order before grouping, by geometry rather than by markup.
+            //
+            // The row pass below is greedy: it walks the list and puts each element in the
+            // first cluster it fits, so what it produces depends on the order it reads them
+            // in. The stack pass sorts by y, but a stable sort leaves elements that share a
+            // y in whatever order they arrived. Both therefore inherited document order,
+            // and reversing the element list -- which changes nothing a reader can see --
+            // moved two peer groups on the Arabic Wikipedia. A reader sees the page, not the
+            // markup, so the grouping has to be a function of the geometry alone.
+            kids.sort(Comparator.comparingDouble((Elem e) -> e.y)
+                    .thenComparingDouble(e -> e.x)
+                    .thenComparingInt(e -> e.id));
 
             // Split into rows first: anything sharing a row belongs to the same row group.
             for (List<Elem> row : cluster(kids, Axis.ROW)) {
@@ -124,6 +137,13 @@ public final class VisualGroups {
         return blocks;
     }
 
+    /** True when an element's box is made of finite, non-negative numbers. */
+    public static boolean hasRealGeometry(Elem e) {
+        return Double.isFinite(e.x) && Double.isFinite(e.y)
+                && Double.isFinite(e.w) && Double.isFinite(e.h)
+                && e.w >= 0 && e.h >= 0;
+    }
+
     private static boolean paintsItsOwnSurface(Elem e) {
         com.calpano.uxlens.model.Rgba bg = com.calpano.uxlens.model.Rgba.parse(e.backgroundColor);
         return bg != null && bg.a() > 0.05;
@@ -163,6 +183,12 @@ public final class VisualGroups {
      */
     public static List<Elem> content(PageSnapshot snapshot) {
         return snapshot.elements.stream()
+                // An element whose geometry is not a number is not a thing on a page. No
+                // browser produces one, but a snapshot can, and an infinite width summed
+                // into a total makes every later comparison against that total false --
+                // which is how a measurement comes back as NaN and a rule goes quiet for
+                // good.
+                .filter(VisualGroups::hasRealGeometry)
                 // The page's own surface is a backdrop, not something to look at.
                 .filter(e -> !"body".equals(e.tag) && !"html".equals(e.tag) && !"main".equals(e.tag))
                 .filter(e -> e.hasOwnText() || e.img != null

@@ -478,7 +478,9 @@ public final class Census {
     }
 
     private static void tokens(List<Probe> p) {
-        add(p, "spacing", "base unit", Expect.POSITIVE, false,
+        // Not POSITIVE: zero is the answer for a page with no discernible scale, and
+        // saying so is better than naming a spurious one. Three captures read zero.
+        add(p, "spacing", "base unit", Expect.VARIES, false,
                 s -> (double) s.analysis().spacing().baseUnit());
         add(p, "spacing", "adherence", Expect.VARIES, false,
                 s -> s.analysis().spacing().adherence());

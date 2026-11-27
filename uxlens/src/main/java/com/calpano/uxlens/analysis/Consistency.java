@@ -61,6 +61,9 @@ public final class Consistency {
         for (VisualGroups.Group g : VisualGroups.groups(snapshot)) {
             if (g.size() < MIN_PEERS) continue;
             if (g.members().stream().map(e -> e.tag).distinct().count() != 1) continue;
+            // All null counts as "one distinct tag", and a group reported as
+            // "4 sibling <null> elements" is not a sentence anybody can act on.
+            if (g.members().get(0).tag == null) continue;
             out.add(new Peers(g.axis() == VisualGroups.Axis.ROW ? "row" : "stack",
                     g.size() + " sibling <" + g.members().get(0).tag + "> elements", g.members()));
         }
@@ -82,6 +85,7 @@ public final class Consistency {
     private static String cohortSignature(Elem e) {
         if (e.fixedLayer) return null;
         if (e.heading > 0) return "<h" + e.heading + "> headings";
+        if (e.tag == null) return null;         // a string switch on null throws
         return switch (e.tag) {
             case "button" -> "buttons";
             case "input" -> "inputs";
